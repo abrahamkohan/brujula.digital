@@ -38,7 +38,9 @@ export async function middleware(request: NextRequest) {
   // Public routes
   const isPublic =
     pathname === "/" ||
+    pathname.startsWith("/login") ||
     pathname.startsWith("/verificar") ||
+    pathname.startsWith("/precios") ||
     pathname.startsWith("/api") ||
     pathname.startsWith("/auth");
 
