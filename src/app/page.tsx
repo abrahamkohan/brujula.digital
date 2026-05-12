@@ -1,5 +1,12 @@
 import Link from "next/link";
-import { ShieldCheck, TrendingUp, Search, Zap, ArrowRight, Shield } from "lucide-react";
+import { ShieldCheck, TrendingUp, Search, Zap, ArrowRight, Shield, Star, Package } from "lucide-react";
+import { WhatsAppFloat } from "@/components/whatsapp-float";
+
+const planes = [
+  { nombre: "Starter", modulos: "1 módulo", precio: "USD 30–80/mes", tag: "Entrada", features: ["1 módulo a elección","Consultas ilimitadas","Soporte por email"] },
+  { nombre: "Pro", modulos: "2–3 módulos", precio: "USD 100–200/mes", tag: "Volumen", features: ["2-3 módulos combinados","API acceso básico","Dashboard avanzado","Soporte prioritario"] },
+  { nombre: "Full", modulos: "Todos", precio: "USD 300–500/mes", tag: "All-in", features: ["Todos los módulos","API completa","Múltiples usuarios","Soporte WhatsApp","SLA garantizado"] },
+];
 
 export default function LandingPage() {
   return (
@@ -113,6 +120,32 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* Pricing */}
+      <section className="max-w-4xl mx-auto px-6 py-16">
+        <p className="text-xs font-semibold uppercase tracking-widest text-[#C96442] mb-3 text-center">Planes</p>
+        <h2 className="text-2xl font-bold text-[#1F1E1D] text-center mb-2">Pagás solo por lo que usás</h2>
+        <p className="text-[#87867F] text-center text-sm mb-10">Sin permanencia. Cancelás cuando quieras.</p>
+        <div className="grid sm:grid-cols-3 gap-4">
+          {planes.map(p => (
+            <div key={p.nombre} className="bg-white rounded-2xl border-2 border-[#D4D2C9] p-6 flex flex-col hover:border-[#C96442]/30 transition-colors">
+              <div className="flex items-center justify-between mb-3">
+                <span className="font-bold text-[#1F1E1D] text-lg">{p.nombre}</span>
+                <span className="text-xs bg-[#F5F4ED] text-[#87867F] px-2 py-0.5 rounded-full border border-[#D4D2C9]">{p.tag}</span>
+              </div>
+              <p className="text-xs text-[#87867F] mb-4">{p.modulos}</p>
+              <ul className="space-y-2 mb-6 flex-1">
+                {p.features.map(f => (
+                  <li key={f} className="flex items-center gap-2 text-xs text-[#5C5B57]">
+                    <Star className="h-3 w-3 text-[#C96442] shrink-0" />{f}
+                  </li>
+                ))}
+              </ul>
+              <p className="text-lg font-bold text-[#C96442] pt-3 border-t border-[#E5E4DD]">{p.precio}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
       {/* CTA */}
       <section className="max-w-2xl mx-auto px-6 py-20 text-center">
         <h2 className="text-3xl font-bold text-[#1F1E1D] mb-4">
@@ -130,6 +163,8 @@ export default function LandingPage() {
           </Link>
         </div>
       </section>
+
+      <WhatsAppFloat />
 
       {/* Footer */}
       <footer className="border-t border-[#D4D2C9] py-8 text-center space-y-2">
