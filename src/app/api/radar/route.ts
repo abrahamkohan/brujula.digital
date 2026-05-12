@@ -61,9 +61,9 @@ export async function GET(request: NextRequest) {
 
     // Summary stats
     const stats = {
-      licitaciones: eventos.filter(e => e.tipo === "licitacion").length,
-      adjudicaciones: eventos.filter(e => e.tipo === "adjudicacion").length,
-      contratos: eventos.filter(e => e.tipo === "contrato").length,
+      licitaciones: eventos.filter((e: { tipo: string }) => e.tipo === "licitacion").length,
+      adjudicaciones: eventos.filter((e: { tipo: string }) => e.tipo === "adjudicacion").length,
+      contratos: eventos.filter((e: { tipo: string }) => e.tipo === "contrato").length,
       total: eventos.length,
     };
 
