@@ -140,7 +140,7 @@ export async function GET(request: NextRequest) {
     }
 
     return NextResponse.json({
-      ruc: cleaned,
+      ruc: rucDNCP.replace(/^PY-RUC-/, ""),
       nombre,
       categorias,
       sanciones,
