@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ShieldCheck, TrendingUp, Shield, ArrowRight, Users, Search, Database } from "lucide-react";
+import { ShieldCheck, TrendingUp, Shield, ArrowRight, Activity, Search, Database } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
 export default function DashboardHome() {
@@ -41,11 +41,12 @@ export default function DashboardHome() {
       </div>
 
       {/* Tools grid */}
-      <div className="grid sm:grid-cols-3 gap-4 mb-6">
+      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         {[
-          { href: "/verificar", icon: ShieldCheck, title: "Verificar Funcionario", desc: "Buscá por CI", color: "bg-[#C96442]/10 text-[#C96442]" },
-          { href: "/precios", icon: TrendingUp, title: "Precios DNCP", desc: "Licitaciones adjudicadas", color: "bg-[#5A7D5A]/10 text-[#5A7D5A]" },
+          { href: "/verificar", icon: ShieldCheck, title: "Funcionarios", desc: "Buscar por CI", color: "bg-[#C96442]/10 text-[#C96442]" },
+          { href: "/precios", icon: TrendingUp, title: "Precios DNCP", desc: "Licitaciones", color: "bg-[#5A7D5A]/10 text-[#5A7D5A]" },
           { href: "/score", icon: Shield, title: "Empresa Score", desc: "KYC por RUC", color: "bg-[#4A7B9D]/10 text-[#4A7B9D]" },
+          { href: "/radar", icon: Activity, title: "Radar", desc: "Monitoreo", color: "bg-[#B89B4B]/10 text-[#B89B4B]" },
         ].map(tool => (
           <Link key={tool.href} href={tool.href} className="group bg-white rounded-2xl border border-[#D4D2C9] p-5 hover:shadow-md hover:border-[#C96442]/30 transition-all">
             <div className={`w-10 h-10 rounded-xl ${tool.color} flex items-center justify-center mb-4`}>

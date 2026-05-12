@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ShieldCheck, TrendingUp, Search, Zap, ArrowRight, Shield, Star } from "lucide-react";
+import { ShieldCheck, TrendingUp, Search, Zap, ArrowRight, Shield, Star, Activity } from "lucide-react";
 import WhatsAppFloat from "@/components/whatsapp-float";
 
 const planes = [
@@ -42,53 +42,38 @@ export default function LandingPage() {
         <p className="text-xs font-semibold uppercase tracking-widest text-[#C96442] mb-3 text-center">Productos disponibles</p>
         <h2 className="text-2xl font-bold text-[#1F1E1D] text-center mb-10">Dos herramientas. Un solo lugar.</h2>
 
-        <div className="grid sm:grid-cols-3 gap-6">
-          {/* Módulo 3 */}
+        <div className="grid sm:grid-cols-2 gap-6">
+          {/* Verificación */}
           <Link href="/verificar" className="group bg-white rounded-2xl border border-[#D4D2C9] p-6 hover:shadow-lg hover:border-[#C96442]/30 transition-all">
             <div className="w-12 h-12 rounded-xl bg-[#C96442]/10 flex items-center justify-center mb-5">
-              <ShieldCheck className="h-6 w-6 text-[#C96442]" />
-            </div>
-            <h3 className="text-lg font-bold text-[#1F1E1D] mb-2 group-hover:text-[#C96442] transition-colors">
-              Verificación
-            </h3>
-            <p className="text-sm text-[#5C5B57] leading-relaxed mb-4">
-              ¿Es funcionario público? Ingresá una CI y enterate en segundos.
-            </p>
-            <span className="text-sm font-semibold text-[#C96442] flex items-center gap-1">
-              Probar <ArrowRight className="h-3.5 w-3.5" />
-            </span>
+              <ShieldCheck className="h-6 w-6 text-[#C96442]" /></div>
+            <h3 className="text-lg font-bold text-[#1F1E1D] mb-2 group-hover:text-[#C96442]">Verificación</h3>
+            <p className="text-sm text-[#5C5B57] mb-4">¿Es funcionario público? Ingresá una CI.</p>
+            <span className="text-sm font-semibold text-[#C96442] flex items-center gap-1">Probar <ArrowRight className="h-3.5 w-3.5" /></span>
           </Link>
-
-          {/* Módulo 2 */}
+          {/* Precios */}
           <Link href="/precios" className="group bg-white rounded-2xl border border-[#D4D2C9] p-6 hover:shadow-lg hover:border-[#C96442]/30 transition-all">
             <div className="w-12 h-12 rounded-xl bg-[#5A7D5A]/10 flex items-center justify-center mb-5">
-              <TrendingUp className="h-6 w-6 text-[#5A7D5A]" />
-            </div>
-            <h3 className="text-lg font-bold text-[#1F1E1D] mb-2 group-hover:text-[#C96442] transition-colors">
-              Precios DNCP
-            </h3>
-            <p className="text-sm text-[#5C5B57] leading-relaxed mb-4">
-              Historial de precios adjudicados en licitaciones del Estado.
-            </p>
-            <span className="text-sm font-semibold text-[#C96442] flex items-center gap-1">
-              Probar <ArrowRight className="h-3.5 w-3.5" />
-            </span>
+              <TrendingUp className="h-6 w-6 text-[#5A7D5A]" /></div>
+            <h3 className="text-lg font-bold text-[#1F1E1D] mb-2 group-hover:text-[#C96442]">Precios DNCP</h3>
+            <p className="text-sm text-[#5C5B57] mb-4">Historial de precios adjudicados.</p>
+            <span className="text-sm font-semibold text-[#C96442] flex items-center gap-1">Probar <ArrowRight className="h-3.5 w-3.5" /></span>
           </Link>
-
-          {/* Módulo 1 — NUEVO */}
+          {/* Score */}
           <Link href="/score" className="group bg-white rounded-2xl border border-[#D4D2C9] p-6 hover:shadow-lg hover:border-[#C96442]/30 transition-all">
             <div className="w-12 h-12 rounded-xl bg-[#4A7B9D]/10 flex items-center justify-center mb-5">
-              <Shield className="h-6 w-6 text-[#4A7B9D]" />
-            </div>
-            <h3 className="text-lg font-bold text-[#1F1E1D] mb-2 group-hover:text-[#C96442] transition-colors">
-              Empresa Score
-            </h3>
-            <p className="text-sm text-[#5C5B57] leading-relaxed mb-4">
-              Perfil de contrataciones de una empresa por RUC. KYC en segundos.
-            </p>
-            <span className="text-sm font-semibold text-[#C96442] flex items-center gap-1">
-              Probar <ArrowRight className="h-3.5 w-3.5" />
-            </span>
+              <Shield className="h-6 w-6 text-[#4A7B9D]" /></div>
+            <h3 className="text-lg font-bold text-[#1F1E1D] mb-2 group-hover:text-[#C96442]">Empresa Score</h3>
+            <p className="text-sm text-[#5C5B57] mb-4">KYC por RUC. Contratos con el Estado.</p>
+            <span className="text-sm font-semibold text-[#C96442] flex items-center gap-1">Probar <ArrowRight className="h-3.5 w-3.5" /></span>
+          </Link>
+          {/* Radar */}
+          <Link href="/radar" className="group bg-white rounded-2xl border border-[#D4D2C9] p-6 hover:shadow-lg hover:border-[#C96442]/30 transition-all">
+            <div className="w-12 h-12 rounded-xl bg-[#B89B4B]/10 flex items-center justify-center mb-5">
+              <Activity className="h-6 w-6 text-[#B89B4B]" /></div>
+            <h3 className="text-lg font-bold text-[#1F1E1D] mb-2 group-hover:text-[#C96442]">Radar</h3>
+            <p className="text-sm text-[#5C5B57] mb-4">Monitoreo de licitaciones en tiempo real.</p>
+            <span className="text-sm font-semibold text-[#C96442] flex items-center gap-1">Probar <ArrowRight className="h-3.5 w-3.5" /></span>
           </Link>
         </div>
       </section>
