@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ShieldCheck, TrendingUp, Shield, ArrowRight, Activity, Search, Database } from "lucide-react";
+import { ShieldCheck, TrendingUp, Shield, ArrowRight, Activity, Search, Database, Users } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
 export default function DashboardHome() {
