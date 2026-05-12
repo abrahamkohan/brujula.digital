@@ -34,7 +34,9 @@ export default function ScorePage() {
   async function buscar() {
     setError(null); setData(null); setLoading(true);
     try {
-      const res = await fetch(`/api/empresa-score?ruc=${ruc}`);
+      const isRuc = /^\d/.test(ruc) && ruc.replace(/\D/g, "").length >= 6;
+      const params = isRuc ? `ruc=${ruc}` : `name=${encodeURIComponent(ruc)}`;
+      const res = await fetch(`/api/empresa-score?${params}`);
       const json = await res.json();
       if (!res.ok || json.error) throw new Error(json.error);
       setData(json);
@@ -59,15 +61,16 @@ export default function ScorePage() {
         <Card className="border-[#D4D2C9] shadow-sm">
           <CardContent className="pt-6 space-y-4">
             <div className="flex flex-col sm:flex-row gap-2">
-              <Input placeholder="RUC: 80012345-7" value={ruc}
-                onChange={(e) => setRuc(e.target.value.replace(/[^\d-]/g, "").slice(0, 12))}
-                onKeyDown={(e) => e.key === "Enter" && ruc.length >= 8 && buscar()}
+              <Input placeholder="RUC: 80012345-7 o nombre de empresa" value={ruc}
+                onChange={(e) => setRuc(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && ruc.length >= 3 && buscar()}
                 className="h-12 bg-white border-[#D4D2C9] focus-visible:ring-[#C96442] flex-1" autoFocus />
-              <Button onClick={buscar} disabled={loading || ruc.length < 8}
+              <Button onClick={buscar} disabled={loading || ruc.length < 3}
                 className="h-12 px-6 bg-[#C96442] hover:bg-[#B5583A] text-white font-semibold">
                 {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Search className="h-5 w-5" />}
               </Button>
             </div>
+            <p className="text-xs text-[#87867F] text-center">Ejemplos: 80012345-7 · CQ Emprendimientos · HIDRAULICA PARAGUAYA</p>
             {error && <div className="flex items-start gap-2 p-3 rounded-xl bg-red-50 border border-red-200 text-red-800 text-sm"><AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />{error}</div>}
 
             {data && (

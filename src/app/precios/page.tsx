@@ -165,10 +165,13 @@ export default function PreciosPage() {
                       </div>
                     </div>
                     <div className="flex flex-wrap items-center gap-2">
-                      <Badge className="bg-[#F5F4ED] text-[#5C5B57] hover:bg-[#F5F4ED] border-0 text-xs">
-                        <User className="h-3 w-3 mr-1" />
+                      <a
+                        href={`/score?name=${encodeURIComponent(award.supplier)}`}
+                        className="inline-flex items-center gap-1 bg-[#F5F4ED] text-[#5C5B57] hover:bg-[#E8DCC8] border-0 text-xs px-3 py-1 rounded-full transition-colors"
+                      >
+                        <User className="h-3 w-3" />
                         {award.supplier}
-                      </Badge>
+                      </a>
                       {award.date && (
                         <Badge className="bg-[#F5F4ED] text-[#87867F] hover:bg-[#F5F4ED] border-0 text-xs">
                           <Calendar className="h-3 w-3 mr-1" />

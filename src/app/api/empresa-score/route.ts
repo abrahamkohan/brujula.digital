@@ -18,20 +18,47 @@ async function getToken(): Promise<string> {
 
 export async function GET(request: NextRequest) {
   const ruc = request.nextUrl.searchParams.get("ruc");
-  if (!ruc) {
-    return NextResponse.json({ error: "RUC requerido. Formato: 80012345-7" }, { status: 400 });
-  }
-
-  const cleaned = ruc.replace(/\D/g, "");
-  if (cleaned.length < 6) {
-    return NextResponse.json({ error: "RUC inválido" }, { status: 400 });
+  const name = request.nextUrl.searchParams.get("name");
+  
+  if (!ruc && !name) {
+    return NextResponse.json({ error: "RUC o nombre de empresa requerido" }, { status: 400 });
   }
 
   try {
     const token = await getToken();
-    const rucDNCP = `${cleaned.slice(0, -1)}-${cleaned.slice(-1)}`;
+    let rucDNCP = "";
+    
+    // If searching by name, find RUC first
+    if (name && !ruc) {
+      const searchRes = await fetch(
+        `${DNCP_API}/search/suppliers?name=${encodeURIComponent(name)}&items_per_page=3`,
+        { headers: { Authorization: `Bearer ${token}` }, signal: AbortSignal.timeout(8000) }
+      ).catch(() => null);
+      
+      if (searchRes?.ok) {
+        const text = await searchRes.text();
+        if (text) {
+          try {
+            const data = JSON.parse(text);
+            const results = data.releases ?? data.results ?? data.suppliers ?? [];
+            if (results.length > 0) {
+              rucDNCP = results[0].identifier?.id ?? results[0].id ?? "";
+            }
+          } catch { /* ignore */ }
+        }
+      }
+      if (!rucDNCP) {
+        return NextResponse.json({ error: `No se encontró "${name}" en los registros de la DNCP. Probá con el RUC exacto.` }, { status: 404 });
+      }
+    } else {
+      const cleaned = (ruc || "").replace(/\D/g, "");
+      if (cleaned.length < 6) {
+        return NextResponse.json({ error: "RUC inválido. Formato: 80012345-7" }, { status: 400 });
+      }
+      rucDNCP = `${cleaned.slice(0, -1)}-${cleaned.slice(-1)}`;
+    }
 
-    // Fetch supplier + contracts in parallel
+    // Rest of the code continues the same...
     const [supplierRes, contractsRes] = await Promise.all([
       fetch(`${DNCP_API}/suppliers/${rucDNCP}`, { headers: { Authorization: `Bearer ${token}` }, signal: AbortSignal.timeout(8000) }).catch(() => null),
       fetch(`${DNCP_API}/search/processes?awards.suppliers.id=PY-RUC-${rucDNCP}&items_per_page=10&tipo_fecha=adjudicacion&fecha_desde=2023-01-01`, { headers: { Authorization: `Bearer ${token}` }, signal: AbortSignal.timeout(10000) }).catch(() => null),
