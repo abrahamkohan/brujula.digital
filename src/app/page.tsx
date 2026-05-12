@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { ShieldCheck, TrendingUp, Search, Zap, ArrowRight, CheckCircle2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 
 export default function LandingPage() {
   return (
@@ -22,16 +21,12 @@ export default function LandingPage() {
         </p>
 
         <div className="flex flex-wrap gap-4 justify-center">
-          <Button asChild className="h-12 px-8 bg-[#C96442] hover:bg-[#B5583A] text-white font-semibold text-base rounded-xl">
-            <Link href="/verificar">
-              Probar ahora <ArrowRight className="h-4 w-4 ml-2" />
-            </Link>
-          </Button>
-          <Button asChild variant="outline" className="h-12 px-8 border-[#D4D2C9] text-[#1F1E1D] font-semibold text-base rounded-xl hover:bg-white">
-            <Link href="/login">
-              Ingresar
-            </Link>
-          </Button>
+          <Link href="/verificar" className="inline-flex items-center h-12 px-8 bg-[#C96442] hover:bg-[#B5583A] text-white font-semibold text-base rounded-xl transition-colors">
+            Probar ahora <ArrowRight className="h-4 w-4 ml-2" />
+          </Link>
+          <Link href="/login" className="inline-flex items-center h-12 px-8 border border-[#D4D2C9] text-[#1F1E1D] font-semibold text-base rounded-xl hover:bg-white transition-colors">
+            Ingresar
+          </Link>
         </div>
       </section>
 
@@ -125,16 +120,12 @@ export default function LandingPage() {
           3 consultas por día. Sin costo. Sin tarjeta.
         </p>
         <div className="flex flex-wrap gap-4 justify-center">
-          <Button asChild className="h-12 px-8 bg-[#C96442] hover:bg-[#B5583A] text-white font-semibold text-base rounded-xl">
-            <Link href="/verificar">
-              Verificar funcionario <ArrowRight className="h-4 w-4 ml-2" />
-            </Link>
-          </Button>
-          <Button asChild variant="outline" className="h-12 px-8 border-[#D4D2C9] text-[#1F1E1D] font-semibold text-base rounded-xl hover:bg-white">
-            <Link href="/precios">
-              Buscar precios <ArrowRight className="h-4 w-4 ml-2" />
-            </Link>
-          </Button>
+          <Link href="/verificar" className="inline-flex items-center h-12 px-8 bg-[#C96442] hover:bg-[#B5583A] text-white font-semibold text-base rounded-xl transition-colors">
+            Verificar funcionario <ArrowRight className="h-4 w-4 ml-2" />
+          </Link>
+          <Link href="/precios" className="inline-flex items-center h-12 px-8 border border-[#D4D2C9] text-[#1F1E1D] font-semibold text-base rounded-xl hover:bg-white transition-colors">
+            Buscar precios <ArrowRight className="h-4 w-4 ml-2" />
+          </Link>
         </div>
       </section>
 
