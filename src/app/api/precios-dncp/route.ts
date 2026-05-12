@@ -68,10 +68,11 @@ export async function GET(request: NextRequest) {
         });
         const relText = await relRes.text();
         if (!relText) return null;
-        const release = JSON.parse(relText);
-        const tender = release.tender;
-        const award = release.awards?.[0];
-        const contract = release.contracts?.[0];
+        const releaseData = JSON.parse(relText);
+        const inner = releaseData.releases?.[0] ?? releaseData;
+        const tender = inner.tender;
+        const award = inner.awards?.[0];
+        const contract = inner.contracts?.[0];
 
         return {
           ocid: record.ocid,
