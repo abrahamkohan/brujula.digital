@@ -82,6 +82,7 @@ export async function GET(request: NextRequest) {
           amount: award?.value?.amount ?? contract?.value?.amount ?? tender?.value?.amount ?? 0,
           currency: award?.value?.currency ?? "PYG",
           date: award?.date ?? contract?.dateSigned ?? latestRelease.url.split("-").pop()?.slice(0, 10) ?? "",
+          dncp_url: award?.documents?.[0]?.url ?? `https://www.contrataciones.gov.py/licitaciones/${record.ocid.replace("ocds-03ad3f-","")}`,
           items: [
             ...new Set([
               ...(tender?.items?.map((i: { description: string }) => i.description) ?? []),

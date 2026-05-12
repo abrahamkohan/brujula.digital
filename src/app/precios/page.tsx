@@ -15,6 +15,7 @@ interface Award {
   amount: number;
   currency: string;
   date: string;
+  dncp_url?: string;
   items: string[];
 }
 
@@ -171,6 +172,16 @@ export default function PreciosPage() {
                           <Calendar className="h-3 w-3 mr-1" />
                           {new Date(award.date).toLocaleDateString("es-PY")}
                         </Badge>
+                      )}
+                      {award.dncp_url && (
+                        <a
+                          href={award.dncp_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-xs text-[#C96442] hover:underline font-medium ml-auto"
+                        >
+                          Ver expediente en DNCP ↗
+                        </a>
                       )}
                     </div>
                     {award.items.length > 0 && (
