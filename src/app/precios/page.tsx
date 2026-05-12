@@ -3,27 +3,19 @@
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Search, TrendingUp, TrendingDown, Minus, Loader2, Package } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Search, TrendingUp, Loader2, Building2, User, Calendar, PackageOpen } from "lucide-react";
 
-interface CatalogoItem {
-  id: string;
-  description: string;
-  classification?: { id: string; description: string };
-}
-
-interface Adjudicacion {
-  id?: string;
-  award?: {
-    value?: { amount: number; currency: string };
-    suppliers?: Array<{ name: string; id: string }>;
-    date?: string;
-  };
-  tender?: {
-    title?: string;
-    procuringEntity?: { name: string };
-    items?: Array<{ description: string; quantity: number }>;
-  };
+interface Award {
+  ocid: string;
+  title: string;
+  entity: string;
+  supplier: string;
+  amount: number;
+  currency: string;
+  date: string;
+  items: string[];
 }
 
 interface Stats {
@@ -43,61 +35,31 @@ function fmtGs(n: number): string {
 
 export default function PreciosPage() {
   const [search, setSearch] = useState("");
-  const [catalogo, setCatalogo] = useState<CatalogoItem[]>([]);
-  const [selectedItem, setSelectedItem] = useState<string | null>(null);
-  const [selectedYear, setSelectedYear] = useState("2025");
-  const [adjudicaciones, setAdjudicaciones] = useState<Adjudicacion[]>([]);
-  const [stats, setStats] = useState<Stats | null>(null);
+  const [year, setYear] = useState("2025");
   const [loading, setLoading] = useState(false);
+  const [awards, setAwards] = useState<Award[]>([]);
+  const [stats, setStats] = useState<Stats | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [message, setMessage] = useState<string | null>(null);
 
-  async function buscarCatalogo() {
-    if (!search.trim()) return;
+  async function buscar() {
     setError(null);
-    setCatalogo([]);
+    setMessage(null);
     setLoading(true);
-    setSelectedItem(null);
-    setAdjudicaciones([]);
+    setAwards([]);
     setStats(null);
 
     try {
-      const res = await fetch(`/api/precios-dncp?search=${encodeURIComponent(search)}`);
-      const data = await res.json();
-      if (data.error) throw new Error(data.error);
+      const params = new URLSearchParams({ year });
+      if (search.trim()) params.set("search", search.trim());
       
-      // Extract items from OCDS release format or direct items
-      const items = (data.items || []).map((r: Record<string, unknown>) => {
-        const award = (r as { award?: { items?: Array<CatalogoItem> } }).award;
-        const items = award?.items;
-        if (items && items[0]) return items[0];
-        // Try direct catalog format
-        const desc = (r as { description?: string }).description;
-        const id = (r as { id?: string }).id;
-        const classification = (r as { classification?: { id: string; description: string } }).classification;
-        if (desc) return { id: id ?? classification?.id ?? "", description: desc, classification };
-        return null;
-      }).filter(Boolean);
-      
-      setCatalogo(items.slice(0, 20));
-    } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : "Error al buscar");
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  async function verPrecios(code: string) {
-    setError(null);
-    setSelectedItem(code);
-    setLoading(true);
-    setAdjudicaciones([]);
-    setStats(null);
-
-    try {
-      const res = await fetch(`/api/precios-dncp?code=${code}&year=${selectedYear}`);
+      const res = await fetch(`/api/precios-dncp?${params}`);
       const data = await res.json();
+      
       if (data.error) throw new Error(data.error);
-      setAdjudicaciones(data.items || []);
+      if (data.message) setMessage(data.message);
+      
+      setAwards(data.awards || []);
       setStats(data.stats);
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : "Error al consultar");
@@ -108,32 +70,45 @@ export default function PreciosPage() {
 
   return (
     <div className="min-h-screen bg-[#F5F4ED] font-sans">
-      {/* Header */}
+      {/* Hero */}
       <section className="max-w-3xl mx-auto px-6 pt-16 pb-8 text-center">
+        <div className="inline-flex items-center gap-2 bg-white border border-[#D4D2C9] text-[#87867F] text-xs px-4 py-1.5 rounded-full mb-6 font-medium">
+          <TrendingUp className="h-3.5 w-3.5 text-[#C96442]" />
+          Datos de la DNCP · Actualizado en tiempo real
+        </div>
         <h1 className="text-3xl sm:text-4xl font-bold text-[#1F1E1D] leading-tight mb-3">
           Inteligencia de Precios
         </h1>
         <p className="text-lg text-[#5C5B57] max-w-lg mx-auto">
-          Historial de precios adjudicados en licitaciones del Estado. Buscá por producto.
+          Precios adjudicados en licitaciones del Estado paraguayo. Buscá por producto, proveedor o entidad.
         </p>
       </section>
 
       {/* Search */}
-      <section className="max-w-2xl mx-auto px-6 pb-16">
+      <section className="max-w-3xl mx-auto px-6 pb-16">
         <Card className="border-[#D4D2C9] shadow-sm">
           <CardContent className="pt-6 space-y-4">
-            <div className="flex gap-2">
+            <div className="flex gap-2 flex-wrap">
               <Input
-                placeholder='Ej: "combustible", "limpieza", "computadora"'
+                placeholder='Ej: "combustible", "MSPBS", "limpieza"'
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && buscarCatalogo()}
-                className="h-12 bg-white border-[#D4D2C9] focus-visible:ring-[#C96442]"
+                onKeyDown={(e) => e.key === "Enter" && buscar()}
+                className="h-12 bg-white border-[#D4D2C9] focus-visible:ring-[#C96442] flex-1 min-w-[200px]"
                 autoFocus
               />
+              <select
+                value={year}
+                onChange={(e) => setYear(e.target.value)}
+                className="h-12 px-3 rounded-xl border border-[#D4D2C9] bg-white text-sm text-[#5C5B57] focus:outline-none focus:ring-2 focus:ring-[#C96442]"
+              >
+                {["2026","2025","2024","2023","2022"].map(y => (
+                  <option key={y} value={y}>{y}</option>
+                ))}
+              </select>
               <Button
-                onClick={buscarCatalogo}
-                disabled={loading || !search.trim()}
+                onClick={buscar}
+                disabled={loading}
                 className="h-12 px-6 bg-[#C96442] hover:bg-[#B5583A] text-white font-semibold"
               >
                 {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Search className="h-5 w-5" />}
@@ -141,88 +116,74 @@ export default function PreciosPage() {
             </div>
 
             {error && (
-              <div className="p-3 rounded-xl bg-red-50 border border-red-200 text-red-800 text-sm">
-                {error}
-              </div>
+              <div className="p-3 rounded-xl bg-red-50 border border-red-200 text-red-800 text-sm">{error}</div>
             )}
-
-            {/* Catalog results */}
-            {catalogo.length > 0 && (
-              <div className="space-y-2 pt-2">
-                <p className="text-xs font-semibold text-[#87867F] uppercase tracking-wider">
-                  Seleccioná un producto:
-                </p>
-                {catalogo.map((item) => (
-                  <button
-                    key={item.id}
-                    onClick={() => verPrecios(item.id)}
-                    className={`w-full text-left p-3 rounded-xl border transition-colors ${
-                      selectedItem === item.id
-                        ? "border-[#C96442] bg-[#C96442]/5"
-                        : "border-[#D4D2C9] bg-white hover:border-[#C96442]/30"
-                    }`}
-                  >
-                    <div className="flex items-center gap-2">
-                      <Package className="h-4 w-4 text-[#C96442] shrink-0" />
-                      <span className="text-sm font-medium text-[#1F1E1D]">{item.description}</span>
-                    </div>
-                    {item.classification?.id && (
-                      <p className="text-xs text-[#87867F] mt-1 ml-6">
-                        Código: {item.classification.id}
-                      </p>
-                    )}
-                  </button>
-                ))}
-              </div>
+            {message && (
+              <p className="text-sm text-[#87867F] text-center">{message}</p>
             )}
 
             {/* Stats */}
             {stats && (
-              <div className="grid grid-cols-3 gap-3 pt-4 border-t border-[#E5E4DD]">
-                <div className="bg-[#F5F4ED] rounded-xl p-3 text-center">
-                  <p className="text-xs text-[#87867F] mb-1">Mínimo</p>
-                  <p className="text-lg font-bold text-[#5A7D5A]">{fmtGs(stats.min)}</p>
-                </div>
-                <div className="bg-[#F5F4ED] rounded-xl p-3 text-center">
-                  <p className="text-xs text-[#87867F] mb-1">Promedio</p>
-                  <p className="text-lg font-bold text-[#C96442]">{fmtGs(stats.avg)}</p>
-                </div>
-                <div className="bg-[#F5F4ED] rounded-xl p-3 text-center">
-                  <p className="text-xs text-[#87867F] mb-1">Máximo</p>
-                  <p className="text-lg font-bold text-[#B89B4B]">{fmtGs(stats.max)}</p>
-                </div>
+              <div className="grid grid-cols-3 gap-3 pt-2">
+                {[
+                  { label: "Mínimo", value: fmtGs(stats.min), color: "text-[#5A7D5A]" },
+                  { label: "Promedio", value: fmtGs(stats.avg), color: "text-[#C96442]" },
+                  { label: "Máximo", value: fmtGs(stats.max), color: "text-[#B89B4B]" },
+                ].map((s) => (
+                  <div key={s.label} className="bg-[#F5F4ED] rounded-xl p-3 text-center">
+                    <p className="text-xs text-[#87867F] mb-1">{s.label}</p>
+                    <p className={`text-lg font-bold ${s.color}`}>{s.value}</p>
+                  </div>
+                ))}
                 <p className="col-span-3 text-xs text-[#87867F] text-center">
-                  {stats.count} adjudicaciones · {stats.currency} · Año {selectedYear}
+                  {stats.count} adjudicaciones · {stats.currency} · {year}
                 </p>
               </div>
             )}
 
-            {/* Adjudicaciones list */}
-            {adjudicaciones.length > 0 && (
-              <div className="space-y-2 pt-2">
+            {/* Awards list */}
+            {awards.length > 0 && (
+              <div className="space-y-3 pt-2">
                 <p className="text-xs font-semibold text-[#87867F] uppercase tracking-wider">
-                  Últimas adjudicaciones:
+                  Adjudicaciones {search ? `para "${search}"` : "recientes"}:
                 </p>
-                {adjudicaciones.slice(0, 10).map((adj, i) => {
-                  const amount = adj.award?.value?.amount;
-                  const supplier = adj.award?.suppliers?.[0]?.name;
-                  const entity = adj.tender?.procuringEntity?.name;
-                  return (
-                    <div key={i} className="bg-white rounded-xl border border-[#D4D2C9] p-3">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="text-sm font-medium text-[#1F1E1D] truncate max-w-[250px]">
-                            {supplier ?? "Proveedor"}
-                          </p>
-                          <p className="text-xs text-[#87867F]">{entity}</p>
+                {awards.map((award, i) => (
+                  <div key={i} className="bg-white rounded-xl border border-[#D4D2C9] p-4 hover:shadow-sm transition-shadow">
+                    <div className="flex items-start justify-between gap-3 mb-3">
+                      <div className="flex-1 min-w-0">
+                        <p className="font-semibold text-[#1F1E1D] text-sm leading-snug">{award.title}</p>
+                        <div className="flex items-center gap-2 mt-1.5">
+                          <Building2 className="h-3 w-3 text-[#87867F] shrink-0" />
+                          <span className="text-xs text-[#5C5B57] truncate">{award.entity}</span>
                         </div>
-                        <span className="text-sm font-bold text-[#C96442]">
-                          {amount ? `${fmtGs(amount)} Gs` : "—"}
-                        </span>
+                      </div>
+                      <div className="text-right shrink-0">
+                        <p className="text-lg font-bold text-[#C96442]">{fmtGs(award.amount)} Gs</p>
                       </div>
                     </div>
-                  );
-                })}
+                    <div className="flex flex-wrap items-center gap-2">
+                      <Badge className="bg-[#F5F4ED] text-[#5C5B57] hover:bg-[#F5F4ED] border-0 text-xs">
+                        <User className="h-3 w-3 mr-1" />
+                        {award.supplier}
+                      </Badge>
+                      {award.date && (
+                        <Badge className="bg-[#F5F4ED] text-[#87867F] hover:bg-[#F5F4ED] border-0 text-xs">
+                          <Calendar className="h-3 w-3 mr-1" />
+                          {new Date(award.date).toLocaleDateString("es-PY")}
+                        </Badge>
+                      )}
+                    </div>
+                    {award.items.length > 0 && (
+                      <div className="flex flex-wrap gap-1 mt-2">
+                        {award.items.map((item, j) => (
+                          <span key={j} className="text-xs text-[#87867F] bg-[#F5F4ED] px-2 py-0.5 rounded-full">
+                            {item}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ))}
               </div>
             )}
           </CardContent>

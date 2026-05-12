@@ -17,94 +17,115 @@ async function getToken(): Promise<string> {
   const data = await res.json();
   cachedToken = {
     token: data.access_token,
-    expires: Date.now() + 14 * 60 * 1000, // 14 min (token lives 15 min)
+    expires: Date.now() + 14 * 60 * 1000,
   };
   return cachedToken.token;
 }
 
-interface CatalogItem {
-  id: string;
-  description: string;
-  classification?: { id: string; description: string };
+interface Award {
+  ocid: string;
+  title: string;
+  entity: string;
+  supplier: string;
+  amount: number;
+  currency: string;
+  date: string;
+  items: string[];
+}
+
+async function fetchRelease(url: string, token: string) {
+  const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
+  const text = await res.text();
+  if (!text) return null;
+  try {
+    return JSON.parse(text);
+  } catch {
+    return null;
+  }
 }
 
 export async function GET(request: NextRequest) {
-  const code = request.nextUrl.searchParams.get("code");
-  const year = request.nextUrl.searchParams.get("year") ?? "2025";
   const search = request.nextUrl.searchParams.get("search");
+  const year = request.nextUrl.searchParams.get("year") ?? "2025";
 
   try {
     const token = await getToken();
 
-    // If searching by name, find catalog items first
+    // Search processes with filters
+    const params = new URLSearchParams({
+      items_per_page: "20",
+      tipo_fecha: "adjudicacion",
+      fecha_desde: `${year}-01-01`,
+      fecha_hasta: `${year}-12-31`,
+      order: "date desc",
+    });
+
     if (search) {
-      const url = `${DNCP_API}/search/classification?items_per_page=10&name=${encodeURIComponent(search)}`;
-      const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
-      const text = await res.text();
-      if (!text) return NextResponse.json({ items: [] });
-
-      try {
-        const data = JSON.parse(text);
-        return NextResponse.json({
-          items: data.releases ?? data.items ?? data.results ?? [],
-          search,
-        });
-      } catch {
-        return NextResponse.json({ items: [], error: "No se pudo procesar la respuesta" });
-      }
+      params.set("tender.title", search);
     }
 
-    // If code provided, get awarded prices
-    if (code) {
-      const url = `${DNCP_API}/search/awarded-items/${code}/amount/${year}?items_per_page=50`;
-      const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
-      const text = await res.text();
+    const url = `${DNCP_API}/search/processes?${params}`;
+    const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
+    const text = await res.text();
 
-      if (res.status === 404 || !text) {
-        return NextResponse.json({ items: [], code, year, message: "Sin datos para este código" });
-      }
-
-      try {
-        const data = JSON.parse(text);
-        const awards = data.releases ?? data.items ?? [];
-
-        // Calculate stats
-        const amounts = awards
-          .map((a: Record<string, unknown>) => {
-            const amount = (a as { award?: { value?: { amount?: number } } }).award?.value?.amount
-              ?? (a as { amount?: number }).amount
-              ?? (a as { value?: { amount?: number } }).value?.amount;
-            return typeof amount === "number" ? amount : null;
-          })
-          .filter((a: unknown): a is number => a !== null)
-          .sort((a: number, b: number) => a - b);
-
-        const stats =
-          amounts.length > 0
-            ? {
-                min: amounts[0],
-                max: amounts[amounts.length - 1],
-                avg: Math.round(amounts.reduce((s: number, v: number) => s + v, 0) / amounts.length),
-                count: amounts.length,
-                currency: "PYG",
-              }
-            : null;
-
-        return NextResponse.json({
-          items: awards.slice(0, 20),
-          stats,
-          code,
-          year,
-        });
-      } catch {
-        return NextResponse.json({ items: [], code, year, error: "Error procesando datos" });
-      }
+    if (!text || res.status === 404) {
+      return NextResponse.json({ awards: [], search, year, message: "Sin resultados" });
     }
 
-    return NextResponse.json({ error: "Especificá code o search" }, { status: 400 });
+    const data = JSON.parse(text);
+    const records = data.records ?? [];
+
+    // Fetch first release for each record to get details
+    const awards: Award[] = [];
+    for (const record of records.slice(0, 10)) {
+      const latestRelease = record.releases?.[0];
+      if (!latestRelease?.url) continue;
+
+      const release = await fetchRelease(latestRelease.url, token);
+      if (!release) continue;
+
+      const tender = release.tender;
+      const award = release.awards?.[0];
+      const contract = release.contracts?.[0];
+
+      const amount = award?.value?.amount 
+        ?? contract?.value?.amount
+        ?? tender?.value?.amount;
+
+      const supplier = award?.suppliers?.[0]?.name ?? "Proveedor no especificado";
+      const entity = tender?.procuringEntity?.name ?? "Entidad no especificada";
+      const title = tender?.title ?? record.ocid;
+      const tenderItems = tender?.items?.map((i: { description: string }) => i.description) ?? [];
+      const awardItems = award?.items?.map((i: { description: string }) => i.description) ?? [];
+
+      awards.push({
+        ocid: record.ocid,
+        title,
+        entity,
+        supplier,
+        amount: amount ?? 0,
+        currency: award?.value?.currency ?? "PYG",
+        date: award?.date ?? contract?.dateSigned ?? latestRelease.date,
+        items: [...new Set([...tenderItems, ...awardItems])].slice(0, 5),
+      });
+    }
+
+    // Calculate stats
+    const amounts = awards.filter(a => a.amount > 0).map(a => a.amount).sort((a, b) => a - b);
+    const stats = amounts.length > 0
+      ? {
+          min: amounts[0],
+          max: amounts[amounts.length - 1],
+          avg: Math.round(amounts.reduce((s, v) => s + v, 0) / amounts.length),
+          count: amounts.length,
+          currency: "PYG",
+        }
+      : null;
+
+    return NextResponse.json({ awards, stats, search, year });
   } catch (e) {
     return NextResponse.json(
-      { error: "No pudimos consultar los datos en este momento." },
+      { error: "No pudimos consultar en este momento.", awards: [] },
       { status: 500 }
     );
   }
