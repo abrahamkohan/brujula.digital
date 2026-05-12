@@ -132,10 +132,11 @@ export default function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-[#D4D2C9] py-8 text-center">
+      <footer className="border-t border-[#D4D2C9] py-8 text-center space-y-2">
         <p className="text-sm text-[#87867F]">
           Brujula · Datos públicos, dirección clara. · Paraguay · 2026
         </p>
+        <Link href="/acerca" className="text-xs text-[#C96442] hover:underline">Acerca de</Link>
       </footer>
     </div>
   );

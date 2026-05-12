@@ -42,7 +42,7 @@ export async function middleware(request: NextRequest) {
     pathname.startsWith("/verificar") ||
     pathname.startsWith("/precios") ||
     pathname.startsWith("/score") ||
-    pathname.startsWith("/buscar") ||
+    pathname.startsWith("/acerca") ||
     pathname.startsWith("/proveedores") ||
     pathname.startsWith("/dashboard") ||
     pathname.startsWith("/api") ||
