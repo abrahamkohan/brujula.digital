@@ -36,8 +36,8 @@ export default async function ClientesPage() {
   });
 
   return (
-    <div className="p-8">
-      <div className="flex items-center justify-between mb-8">
+    <div className="p-4 sm:p-8">
+      <div className="flex items-center justify-between mb-6 sm:mb-8">
         <div>
           <h1 className="text-2xl font-bold text-[#1F1E1D]">Clientes</h1>
           <p className="text-sm text-[#87867F] mt-1">

@@ -49,16 +49,16 @@ export default function VerificarPage() {
   return (
     <div className="min-h-screen bg-[#F5F4ED] font-sans">
       {/* Hero */}
-      <section className="max-w-2xl mx-auto px-6 pt-20 pb-12 text-center">
-        <div className="inline-flex items-center gap-2 bg-white border border-[#D4D2C9] text-[#87867F] text-xs px-4 py-1.5 rounded-full mb-6 font-medium">
+      <section className="max-w-2xl mx-auto px-4 sm:px-6 pt-16 sm:pt-20 pb-8 sm:pb-12 text-center">
+        <div className="inline-flex items-center gap-2 bg-white border border-[#D4D2C9] text-[#87867F] text-[10px] sm:text-xs px-3 sm:px-4 py-1.5 rounded-full mb-4 sm:mb-6 font-medium">
           <ShieldCheck className="h-3.5 w-3.5 text-[#C96442]" />
           Datos oficiales · Resultado en segundos
         </div>
 
-        <h1 className="text-4xl sm:text-5xl font-bold text-[#1F1E1D] leading-tight mb-4">
+        <h1 className="text-3xl sm:text-5xl font-bold text-[#1F1E1D] leading-tight mb-3 sm:mb-4">
           ¿Es funcionario<br />público?
         </h1>
-        <p className="text-lg text-[#5C5B57] max-w-md mx-auto leading-relaxed">
+        <p className="text-base sm:text-lg text-[#5C5B57] max-w-md mx-auto leading-relaxed">
           Ingresá una cédula de identidad paraguaya y verificá si trabaja en el Estado.
         </p>
       </section>

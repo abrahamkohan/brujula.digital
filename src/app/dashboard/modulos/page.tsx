@@ -15,8 +15,8 @@ export default async function ModulosPage() {
     .order("created_at", { ascending: true });
 
   return (
-    <div className="p-8">
-      <div className="mb-8">
+    <div className="p-4 sm:p-8">
+      <div className="mb-6 sm:mb-8">
         <h1 className="text-2xl font-bold text-[#1F1E1D]">Módulos</h1>
         <p className="text-sm text-[#87867F] mt-1">Configuración de productos disponibles</p>
       </div>

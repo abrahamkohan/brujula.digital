@@ -25,7 +25,7 @@ export default async function DashboardPage() {
     .gte("created_at", new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString());
 
   return (
-    <div className="p-8">
+    <div className="p-4 sm:p-8">
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-[#1F1E1D]">Dashboard</h1>
         <p className="text-sm text-[#87867F] mt-1">Resumen general de Brujula</p>

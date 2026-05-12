@@ -89,31 +89,33 @@ export default function PreciosPage() {
       <section className="max-w-3xl mx-auto px-6 pb-16">
         <Card className="border-[#D4D2C9] shadow-sm">
           <CardContent className="pt-6 space-y-4">
-            <div className="flex gap-2 flex-wrap">
+            <div className="flex flex-col sm:flex-row gap-2">
               <Input
                 placeholder='Ej: "combustible", "MSPBS", "limpieza"'
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && buscar()}
-                className="h-12 bg-white border-[#D4D2C9] focus-visible:ring-[#C96442] flex-1 min-w-[200px]"
+                className="h-12 bg-white border-[#D4D2C9] focus-visible:ring-[#C96442] flex-1"
                 autoFocus
               />
-              <select
-                value={year}
-                onChange={(e) => setYear(e.target.value)}
-                className="h-12 px-3 rounded-xl border border-[#D4D2C9] bg-white text-sm text-[#5C5B57] focus:outline-none focus:ring-2 focus:ring-[#C96442]"
-              >
-                {["2026","2025","2024","2023","2022"].map(y => (
-                  <option key={y} value={y}>{y}</option>
-                ))}
-              </select>
-              <Button
-                onClick={buscar}
-                disabled={loading}
-                className="h-12 px-6 bg-[#C96442] hover:bg-[#B5583A] text-white font-semibold"
-              >
-                {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Search className="h-5 w-5" />}
-              </Button>
+              <div className="flex gap-2">
+                <select
+                  value={year}
+                  onChange={(e) => setYear(e.target.value)}
+                  className="h-12 px-3 rounded-xl border border-[#D4D2C9] bg-white text-sm text-[#5C5B57] focus:outline-none focus:ring-2 focus:ring-[#C96442]"
+                >
+                  {["2026","2025","2024","2023","2022"].map(y => (
+                    <option key={y} value={y}>{y}</option>
+                  ))}
+                </select>
+                <Button
+                  onClick={buscar}
+                  disabled={loading}
+                  className="h-12 px-4 sm:px-6 bg-[#C96442] hover:bg-[#B5583A] text-white font-semibold"
+                >
+                  {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Search className="h-5 w-5" />}
+                </Button>
+              </div>
             </div>
 
             {error && (

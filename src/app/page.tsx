@@ -10,21 +10,21 @@ export default function LandingPage() {
           Datos públicos · Paraguay
         </div>
 
-        <h1 className="text-4xl sm:text-6xl font-bold text-[#1F1E1D] leading-tight mb-6">
+        <h1 className="text-3xl sm:text-5xl md:text-6xl font-bold text-[#1F1E1D] leading-tight mb-6">
           Los datos del Estado,<br />
           <span className="text-[#C96442]">cuando vos los necesitás.</span>
         </h1>
 
-        <p className="text-lg text-[#5C5B57] max-w-xl mx-auto leading-relaxed mb-10">
+        <p className="text-base sm:text-lg text-[#5C5B57] max-w-xl mx-auto leading-relaxed mb-10 px-4">
           Dos herramientas simples para acceder a información pública del Estado paraguayo.
           Sin burocracia, sin ventanillas, sin esperar.
         </p>
 
-        <div className="flex flex-wrap gap-4 justify-center">
-          <Link href="/verificar" className="inline-flex items-center h-12 px-8 bg-[#C96442] hover:bg-[#B5583A] text-white font-semibold text-base rounded-xl transition-colors">
+        <div className="flex flex-col sm:flex-row gap-3 justify-center px-4">
+          <Link href="/verificar" className="inline-flex items-center justify-center h-12 px-6 sm:px-8 bg-[#C96442] hover:bg-[#B5583A] text-white font-semibold text-base rounded-xl transition-colors">
             Probar ahora <ArrowRight className="h-4 w-4 ml-2" />
           </Link>
-          <Link href="/login" className="inline-flex items-center h-12 px-8 border border-[#D4D2C9] text-[#1F1E1D] font-semibold text-base rounded-xl hover:bg-white transition-colors">
+          <Link href="/login" className="inline-flex items-center justify-center h-12 px-6 sm:px-8 border border-[#D4D2C9] text-[#1F1E1D] font-semibold text-base rounded-xl hover:bg-white transition-colors">
             Ingresar
           </Link>
         </div>
@@ -119,11 +119,11 @@ export default function LandingPage() {
         <p className="text-[#5C5B57] mb-8">
           3 consultas por día. Sin costo. Sin tarjeta.
         </p>
-        <div className="flex flex-wrap gap-4 justify-center">
-          <Link href="/verificar" className="inline-flex items-center h-12 px-8 bg-[#C96442] hover:bg-[#B5583A] text-white font-semibold text-base rounded-xl transition-colors">
+        <div className="flex flex-col sm:flex-row gap-3 justify-center">
+          <Link href="/verificar" className="inline-flex items-center justify-center h-12 px-6 sm:px-8 bg-[#C96442] hover:bg-[#B5583A] text-white font-semibold text-base rounded-xl transition-colors">
             Verificar funcionario <ArrowRight className="h-4 w-4 ml-2" />
           </Link>
-          <Link href="/precios" className="inline-flex items-center h-12 px-8 border border-[#D4D2C9] text-[#1F1E1D] font-semibold text-base rounded-xl hover:bg-white transition-colors">
+          <Link href="/precios" className="inline-flex items-center justify-center h-12 px-6 sm:px-8 border border-[#D4D2C9] text-[#1F1E1D] font-semibold text-base rounded-xl hover:bg-white transition-colors">
             Buscar precios <ArrowRight className="h-4 w-4 ml-2" />
           </Link>
         </div>
