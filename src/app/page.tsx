@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { ShieldCheck, TrendingUp, Search, Zap, ArrowRight, Shield, Star, Package } from "lucide-react";
-import { WhatsAppFloat } from "@/components/whatsapp-float";
+import { ShieldCheck, TrendingUp, Search, Zap, ArrowRight, Shield, Star } from "lucide-react";
+import WhatsAppFloat from "@/components/whatsapp-float";
 
 const planes = [
   { nombre: "Starter", modulos: "1 módulo", precio: "USD 30–80/mes", tag: "Entrada", features: ["1 módulo a elección","Consultas ilimitadas","Soporte por email"] },
