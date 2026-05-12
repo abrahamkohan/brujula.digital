@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ShieldCheck, TrendingUp, Search, Zap, ArrowRight, CheckCircle2 } from "lucide-react";
+import { ShieldCheck, TrendingUp, Search, Zap, ArrowRight, Shield } from "lucide-react";
 
 export default function LandingPage() {
   return (

@@ -41,6 +41,7 @@ export async function middleware(request: NextRequest) {
     pathname.startsWith("/login") ||
     pathname.startsWith("/verificar") ||
     pathname.startsWith("/precios") ||
+    pathname.startsWith("/score") ||
     pathname.startsWith("/api") ||
     pathname.startsWith("/auth");
 
