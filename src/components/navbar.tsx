@@ -11,6 +11,7 @@ const links = [
   { href: "/score", label: "Empresas" },
   { href: "/radar", label: "Radar" },
   { href: "/check", label: "Check" },
+  { href: "/entidades", label: "Entidades" },
   { href: "/proveedores", label: "Proveedores" },
 ];
 
