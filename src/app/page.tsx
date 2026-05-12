@@ -21,11 +21,11 @@ export default function LandingPage() {
         </p>
 
         <div className="flex flex-col sm:flex-row gap-3 justify-center px-4">
-          <Link href="/verificar" className="inline-flex items-center justify-center h-12 px-6 sm:px-8 bg-[#C96442] hover:bg-[#B5583A] text-white font-semibold text-base rounded-xl transition-colors">
-            Probar ahora <ArrowRight className="h-4 w-4 ml-2" />
+          <Link href="/buscar" className="inline-flex items-center justify-center h-12 px-6 sm:px-8 bg-[#C96442] hover:bg-[#B5583A] text-white font-semibold text-base rounded-xl transition-colors">
+            Buscar ahora <ArrowRight className="h-4 w-4 ml-2" />
           </Link>
-          <Link href="/login" className="inline-flex items-center justify-center h-12 px-6 sm:px-8 border border-[#D4D2C9] text-[#1F1E1D] font-semibold text-base rounded-xl hover:bg-white transition-colors">
-            Ingresar
+          <Link href="/proveedores" className="inline-flex items-center justify-center h-12 px-6 sm:px-8 border border-[#D4D2C9] text-[#1F1E1D] font-semibold text-base rounded-xl hover:bg-white transition-colors">
+            Ver proveedores
           </Link>
         </div>
       </section>
