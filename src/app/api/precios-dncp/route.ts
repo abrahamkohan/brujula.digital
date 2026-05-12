@@ -13,6 +13,7 @@ async function getToken(): Promise<string> {
   const res = await fetch(DNCP_AUTH, {
     method: "POST",
     headers: { Authorization: `Basic ${RT}` },
+    signal: AbortSignal.timeout(5000),
   });
   const data = await res.json();
   cachedToken = {
@@ -22,28 +23,6 @@ async function getToken(): Promise<string> {
   return cachedToken.token;
 }
 
-interface Award {
-  ocid: string;
-  title: string;
-  entity: string;
-  supplier: string;
-  amount: number;
-  currency: string;
-  date: string;
-  items: string[];
-}
-
-async function fetchRelease(url: string, token: string) {
-  const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
-  const text = await res.text();
-  if (!text) return null;
-  try {
-    return JSON.parse(text);
-  } catch {
-    return null;
-  }
-}
-
 export async function GET(request: NextRequest) {
   const search = request.nextUrl.searchParams.get("search");
   const year = request.nextUrl.searchParams.get("year") ?? "2025";
@@ -51,21 +30,20 @@ export async function GET(request: NextRequest) {
   try {
     const token = await getToken();
 
-    // Search processes with filters
     const params = new URLSearchParams({
-      items_per_page: "20",
+      items_per_page: "15",
       tipo_fecha: "adjudicacion",
       fecha_desde: `${year}-01-01`,
       fecha_hasta: `${year}-12-31`,
-      order: "date desc",
     });
 
-    if (search) {
-      params.set("tender.title", search);
-    }
+    if (search) params.set("tender.title", search);
 
     const url = `${DNCP_API}/search/processes?${params}`;
-    const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
+    const res = await fetch(url, {
+      headers: { Authorization: `Bearer ${token}` },
+      signal: AbortSignal.timeout(10000),
+    });
     const text = await res.text();
 
     if (!text || res.status === 404) {
@@ -75,57 +53,70 @@ export async function GET(request: NextRequest) {
     const data = JSON.parse(text);
     const records = data.records ?? [];
 
-    // Fetch first release for each record to get details
-    const awards: Award[] = [];
-    for (const record of records.slice(0, 10)) {
+    // Fetch releases in parallel (max 8)
+    const awardsPromises = records.slice(0, 8).map(async (record: {
+      ocid: string;
+      releases?: Array<{ url?: string }>;
+    }) => {
       const latestRelease = record.releases?.[0];
-      if (!latestRelease?.url) continue;
+      if (!latestRelease?.url) return null;
 
-      const release = await fetchRelease(latestRelease.url, token);
-      if (!release) continue;
+      try {
+        const relRes = await fetch(latestRelease.url, {
+          headers: { Authorization: `Bearer ${token}` },
+          signal: AbortSignal.timeout(5000),
+        });
+        const relText = await relRes.text();
+        if (!relText) return null;
+        const release = JSON.parse(relText);
+        const tender = release.tender;
+        const award = release.awards?.[0];
+        const contract = release.contracts?.[0];
 
-      const tender = release.tender;
-      const award = release.awards?.[0];
-      const contract = release.contracts?.[0];
+        return {
+          ocid: record.ocid,
+          title: tender?.title ?? record.ocid,
+          entity: tender?.procuringEntity?.name ?? "—",
+          supplier: award?.suppliers?.[0]?.name ?? "—",
+          amount: award?.value?.amount ?? contract?.value?.amount ?? tender?.value?.amount ?? 0,
+          currency: award?.value?.currency ?? "PYG",
+          date: award?.date ?? contract?.dateSigned ?? latestRelease.url.split("-").pop()?.slice(0, 10) ?? "",
+          items: [
+            ...new Set([
+              ...(tender?.items?.map((i: { description: string }) => i.description) ?? []),
+              ...(award?.items?.map((i: { description: string }) => i.description) ?? []),
+            ]),
+          ].slice(0, 5),
+        };
+      } catch {
+        return null;
+      }
+    });
 
-      const amount = award?.value?.amount 
-        ?? contract?.value?.amount
-        ?? tender?.value?.amount;
+    const awards = (await Promise.all(awardsPromises)).filter(Boolean);
 
-      const supplier = award?.suppliers?.[0]?.name ?? "Proveedor no especificado";
-      const entity = tender?.procuringEntity?.name ?? "Entidad no especificada";
-      const title = tender?.title ?? record.ocid;
-      const tenderItems = tender?.items?.map((i: { description: string }) => i.description) ?? [];
-      const awardItems = award?.items?.map((i: { description: string }) => i.description) ?? [];
+    const amounts = awards
+      .filter((a) => a && a.amount > 0)
+      .map((a) => a!.amount)
+      .sort((a: number, b: number) => a - b);
 
-      awards.push({
-        ocid: record.ocid,
-        title,
-        entity,
-        supplier,
-        amount: amount ?? 0,
-        currency: award?.value?.currency ?? "PYG",
-        date: award?.date ?? contract?.dateSigned ?? latestRelease.date,
-        items: [...new Set([...tenderItems, ...awardItems])].slice(0, 5),
-      });
-    }
-
-    // Calculate stats
-    const amounts = awards.filter(a => a.amount > 0).map(a => a.amount).sort((a, b) => a - b);
-    const stats = amounts.length > 0
-      ? {
-          min: amounts[0],
-          max: amounts[amounts.length - 1],
-          avg: Math.round(amounts.reduce((s, v) => s + v, 0) / amounts.length),
-          count: amounts.length,
-          currency: "PYG",
-        }
-      : null;
+    const stats =
+      amounts.length > 0
+        ? {
+            min: amounts[0],
+            max: amounts[amounts.length - 1],
+            avg: Math.round(amounts.reduce((s: number, v: number) => s + v, 0) / amounts.length),
+            count: amounts.length,
+            currency: "PYG",
+          }
+        : null;
 
     return NextResponse.json({ awards, stats, search, year });
-  } catch (e) {
+  } catch (e: unknown) {
+    const msg = e instanceof Error ? e.message : "Unknown error";
+    console.error("precios-dncp error:", msg);
     return NextResponse.json(
-      { error: "No pudimos consultar en este momento.", awards: [] },
+      { error: "No pudimos consultar en este momento.", awards: [], message: msg.slice(0, 100) },
       { status: 500 }
     );
   }
