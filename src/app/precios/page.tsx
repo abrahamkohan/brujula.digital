@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Search, TrendingUp, Loader2, Building2, User, Calendar, PackageOpen } from "lucide-react";
+import { Search, TrendingUp, Loader2, Building2, User, Calendar, PackageOpen, Share2 } from "lucide-react";
 
 interface Award {
   ocid: string;

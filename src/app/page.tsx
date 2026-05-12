@@ -37,6 +37,24 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* Stats band */}
+      <section className="bg-white border-y border-[#D4D2C9] py-10">
+        <div className="max-w-4xl mx-auto px-6 grid grid-cols-3 sm:grid-cols-5 gap-4 text-center">
+          {[
+            { n: "500+", label: "Funcionarios" },
+            { n: "10+", label: "Fuentes de datos" },
+            { n: "2 seg", label: "Resultado" },
+            { n: "6", label: "Módulos" },
+            { n: "24/7", label: "Disponible" },
+          ].map(s => (
+            <div key={s.label}>
+              <p className="text-2xl sm:text-3xl font-bold text-[#C96442]">{s.n}</p>
+              <p className="text-xs text-[#87867F] mt-1">{s.label}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
       {/* Products */}
       <section className="max-w-4xl mx-auto px-6 pb-20">
         <p className="text-xs font-semibold uppercase tracking-widest text-[#C96442] mb-3 text-center">Productos disponibles</p>
