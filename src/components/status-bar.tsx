@@ -14,13 +14,18 @@ export default function StatusBar() {
 
   useEffect(() => {
     const supabase = createClient();
-    supabase.from("scraper_status").select("*").order("fuente").then(({ data }) => {
-      if (data) {
-        setFuentes(data);
-        const latest = data.reduce((max: string, s: ScraperStatus) => s.ultimo_sync && s.ultimo_sync > max ? s.ultimo_sync : max, "");
-        setLastSync(latest);
-      }
-    });
+    function refresh() {
+      supabase.from("scraper_status").select("*").order("fuente").then(({ data }) => {
+        if (data) {
+          setFuentes(data);
+          const latest = data.reduce((max: string, s: ScraperStatus) => s.ultimo_sync && s.ultimo_sync > max ? s.ultimo_sync : max, "");
+          setLastSync(latest);
+        }
+      });
+    }
+    refresh();
+    const interval = setInterval(refresh, 30000);
+    return () => clearInterval(interval);
   }, []);
 
   const estadoColor: Record<string, string> = {

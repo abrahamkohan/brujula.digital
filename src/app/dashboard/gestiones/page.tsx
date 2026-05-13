@@ -108,7 +108,14 @@ export default function GestionesPage() {
                 </div>
                 <div className="space-y-2">
                   {items.map(g => (
-                    <Card key={g.id} className="border-[#D4D2C9] shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+                    <Card key={g.id} className="border-[#D4D2C9] shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+                      onClick={async () => {
+                        const next = g.estado === "recibido" ? "en_proceso" : g.estado === "en_proceso" ? "completado" : "recibido";
+                        const supabase = createClient();
+                        await supabase.from("gestiones").update({ estado: next }).eq("id", g.id);
+                        setGestiones(prev => prev.map(x => x.id === g.id ? {...x, estado: next} : x));
+                      }}
+                    >
                       <CardContent className="p-4 space-y-2">
                         <div className="flex items-start justify-between">
                           <div>
