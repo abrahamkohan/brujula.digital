@@ -5,8 +5,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { ClipboardList, User, DollarSign, Plus, Loader2, X } from "lucide-react";
+import { ClipboardList, User, DollarSign, Plus, Loader2, X, Trash2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { useToast } from "@/components/toast";
 
 interface Gestion {
   id: string; cliente_nombre: string; tipo: string; estado: string;
@@ -25,6 +26,7 @@ export default function GestionesPage() {
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({ cliente: "", tipo: "antecedente", descripcion: "", precio: "" });
   const [saving, setSaving] = useState(false);
+  const { toast } = useToast();
 
   useEffect(() => {
     const supabase = createClient();
@@ -114,6 +116,7 @@ export default function GestionesPage() {
                         const supabase = createClient();
                         await supabase.from("gestiones").update({ estado: next }).eq("id", g.id);
                         setGestiones(prev => prev.map(x => x.id === g.id ? {...x, estado: next} : x));
+                        toast("Estado actualizado");
                       }}
                     >
                       <CardContent className="p-4 space-y-2">
@@ -126,6 +129,7 @@ export default function GestionesPage() {
                             const supabase = createClient();
                             await supabase.from("gestiones").delete().eq("id", g.id);
                             setGestiones(prev => prev.filter(x => x.id !== g.id));
+                            toast("Gestión eliminada", "error");
                           }}
                           className="text-[10px] text-red-400 hover:text-red-600 mt-1"
                         >Eliminar</button>
