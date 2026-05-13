@@ -192,7 +192,7 @@ export default function LandingPage() {
             <div>
               <p className="text-xs font-semibold text-[#87867F] uppercase tracking-wider mb-3">App</p>
               <div className="space-y-2">
-                {[{ label: "Dashboard", href: "/dashboard" },{ label: "Acerca de", href: "/acerca" },{ label: "Ingresar", href: "/login" }].map(l => (
+                {[{ label: "Dashboard", href: "/dashboard" },{ label: "Acerca de", href: "/acerca" },{ label: "API Docs", href: "/api-docs" },{ label: "Ingresar", href: "/login" }].map(l => (
                   <Link key={l.href} href={l.href} className="block text-xs text-[#5C5B57] hover:text-[#C96442]">{l.label}</Link>
                 ))}
               </div>
