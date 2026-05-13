@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ShieldCheck, TrendingUp, Search, Zap, ArrowRight, Shield, Star, Activity } from "lucide-react";
 import WhatsAppFloat from "@/components/whatsapp-float";
+import { HeroSearch } from "@/components/hero-search";
 
 const planes = [
   { nombre: "Starter", modulos: "1 módulo", precio: "USD 30–80/mes", tag: "Entrada", features: ["1 módulo a elección","Consultas ilimitadas","Soporte por email"] },
@@ -22,12 +23,14 @@ export default function LandingPage() {
           <span className="text-[#C96442]">cuando vos los necesitás.</span>
         </h1>
 
-        <p className="text-base sm:text-lg text-[#5C5B57] max-w-xl mx-auto leading-relaxed mb-10 px-4">
+        <p className="text-base sm:text-lg text-[#5C5B57] max-w-xl mx-auto leading-relaxed mb-8 px-4">
           Dos herramientas simples para acceder a información pública del Estado paraguayo.
           Sin burocracia, sin ventanillas, sin esperar.
         </p>
 
-        <div className="flex flex-col sm:flex-row gap-3 justify-center px-4">
+        <HeroSearch />
+
+        <div className="flex flex-col sm:flex-row gap-3 justify-center px-4 mt-6">
           <Link href="/buscar" className="inline-flex items-center justify-center h-12 px-6 sm:px-8 bg-[#C96442] hover:bg-[#B5583A] text-white font-semibold text-base rounded-xl transition-colors">
             Buscar ahora <ArrowRight className="h-4 w-4 ml-2" />
           </Link>
