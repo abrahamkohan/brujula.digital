@@ -2,11 +2,12 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ShieldCheck, TrendingUp, Shield, ArrowRight, Activity, Search, Database, Users, BarChart3, Clock } from "lucide-react";
+import { ShieldCheck, TrendingUp, Shield, ArrowRight, Activity, Search, Database, Users, ClipboardList, DollarSign } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
 export default function DashboardHome() {
   const [stats, setStats] = useState({ funcionarios: 0, consultasHoy: 0, consultasMes: 0 });
+  const [gestiones, setGestiones] = useState({ total: 0, enProceso: 0, completadas: 0, revenue: 0 });
   const [recent, setRecent] = useState<Array<{ tipo: string; parametro: string; created_at: string }>>([]);
 
   useEffect(() => {
@@ -16,9 +17,17 @@ export default function DashboardHome() {
       supabase.from("consultas").select("*", { count: "exact", head: true }).gte("created_at", new Date(new Date().setHours(0,0,0,0)).toISOString()),
       supabase.from("consultas").select("*", { count: "exact", head: true }).gte("created_at", new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString()),
       supabase.from("consultas").select("tipo,parametro,created_at").order("created_at", { ascending: false }).limit(5),
-    ]).then(([f, h, m, r]) => {
+      supabase.from("gestiones").select("id,estado,precio_cobrado"),
+    ]).then(([f, h, m, r, g]) => {
       setStats({ funcionarios: f.count ?? 0, consultasHoy: h.count ?? 0, consultasMes: m.count ?? 0 });
       setRecent(r.data ?? []);
+      const gs = g.data ?? [];
+      setGestiones({
+        total: gs.length,
+        enProceso: gs.filter(g => g.estado === "en_proceso" || g.estado === "recibido").length,
+        completadas: gs.filter(g => g.estado === "completado").length,
+        revenue: gs.reduce((s, g) => s + (g.precio_cobrado || 0), 0),
+      });
     });
   }, []);
 
@@ -36,7 +45,8 @@ export default function DashboardHome() {
           { label: "Consultas hoy", value: stats.consultasHoy, icon: Search, color: "text-[#5A7D5A]" },
           { label: "Este mes", value: stats.consultasMes, icon: TrendingUp, color: "text-[#4A7B9D]" },
           { label: "Módulos", value: "7", icon: Activity, color: "text-[#B89B4B]" },
-          { label: "Fuentes", value: "2", icon: BarChart3, color: "text-[#8B5E7D]" },
+          { label: "Activas", value: gestiones.enProceso, icon: ClipboardList, color: "text-[#B89B4B]" },
+          { label: "Revenue", value: `Gs ${gestiones.revenue.toLocaleString()}`, icon: DollarSign, color: "text-[#5A7D5A]" },
         ].map(s => (
           <div key={s.label} className="bg-white rounded-xl border border-[#D4D2C9] p-3 text-center">
             <p className="text-[10px] sm:text-xs text-[#87867F] mb-1">{s.label}</p>
