@@ -3,7 +3,9 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ClipboardList, User, DollarSign, Plus, Loader2 } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { ClipboardList, User, DollarSign, Plus, Loader2, X } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
 interface Gestion {
@@ -20,6 +22,9 @@ export default function GestionesPage() {
   const [gestiones, setGestiones] = useState<Gestion[]>([]);
   const [loading, setLoading] = useState(true);
   const [totalRevenue, setTotalRevenue] = useState(0);
+  const [showForm, setShowForm] = useState(false);
+  const [form, setForm] = useState({ cliente: "", tipo: "antecedente", descripcion: "", precio: "" });
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     const supabase = createClient();
@@ -46,7 +51,44 @@ export default function GestionesPage() {
           <h1 className="text-2xl font-bold text-[#1F1E1D]">Panel de Gestorías</h1>
           <p className="text-sm text-[#87867F]">{gestiones.length} gestiones · Revenue: {fmtGs(totalRevenue)} Gs</p>
         </div>
+        <Button onClick={() => setShowForm(!showForm)} className="h-10 px-4 bg-[#C96442] hover:bg-[#B5583A] text-white text-sm">
+          {showForm ? <X className="h-4 w-4" /> : <Plus className="h-4 w-4 mr-1" />}{showForm ? "Cerrar" : "Nueva"}
+        </Button>
       </div>
+
+      {showForm && (
+        <Card className="border-[#C96442] shadow-sm mb-6">
+          <CardContent className="pt-6 space-y-3">
+            <div className="grid sm:grid-cols-2 gap-3">
+              <Input placeholder="Nombre del cliente" value={form.cliente} onChange={e=>setForm({...form,cliente:e.target.value})} className="h-10" />
+              <select value={form.tipo} onChange={e=>setForm({...form,tipo:e.target.value})} className="h-10 rounded-lg border border-[#D4D2C9] bg-white px-3 text-sm">
+                {Object.entries(tipoIcons).map(([k,v])=><option key={k} value={k}>{v}</option>)}
+              </select>
+            </div>
+            <Input placeholder="Descripción" value={form.descripcion} onChange={e=>setForm({...form,descripcion:e.target.value})} className="h-10" />
+            <Input placeholder="Precio cobrado (Gs)" value={form.precio} onChange={e=>setForm({...form,precio:e.target.value.replace(/\D/g,'')})} className="h-10" type="number" />
+            <Button
+              onClick={async () => {
+                if (!form.cliente) return; setSaving(true);
+                const supabase = createClient();
+                const { data: cliente } = await supabase.from("clientes_gestion").insert({ nombre: form.cliente }).select("id").single();
+                if (cliente) {
+                  await supabase.from("gestiones").insert({
+                    cliente_id: cliente.id, tipo: form.tipo, descripcion: form.descripcion,
+                    precio_cobrado: parseInt(form.precio) || 0, estado: "recibido", fecha_inicio: new Date().toISOString().split("T")[0]
+                  });
+                }
+                setShowForm(false); setForm({ cliente: "", tipo: "antecedente", descripcion: "", precio: "" });
+                window.location.reload();
+              }}
+              disabled={saving || !form.cliente}
+              className="w-full h-10 bg-[#C96442] hover:bg-[#B5583A] text-white"
+            >
+              {saving ? <Loader2 className="h-4 w-4 animate-spin mx-auto" /> : "Crear gestión"}
+            </Button>
+          </CardContent>
+        </Card>
+      )}
 
       {gestiones.length === 0 ? (
         <Card className="border-[#D4D2C9]"><CardContent className="pt-8 pb-8 text-center text-[#87867F]">
