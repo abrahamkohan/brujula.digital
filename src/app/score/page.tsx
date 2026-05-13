@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Search, Shield, Loader2, AlertCircle, TrendingUp, FileText, Activity, AlertTriangle, Building2, DollarSign } from "lucide-react";
+import { Search, Shield, Loader2, AlertCircle, TrendingUp, FileText, Activity, AlertTriangle, Building2, DollarSign, Copy, Check } from "lucide-react";
 import Link from "next/link";
 
 interface Contrato {
@@ -31,6 +31,7 @@ export default function ScorePage() {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<EmpresaScore | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
 
   async function buscar() {
     setError(null); setData(null); setLoading(true);
@@ -168,6 +169,17 @@ export default function ScorePage() {
                     ))}
                   </>
                 )}
+                <button
+                  onClick={() => {
+                    const report = `Brujula — Empresa Score\n${data.nombre}\nRUC: ${data.ruc}\nScore: ${data.score?.value}/100 — ${data.score?.classification}\nContratos: ${data.contratos_total} (${data.contratos_12m} en 12m)\nTotal adjudicado: Gs ${data.total_adjudicado.toLocaleString()}`;
+                    navigator.clipboard.writeText(report);
+                    setCopied(true); setTimeout(() => setCopied(false), 2000);
+                  }}
+                  className="w-full flex items-center justify-center gap-2 py-2 text-xs text-[#C96442] hover:bg-[#C96442]/5 rounded-lg transition-colors"
+                >
+                  {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+                  {copied ? "¡Copiado!" : "Copiar reporte"}
+                </button>
               </div>
             )}
           </CardContent>
