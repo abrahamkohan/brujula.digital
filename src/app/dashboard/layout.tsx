@@ -1,35 +1,64 @@
 "use client";
 
-import { createClient } from "@/lib/supabase/client";
-import { redirect } from "next/navigation";
-import Link from "next/link";
 import { useEffect, useState } from "react";
-import { LayoutDashboard, Users, Package, LogOut, Menu, X, ClipboardList } from "lucide-react";
-import StatusBar from "@/components/status-bar";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
+import {
+  LayoutDashboard, Users, Package, ClipboardList, ShieldCheck,
+  TrendingUp, Shield, Activity, Search, Building2, Home,
+  Wheat, Calendar, Banknote, ArrowLeftRight,
+  Menu, X, LogOut, Zap, Database, Globe
+} from "lucide-react";
+
+const navItems = [
+  { section: "Principal", items: [
+    { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  ]},
+  { section: "Módulos", items: [
+    { href: "/verificar", label: "Funcionarios", icon: ShieldCheck },
+    { href: "/precios", label: "Precios DNCP", icon: TrendingUp },
+    { href: "/score", label: "Empresa Score", icon: Shield },
+    { href: "/check", label: "Background Check", icon: Search },
+    { href: "/radar", label: "Radar", icon: Activity },
+    { href: "/eventos", label: "Eventos", icon: Calendar },
+    { href: "/fincheck", label: "FinCheck", icon: Banknote },
+    { href: "/inmobiliario", label: "Inmobiliario", icon: Home },
+    { href: "/agro", label: "Agro", icon: Wheat },
+    { href: "/portal", label: "Portal PY", icon: Globe },
+  ]},
+  { section: "Herramientas", items: [
+    { href: "/buscar", label: "Buscador", icon: Search },
+    { href: "/entidades", label: "Entidades", icon: Building2 },
+    { href: "/comparar", label: "Comparar", icon: ArrowLeftRight },
+    { href: "/proveedores", label: "Proveedores", icon: Users },
+  ]},
+  { section: "Gestión", items: [
+    { href: "/dashboard/gestiones", label: "Gestorías", icon: ClipboardList },
+    { href: "/dashboard/clientes", label: "Clientes", icon: Users },
+    { href: "/dashboard/modulos", label: "Módulos", icon: Package },
+  ]},
+];
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<{ email?: string } | null>(null);
-  const [role, setRole] = useState<string | null>(null);
+  const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [user, setUser] = useState<{ email?: string } | null>(null);
 
   useEffect(() => {
     const supabase = createClient();
     supabase.auth.getUser().then(({ data }) => {
-      if (!data.user) { redirect("/login"); return; }
-      setUser(data.user);
-      supabase.from("profiles").select("role").eq("id", data.user.id).single().then(({ data: profile }) => {
-        setRole(profile?.role ?? "user");
-      });
+      if (data.user) setUser(data.user);
     });
   }, []);
 
-  const isAdmin = role === "admin" || role === "superadmin";
+  const isActive = (href: string) => pathname === href || (href !== "/dashboard" && pathname.startsWith(href));
 
   return (
     <div className="min-h-screen bg-[#F5F4ED]">
       {/* Mobile header */}
       <div className="lg:hidden flex items-center justify-between bg-white border-b border-[#D4D2C9] px-4 h-14">
-        <Link href="/dashboard" className="text-xl font-bold text-[#1F1E1D] tracking-tight">
+        <Link href="/" className="text-lg font-bold text-[#1F1E1D] tracking-tight">
           Bru<span className="text-[#C96442] italic">jula</span>
         </Link>
         <button onClick={() => setSidebarOpen(!sidebarOpen)} className="p-2 text-[#5C5B57]">
@@ -37,64 +66,59 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </button>
       </div>
 
-      {/* Sidebar overlay */}
-      {sidebarOpen && (
-        <div className="lg:hidden fixed inset-0 bg-black/20 z-40" onClick={() => setSidebarOpen(false)} />
-      )}
+      {sidebarOpen && <div className="lg:hidden fixed inset-0 bg-black/20 z-40" onClick={() => setSidebarOpen(false)} />}
 
       <div className="flex">
         {/* Sidebar */}
-        <aside className={`${sidebarOpen ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0 fixed lg:sticky top-0 left-0 z-50 h-screen w-64 bg-white border-r border-[#D4D2C9] flex flex-col shrink-0 transition-transform`}>
-          <div className="p-6 hidden lg:block">
-            <Link href="/dashboard" className="text-2xl font-bold text-[#1F1E1D] tracking-tight">
-              Bru<span className="text-[#C96442] italic">jula</span>
-            </Link>
-            <p className="text-xs text-[#87867F] mt-1">Panel de administración</p>
-          </div>
-          <div className="p-6 lg:hidden">
-            <Link href="/dashboard" className="text-xl font-bold text-[#1F1E1D] tracking-tight">
+        <aside className={`${sidebarOpen ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0 fixed lg:sticky top-0 left-0 z-50 h-screen w-60 bg-white border-r border-[#D4D2C9] flex flex-col shrink-0 transition-transform`}>
+          {/* Brand */}
+          <div className="px-5 py-5">
+            <Link href="/" className="text-xl font-bold text-[#1F1E1D] tracking-tight">
               Bru<span className="text-[#C96442] italic">jula</span>
             </Link>
           </div>
 
-          <nav className="flex-1 px-4 space-y-1">
-            <Link href="/dashboard" onClick={() => setSidebarOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-[#5C5B57] hover:bg-[#F5F4ED] hover:text-[#1F1E1D] transition-colors">
-              <LayoutDashboard className="h-4 w-4" /> Dashboard
-            </Link>
-            <Link href="/dashboard/clientes" onClick={() => setSidebarOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-[#5C5B57] hover:bg-[#F5F4ED] hover:text-[#1F1E1D] transition-colors">
-              <Users className="h-4 w-4" /> Clientes
-            </Link>
-            <Link href="/dashboard/gestiones" onClick={() => setSidebarOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-[#5C5B57] hover:bg-[#F5F4ED] hover:text-[#1F1E1D] transition-colors">
-              <ClipboardList className="h-4 w-4" /> Gestorías
-            </Link>
-            {isAdmin && (
-              <Link href="/dashboard/modulos" onClick={() => setSidebarOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-[#5C5B57] hover:bg-[#F5F4ED] hover:text-[#1F1E1D] transition-colors">
-                <Package className="h-4 w-4" /> Módulos
-              </Link>
-            )}
+          {/* Nav */}
+          <nav className="flex-1 overflow-y-auto px-3 space-y-5">
+            {navItems.map(group => (
+              <div key={group.section}>
+                <p className="px-3 mb-1.5 text-[10px] font-semibold uppercase tracking-widest text-[#D4D2C9]">{group.section}</p>
+                {group.items.map(item => {
+                  const active = isActive(item.href);
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      onClick={() => setSidebarOpen(false)}
+                      className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                        active ? "bg-[#C96442]/10 text-[#C96442]" : "text-[#5C5B57] hover:bg-[#F5F4ED] hover:text-[#1F1E1D]"
+                      }`}
+                    >
+                      <item.icon className="h-4 w-4 shrink-0" />
+                      <span className="truncate">{item.label}</span>
+                    </Link>
+                  );
+                })}
+              </div>
+            ))}
           </nav>
 
+          {/* User */}
           <div className="p-4 border-t border-[#D4D2C9]">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-8 h-8 rounded-full bg-[#C96442]/10 flex items-center justify-center text-[#C96442] text-xs font-bold shrink-0">
-                {role === "superadmin" ? "SA" : "AD"}
+            <div className="flex items-center gap-2.5">
+              <div className="w-7 h-7 rounded-lg bg-[#C96442]/10 flex items-center justify-center text-[#C96442] text-xs font-bold shrink-0">A</div>
+              <div className="min-w-0 flex-1">
+                <p className="text-xs font-medium text-[#1F1E1D] truncate">{user?.email || "Usuario"}</p>
               </div>
-              <div className="min-w-0">
-                <p className="text-sm font-medium text-[#1F1E1D] truncate">{user?.email ?? "—"}</p>
-                <p className="text-xs text-[#87867F] capitalize">{role ?? "..."}</p>
-              </div>
+              <a href="/auth/signout" className="p-1.5 rounded-lg hover:bg-[#F5F4ED] text-[#87867F] transition-colors" title="Salir">
+                <LogOut className="h-3.5 w-3.5" />
+              </a>
             </div>
-            <a href="/auth/signout" className="flex items-center justify-center gap-2 w-full h-9 rounded-lg border border-[#D4D2C9] text-sm text-[#87867F] hover:bg-[#F5F4ED] transition-colors">
-              <LogOut className="h-4 w-4" /> Salir
-            </a>
           </div>
         </aside>
 
-        {/* Main */}
-        <main className="flex-1 min-w-0 overflow-auto flex flex-col">
-          <StatusBar />
-          <div className="flex-1">{children}</div>
-        </main>
+        {/* Content */}
+        <main className="flex-1 min-w-0">{children}</main>
       </div>
     </div>
   );
