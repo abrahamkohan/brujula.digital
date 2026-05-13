@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Search, ShieldCheck, UserX, Loader2, AlertCircle } from "lucide-react";
+import { Search, ShieldCheck, UserX, Loader2, AlertCircle, Share2, Check } from "lucide-react";
 
 interface Resultado {
   encontrado: boolean;
@@ -23,6 +23,13 @@ export default function VerificarPage() {
   const [loading, setLoading] = useState(false);
   const [resultado, setResultado] = useState<Resultado | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
+
+  function compartir() {
+    navigator.clipboard.writeText(`${window.location.origin}/verificar?ci=${ci}`);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }
 
   async function buscar() {
     setError(null);
@@ -96,6 +103,10 @@ export default function VerificarPage() {
             <p className="text-xs text-[#87867F] text-center">
               Gratis · 3 consultas por día sin registro
             </p>
+            <button onClick={compartir} className="w-full flex items-center justify-center gap-2 py-2 text-xs text-[#C96442] hover:bg-[#C96442]/5 rounded-lg transition-colors">
+              {copied ? <Check className="h-3.5 w-3.5" /> : <Share2 className="h-3.5 w-3.5" />}
+              {copied ? "¡Copiado!" : "Compartir resultado"}
+            </button>
           </CardContent>
         </Card>
 
