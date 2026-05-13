@@ -41,7 +41,7 @@ export default function LandingPage() {
       <section className="bg-white border-y border-[#D4D2C9] py-10">
         <div className="max-w-4xl mx-auto px-6 grid grid-cols-3 sm:grid-cols-5 gap-4 text-center">
           {[
-            { n: "500+", label: "Funcionarios" },
+            { n: "700+", label: "Funcionarios" },
             { n: "10+", label: "Fuentes de datos" },
             { n: "2 seg", label: "Resultado" },
             { n: "6", label: "Módulos" },
