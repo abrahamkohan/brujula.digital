@@ -170,11 +170,48 @@ export default function LandingPage() {
       <WhatsAppFloat />
 
       {/* Footer */}
-      <footer className="border-t border-[#D4D2C9] py-8 text-center space-y-2">
-        <p className="text-sm text-[#87867F]">
-          Brujula · Datos públicos, dirección clara. · Paraguay · 2026
-        </p>
-        <Link href="/acerca" className="text-xs text-[#C96442] hover:underline">Acerca de</Link>
+      <footer className="border-t border-[#D4D2C9] py-10">
+        <div className="max-w-4xl mx-auto px-6">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 mb-8">
+            <div>
+              <p className="text-xs font-semibold text-[#87867F] uppercase tracking-wider mb-3">Productos</p>
+              <div className="space-y-2">
+                {[{ label: "Funcionarios", href: "/verificar" },{ label: "Precios", href: "/precios" },{ label: "Empresas", href: "/score" },{ label: "Radar", href: "/radar" },{ label: "Background Check", href: "/check" }].map(l => (
+                  <Link key={l.href} href={l.href} className="block text-xs text-[#5C5B57] hover:text-[#C96442]">{l.label}</Link>
+                ))}
+              </div>
+            </div>
+            <div>
+              <p className="text-xs font-semibold text-[#87867F] uppercase tracking-wider mb-3">Herramientas</p>
+              <div className="space-y-2">
+                {[{ label: "Buscador", href: "/buscar" },{ label: "Proveedores", href: "/proveedores" },{ label: "Entidades", href: "/entidades" },{ label: "Comparar", href: "/comparar" }].map(l => (
+                  <Link key={l.href} href={l.href} className="block text-xs text-[#5C5B57] hover:text-[#C96442]">{l.label}</Link>
+                ))}
+              </div>
+            </div>
+            <div>
+              <p className="text-xs font-semibold text-[#87867F] uppercase tracking-wider mb-3">App</p>
+              <div className="space-y-2">
+                {[{ label: "Dashboard", href: "/dashboard" },{ label: "Acerca de", href: "/acerca" },{ label: "Ingresar", href: "/login" }].map(l => (
+                  <Link key={l.href} href={l.href} className="block text-xs text-[#5C5B57] hover:text-[#C96442]">{l.label}</Link>
+                ))}
+              </div>
+            </div>
+            <div>
+              <p className="text-xs font-semibold text-[#87867F] uppercase tracking-wider mb-3">Contacto</p>
+              <div className="space-y-2">
+                <a href="https://wa.me/595982000808" className="block text-xs text-[#5C5B57] hover:text-[#C96442]">WhatsApp</a>
+                <a href="/api/export?source=funcionarios" className="block text-xs text-[#C96442] font-medium hover:underline">Exportar datos ↗</a>
+              </div>
+            </div>
+          </div>
+          <p className="text-xs text-[#87867F] text-center pt-6 border-t border-[#D4D2C9]">
+            Brujula · Datos públicos, dirección clara. · Paraguay · 2026
+          </p>
+        </div>
+        <div className="text-center mt-3">
+          <Link href="/acerca" className="text-xs text-[#C96442] hover:underline">Acerca de</Link>
+        </div>
       </footer>
     </div>
   );
