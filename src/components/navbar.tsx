@@ -26,8 +26,9 @@ export default function Navbar() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
 
-  // Hide on dashboard pages
-  if (pathname.startsWith("/dashboard")) return null;
+  // Navbar only on public pages
+  const publicPaths = ["/", "/login", "/acerca"];
+  if (!publicPaths.includes(pathname)) return null;
 
   return (
     <nav className="bg-white border-b border-[#D4D2C9] sticky top-0 z-50">
