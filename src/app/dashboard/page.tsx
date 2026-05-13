@@ -40,7 +40,7 @@ export default function DashboardPage() {
     { label: "Fuentes activas", value: `${stats.fuentesActivas}/3`, icon: Globe, color: "text-[#8B5E7D]" },
   ];
 
-  const systemStatus = [
+  const systemStatus: Array<{ name: string; status: "online" | "warning" | "offline" }> = [
     { name: "DNCP API", status: "online" as const },
     { name: "Supabase", status: "online" as const },
     { name: "Scraping SFP", status: "offline" as const },
