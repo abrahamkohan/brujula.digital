@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/client";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { LayoutDashboard, Users, Package, LogOut, Menu, X } from "lucide-react";
+import { LayoutDashboard, Users, Package, LogOut, Menu, X, ClipboardList } from "lucide-react";
 import StatusBar from "@/components/status-bar";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -63,6 +63,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </Link>
             <Link href="/dashboard/clientes" onClick={() => setSidebarOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-[#5C5B57] hover:bg-[#F5F4ED] hover:text-[#1F1E1D] transition-colors">
               <Users className="h-4 w-4" /> Clientes
+            </Link>
+            <Link href="/dashboard/gestiones" onClick={() => setSidebarOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-[#5C5B57] hover:bg-[#F5F4ED] hover:text-[#1F1E1D] transition-colors">
+              <ClipboardList className="h-4 w-4" /> Gestorías
             </Link>
             {isAdmin && (
               <Link href="/dashboard/modulos" onClick={() => setSidebarOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-[#5C5B57] hover:bg-[#F5F4ED] hover:text-[#1F1E1D] transition-colors">
