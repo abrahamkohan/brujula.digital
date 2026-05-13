@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Search, ShieldCheck, UserX, Loader2, AlertCircle, Share2, Check } from "lucide-react";
+import { Search, ShieldCheck, UserX, Loader2, AlertCircle, Share2, Check, List, Hash } from "lucide-react";
 
 interface Resultado {
   encontrado: boolean;
@@ -24,6 +24,11 @@ export default function VerificarPage() {
   const [resultado, setResultado] = useState<Resultado | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const [modo, setModo] = useState<"simple"|"bulk">("simple");
+  const [bulkCIs, setBulkCIs] = useState("");
+  const [bulkResults, setBulkResults] = useState<Array<{ci:string;encontrado:boolean;nombre:string;organismo:string;cargo:string;estado:string}>>([]);
+  const [bulkStats, setBulkStats] = useState<{total:number;encontrados:number;no_encontrados:number}|null>(null);
+  const [bulkLoading, setBulkLoading] = useState(false);
 
   function compartir() {
     navigator.clipboard.writeText(`${window.location.origin}/verificar?ci=${ci}`);
@@ -167,7 +172,22 @@ export default function VerificarPage() {
         )}
       </section>
 
-      {/* Footer */}
+      {/* Bulk mode */}
+      <section className="max-w-2xl mx-auto px-4 sm:px-6 pb-16">
+        <div className="flex items-center gap-2 mb-4">
+          <button onClick={() => setModo("simple")} className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${modo==="simple"?"bg-[#C96442] text-white":"bg-white text-[#5C5B57] border border-[#D4D2C9]"}`}>Individual</button>
+          <button onClick={() => setModo("bulk")} className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${modo==="bulk"?"bg-[#C96442] text-white":"bg-white text-[#5C5B57] border border-[#D4D2C9]"}`}>Bulk (múltiples CIs)</button>
+        </div>
+        {modo==="bulk" && (
+          <Card className="border-[#D4D2C9] shadow-sm"><CardContent className="pt-6 space-y-4">
+            <textarea value={bulkCIs} onChange={e=>setBulkCIs(e.target.value)} placeholder="4567890&#10;2345678&#10;1234567" rows={6} className="w-full rounded-xl border border-[#D4D2C9] bg-white p-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#C96442]" />
+            <Button onClick={async()=>{const cis=bulkCIs.split('\n').filter(l=>l.trim());if(!cis.length||cis.length>100)return;setBulkLoading(true);setBulkResults([]);setBulkStats(null);try{const r=await fetch('/api/verificar-funcionario/bulk',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({cis})});const j=await r.json();setBulkResults(j.results||[]);setBulkStats(j.stats)}catch(e){}finally{setBulkLoading(false)}}} disabled={bulkLoading||!bulkCIs.trim()} className="w-full h-12 bg-[#C96442] hover:bg-[#B5583A] text-white font-semibold">{bulkLoading?<Loader2 className="h-5 w-5 animate-spin mx-auto"/>:`Verificar ${bulkCIs.split('\n').filter(l=>l.trim()).length} CIs`}</Button>
+            {bulkStats&&<div className="grid grid-cols-3 gap-2 pt-2 border-t border-[#E5E4DD]"><div className="text-center"><p className="text-xs text-[#87867F]">Total</p><p className="font-bold">{bulkStats.total}</p></div><div className="text-center"><p className="text-xs text-[#87867F]">Encontrados</p><p className="font-bold text-[#5A7D5A]">{bulkStats.encontrados}</p></div><div className="text-center"><p className="text-xs text-[#87867F]">No encontrados</p><p className="font-bold text-[#C96442]">{bulkStats.no_encontrados}</p></div></div>}
+            {bulkResults.length>0&&<div className="overflow-x-auto"><table className="w-full text-xs"><thead><tr className="border-b border-[#E5E4DD]"><th className="text-left py-2 text-[#87867F]">CI</th><th className="text-left py-2 text-[#87867F]">Nombre</th><th className="text-left py-2 text-[#87867F]">Organismo</th><th className="text-left py-2 text-[#87867F]">Estado</th></tr></thead><tbody>{bulkResults.map((r,i)=><tr key={i} className="border-b border-[#E5E4DD]"><td className="py-2 font-mono">{r.ci}</td><td className="py-2">{r.encontrado?<span className="font-medium">{r.nombre}</span>:<span className="text-[#87867F]">—</span>}</td><td className="py-2 text-[#5C5B57]">{r.organismo||"—"}</td><td className="py-2">{r.encontrado?<Badge className="bg-[#5A7D5A]/10 text-[#5A7D5A] text-[10px]">{r.estado}</Badge>:<Badge className="bg-gray-100 text-[#87867F] text-[10px]">No</Badge>}</td></tr>)}</tbody></table></div>}
+          </CardContent></Card>
+        )}
+      </section>
+
       <footer className="text-center pb-10">
         <p className="text-xs text-[#87867F]">
           Brujula · Datos públicos, dirección clara.
