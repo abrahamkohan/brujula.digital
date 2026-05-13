@@ -1,0 +1,12 @@
+{
+  "name": "Brujula",
+  "short_name": "Brujula",
+  "description": "Datos públicos del Estado paraguayo",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F5F4ED",
+  "theme_color": "#C96442",
+  "icons": [
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}
