@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { LayoutDashboard, Users, Package, LogOut, Menu, X } from "lucide-react";
+import StatusBar from "@/components/status-bar";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<{ email?: string } | null>(null);
@@ -87,8 +88,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </aside>
 
         {/* Main */}
-        <main className="flex-1 min-w-0 overflow-auto">
-          {children}
+        <main className="flex-1 min-w-0 overflow-auto flex flex-col">
+          <StatusBar />
+          <div className="flex-1">{children}</div>
         </main>
       </div>
     </div>
