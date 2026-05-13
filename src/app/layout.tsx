@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Geist_Mono } from "next/font/google";
 import Navbar from "@/components/navbar";
 import PageTransition from "@/components/page-transition";
+import KeyboardShortcuts from "@/components/keyboard-shortcuts";
 import "./globals.css";
 
 const inter = Inter({ variable: "--font-inter", subsets: ["latin"] });
@@ -21,6 +22,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="es" className={`${inter.variable} ${geistMono.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col">
+        <KeyboardShortcuts />
         <Navbar />
         <main className="flex-1"><PageTransition>{children}</PageTransition></main>
       </body>
