@@ -127,7 +127,7 @@ export default function LandingPage() {
       <section className="max-w-4xl mx-auto px-6 py-16">
         <p className="text-xs font-semibold uppercase tracking-widest text-[#C96442] mb-3 text-center">Planes</p>
         <h2 className="text-2xl font-bold text-[#1F1E1D] text-center mb-2">Pagás solo por lo que usás</h2>
-        <p className="text-[#87867F] text-center text-sm mb-10">Sin permanencia. Cancelás cuando quieras.</p>
+        <p className="text-[#87867F] text-center text-sm mb-10">Sin permanencia. Cancelás cuando quieras. <Link href="/precios-plan" className="text-[#C96442] hover:underline">Ver plan completo →</Link></p>
         <div className="grid sm:grid-cols-3 gap-4">
           {planes.map(p => (
             <div key={p.nombre} className="bg-white rounded-2xl border-2 border-[#D4D2C9] p-6 flex flex-col hover:border-[#C96442]/30 transition-colors">
