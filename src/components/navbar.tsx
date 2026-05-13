@@ -13,6 +13,8 @@ const links = [
   { href: "/radar", label: "Radar" },
   { href: "/check", label: "Check" },
   { href: "/comparar", label: "Comparar" },
+  { href: "/eventos", label: "Eventos" },
+  { href: "/fincheck", label: "FinCheck" },
   { href: "/entidades", label: "Entidades" },
   { href: "/proveedores", label: "Proveedores" },
 ];
