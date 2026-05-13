@@ -15,6 +15,9 @@ const links = [
   { href: "/comparar", label: "Comparar" },
   { href: "/eventos", label: "Eventos" },
   { href: "/fincheck", label: "FinCheck" },
+  { href: "/inmobiliario", label: "Inmuebles" },
+  { href: "/agro", label: "Agro" },
+  { href: "/portal", label: "Portal" },
   { href: "/entidades", label: "Entidades" },
   { href: "/proveedores", label: "Proveedores" },
 ];
