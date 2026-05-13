@@ -121,6 +121,14 @@ export default function GestionesPage() {
                           <div>
                             <p className="text-sm font-semibold text-[#1F1E1D]">{tipoIcons[g.tipo] || g.tipo}</p>
                             <p className="text-xs text-[#5C5B57]">{g.descripcion || "Sin descripción"}</p>
+                        <button
+                          onClick={async (e) => { e.stopPropagation();
+                            const supabase = createClient();
+                            await supabase.from("gestiones").delete().eq("id", g.id);
+                            setGestiones(prev => prev.filter(x => x.id !== g.id));
+                          }}
+                          className="text-[10px] text-red-400 hover:text-red-600 mt-1"
+                        >Eliminar</button>
                           </div>
                           <Badge className={estadoColors[g.estado] + " text-[10px]"}>{estadoLabels[g.estado]}</Badge>
                         </div>
