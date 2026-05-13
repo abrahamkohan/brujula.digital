@@ -131,13 +131,36 @@ export async function GET(request: NextRequest) {
           const results = (await Promise.all(releasePromises)).filter(Boolean);
           contratos.push(...results);
           totalAdjudicado = results.reduce((s, c) => s + c.monto, 0);
-          contratos12m = results.filter(c => {
-            const d = new Date(c.fecha);
-            return d >= new Date(Date.now() - 365 * 24 * 60 * 60 * 1000);
-          }).length;
+          contratos12m = results.filter(c => new Date(c.fecha) >= new Date(Date.now() - 365*24*60*60*1000)).length;
         } catch { /* ignore */ }
       }
     }
+
+    // KYC Scoring Algorithm
+    let score = 100;
+    const components: Array<{ name: string; puntos: number; max: number; status: "ok"|"warn"|"missing" }> = [];
+
+    // DNCP contracts (available)
+    components.push({ name: "Contratos DNCP", puntos: contratos.length > 0 ? 20 : 0, max: 20, status: contratos.length > 0 ? "ok" : "warn" });
+    if (contratos.length === 0) score -= 20;
+
+    // Sanctions
+    const hasSanctions = sanciones.length > 0;
+    components.push({ name: "Sin sanciones DNCP", puntos: hasSanctions ? 0 : 20, max: 20, status: hasSanctions ? "warn" : "ok" });
+    if (hasSanctions) score -= 20;
+
+    // Activity level
+    if (contratos12m > 3) components.push({ name: "Actividad alta (12m)", puntos: 10, max: 10, status: "ok" });
+    else if (contratos12m > 0) { components.push({ name: "Actividad moderada", puntos: 5, max: 10, status: "warn" }); score -= 5; }
+    else { components.push({ name: "Sin actividad reciente", puntos: 0, max: 10, status: "warn" }); score -= 10; }
+
+    // Placeholder sources (not yet integrated)
+    components.push({ name: "CSJ — Causas judiciales", puntos: 0, max: 30, status: "missing" });
+    components.push({ name: "CGR — Auditorías", puntos: 0, max: 20, status: "missing" });
+    components.push({ name: "MIC — Registro comercial", puntos: 0, max: 10, status: "missing" });
+    components.push({ name: "Beneficiarios finales", puntos: 0, max: 10, status: "missing" });
+
+    const classification = score >= 80 ? "🟢 Bajo riesgo" : score >= 50 ? "🟡 Riesgo moderado" : "🔴 Alto riesgo";
 
     return NextResponse.json({
       ruc: rucDNCP.replace(/^PY-RUC-/, ""),
@@ -149,6 +172,7 @@ export async function GET(request: NextRequest) {
       contratos_12m: contratos12m,
       nivel_actividad: contratos.length === 0 ? "Sin datos" : contratos12m > 3 ? "Alto" : contratos12m > 0 ? "Medio" : "Bajo",
       contratos,
+      score: { value: score, classification, components },
     });
   } catch {
     return NextResponse.json({ error: "No pudimos consultar en este momento." }, { status: 500 });

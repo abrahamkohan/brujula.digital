@@ -16,6 +16,7 @@ interface EmpresaScore {
   ruc: string; nombre: string; categorias: string[]; sanciones: string[];
   total_adjudicado: number; contratos_total: number; contratos_12m: number; nivel_actividad: string;
   contratos: Contrato[];
+  score?: { value: number; classification: string; components: Array<{ name: string; puntos: number; max: number; status: string }> };
 }
 
 function fmtGs(n: number): string {
@@ -75,6 +76,39 @@ export default function ScorePage() {
 
             {data && (
               <div className="space-y-4 pt-2">
+                {/* Score visual — KYC */}
+                {data.score && (
+                  <div className="bg-[#F5F4ED] rounded-2xl p-5">
+                    <div className="flex items-center justify-between mb-4">
+                      <div>
+                        <p className="text-xs text-[#87867F] uppercase tracking-wider">Score de Riesgo</p>
+                        <p className={`text-3xl font-bold ${data.score.value >= 80 ? 'text-[#5A7D5A]' : data.score.value >= 50 ? 'text-[#B89B4B]' : 'text-red-500'}`}>
+                          {data.score.value}/100
+                        </p>
+                      </div>
+                      <div className={`text-sm font-bold px-3 py-1 rounded-full ${data.score.value >= 80 ? 'bg-[#5A7D5A]/10 text-[#5A7D5A]' : data.score.value >= 50 ? 'bg-amber-50 text-[#B89B4B]' : 'bg-red-50 text-red-600'}`}>
+                        {data.score.classification}
+                      </div>
+                    </div>
+                    {/* Progress bar */}
+                    <div className="h-2 bg-[#D4D2C9] rounded-full overflow-hidden mb-3">
+                      <div className={`h-full rounded-full transition-all ${data.score.value >= 80 ? 'bg-[#5A7D5A]' : data.score.value >= 50 ? 'bg-[#B89B4B]' : 'bg-red-500'}`}
+                        style={{width: `${data.score.value}%`}} />
+                    </div>
+                    {/* Components */}
+                    <div className="space-y-1.5">
+                      {data.score.components.map((c, i) => (
+                        <div key={i} className="flex items-center justify-between text-xs">
+                          <span className={c.status === "missing" ? "text-[#D4D2C9]" : "text-[#5C5B57]"}>{c.name}</span>
+                          <span className={`font-mono ${c.status === "ok" ? "text-[#5A7D5A]" : c.status === "warn" ? "text-[#B89B4B]" : "text-[#D4D2C9]"}`}>
+                            {c.status === "missing" ? `—/${c.max}` : `${c.puntos}/${c.max}`}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 {/* Header */}
                 <div className="bg-[#F5F4ED] rounded-2xl p-5">
                   <p className="text-xs text-[#87867F] uppercase tracking-wider mb-1">Empresa</p>
