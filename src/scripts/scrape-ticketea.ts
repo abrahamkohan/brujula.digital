@@ -179,7 +179,7 @@ export async function scrapeTicketea(): Promise<ScrapedEvent[]> {
             ? (detail.imageUrl.startsWith("http") ? detail.imageUrl : `${BASE}${detail.imageUrl}`)
             : item.imageUrl?.startsWith("http")
               ? item.imageUrl
-              : item.imageUrl
+              : item.imageUrl && !item.imageUrl.startsWith("data:")
                 ? `${BASE}${item.imageUrl}`
                 : undefined,
           source_url: `${BASE}/events/${item.slug}`,
@@ -202,7 +202,7 @@ export async function scrapeTicketea(): Promise<ScrapedEvent[]> {
           currency: "PYG",
           image_url: item.imageUrl?.startsWith("http")
             ? item.imageUrl
-            : item.imageUrl
+            : item.imageUrl && !item.imageUrl.startsWith("data:")
               ? `${BASE}${item.imageUrl}`
               : undefined,
           source_url: `${BASE}/events/${item.slug}`,

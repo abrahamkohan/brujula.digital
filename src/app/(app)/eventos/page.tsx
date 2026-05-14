@@ -3,7 +3,7 @@
 import { useEffect, useState, useRef, useMemo } from "react";
 import {
   Search, Music, Trophy, Film, UtensilsCrossed, Hotel,
-  MapPin, Star, Beer, ShoppingBag, Building2,
+  MapPin, Star, Beer, ShoppingBag, Building2, X,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import EventCard from "@/components/eventos/event-card";
@@ -275,6 +275,13 @@ export default function EventosPage() {
                 {z.label}
               </button>
             ))}
+            {/* Clear filters */}
+            {(zonaFilter || tipoGastro || tipoBares || timeFilter !== "all") && (
+              <button onClick={() => { setZonaFilter(""); setTipoGastro(""); setTipoBares(""); setTimeFilter("all"); }}
+                className="shrink-0 flex items-center gap-1 px-3 py-1 rounded-full text-[11px] font-medium bg-[#1F1E1D] text-white">
+                <X className="h-3 w-3" /> Limpiar
+              </button>
+            )}
           </div>
         </div>
       </div>
