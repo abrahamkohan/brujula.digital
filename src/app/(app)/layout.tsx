@@ -67,7 +67,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       {sidebarOpen && <div className="lg:hidden fixed inset-0 bg-black/20 z-40" onClick={() => setSidebarOpen(false)} />}
 
       <div className="flex">
-        {/* Sidebar */}
+        {/* Sidebar — completamente oculto en eventos */}
+        {!pathname.startsWith("/eventos") && (
         <aside className={`${sidebarOpen ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0 fixed lg:sticky top-0 left-0 z-50 h-screen w-60 bg-white border-r border-[#D4D2C9] flex flex-col shrink-0 transition-transform`}>
           <div className="px-5 py-5">
             <Link href="/" onClick={() => setSidebarOpen(false)} className="flex items-center gap-2">
@@ -105,6 +106,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             </div>
           </div>
         </aside>
+        )}
 
         {/* Content */}
         <main className="flex-1 min-w-0">{children}</main>
