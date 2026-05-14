@@ -381,7 +381,7 @@ export default function EventosPage() {
                 </div>
                 <div className="flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-none">
                   {peliculasFiltradas.slice(0, 5).map((p) => (
-                    <div key={p.id} className="w-40 sm:w-48 shrink-0 snap-start">
+                    <div key={p.id} className="w-44 sm:w-52 shrink-0 snap-start">
                       <MovieCard movie={p} />
                     </div>
                   ))}

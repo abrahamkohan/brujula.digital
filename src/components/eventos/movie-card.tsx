@@ -40,8 +40,8 @@ export default function MovieCard({ movie }: { movie: Pelicula }) {
             }}
           />
         ) : (
-          <div className="w-full h-full bg-gradient-to-br from-blue-200 to-indigo-100 flex items-center justify-center">
-            <span className="text-4xl text-white/60">🎬</span>
+          <div className="w-full h-full bg-[#1F1E1D] flex items-center justify-center">
+            <span className="text-5xl opacity-20">🎬</span>
           </div>
         )}
 
