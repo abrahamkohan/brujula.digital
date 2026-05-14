@@ -27,14 +27,14 @@ const CAT_META: Record<string, { icon: typeof Music; label: string }> = {
   cine:             { icon: Clapperboard, label: "Cine" },
 };
 
-const GRADIENTS: Record<string, string> = {
-  concierto:        "from-purple-200 to-pink-100",
-  deporte:          "from-emerald-200 to-teal-100",
-  teatro:           "from-violet-200 to-fuchsia-100",
-  feria:            "from-amber-200 to-orange-100",
-  entretenimiento:  "from-rose-200 to-red-100",
-  congreso:         "from-blue-200 to-indigo-100",
-  cine:             "from-yellow-200 to-amber-100",
+const GRADIENT_STYLES: Record<string, string> = {
+  concierto:       "linear-gradient(135deg, #7c3aed, #db2777)",
+  deporte:         "linear-gradient(135deg, #059669, #0891b2)",
+  teatro:          "linear-gradient(135deg, #7c3aed, #a855f7)",
+  feria:           "linear-gradient(135deg, #d97706, #dc2626)",
+  entretenimiento: "linear-gradient(135deg, #db2777, #ef4444)",
+  congreso:        "linear-gradient(135deg, #2563eb, #4f46e5)",
+  cine:            "linear-gradient(135deg, #d97706, #f59e0b)",
 };
 
 const MONTHS = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
@@ -52,20 +52,13 @@ function formatDate(dateStr: string) {
 function isToday(dateStr: string) {
   const d = new Date(dateStr);
   const today = new Date();
-  return (
-    d.getDate() === today.getDate() &&
-    d.getMonth() === today.getMonth() &&
-    d.getFullYear() === today.getFullYear()
-  );
+  return d.getDate() === today.getDate() && d.getMonth() === today.getMonth() && d.getFullYear() === today.getFullYear();
 }
 
 export default function EventCard({ event, featured }: Props) {
-  const cat = CAT_META[event.categoria?.toLowerCase()] ?? {
-    icon: Calendar,
-    label: "Evento",
-  };
+  const cat = CAT_META[event.categoria?.toLowerCase()] ?? { icon: Calendar, label: "Evento" };
   const Icon = cat.icon;
-  const grad = GRADIENTS[event.categoria?.toLowerCase()] ?? "from-gray-200 to-gray-100";
+  const gradStyle = GRADIENT_STYLES[event.categoria?.toLowerCase()] ?? "linear-gradient(135deg, #6b7280, #4b5563)";
   const hoy = isToday(event.fecha);
   const hasImage =
     event.image_url?.startsWith("http") &&
@@ -75,7 +68,6 @@ export default function EventCard({ event, featured }: Props) {
 
   const content = (
     <div className="group relative rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:scale-[1.02] cursor-pointer">
-      {/* ─── Imagen ─────────────────────────────── */}
       <div className={`relative ${featured ? "aspect-[4/3]" : "aspect-[3/4]"}`}>
         {hasImage ? (
           <img
@@ -86,32 +78,28 @@ export default function EventCard({ event, featured }: Props) {
               const el = ev.target as HTMLImageElement;
               el.style.display = "none";
               const p = el.parentElement!;
-              p.className = `relative ${featured ? "aspect-[4/3]" : "aspect-[3/4]"} bg-gradient-to-br ${grad}`;
+              p.style.background = gradStyle;
             }}
           />
         ) : (
-          <div className={`absolute inset-0 bg-gradient-to-br ${grad} flex items-center justify-center`}>
+          <div className="absolute inset-0 flex items-center justify-center" style={{ background: gradStyle }}>
             <Icon className="h-12 w-12 text-white/40" strokeWidth={1.2} />
           </div>
         )}
 
-        {/* ─── Overlay gradiente ────────────────── */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
 
-        {/* ─── Chip categoría ────────────────────── */}
         <span className="absolute top-3 left-3 inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-medium tracking-wide bg-white/20 backdrop-blur-sm text-white shadow-xs">
           <Icon className="h-3 w-3" />
           {cat.label}
         </span>
 
-        {/* ─── Badge HOY ────────────────────────── */}
         {hoy && (
           <span className="absolute top-3 right-3 inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest bg-[#C96442] text-white shadow-xs animate-pulse">
             Hoy
           </span>
         )}
 
-        {/* ─── Info (abajo, sobre gradiente) ─────── */}
         <div className="absolute bottom-0 left-0 right-0 p-5 space-y-1">
           <h3 className="font-bold text-base text-white leading-snug line-clamp-2 drop-shadow-sm">
             {event.titulo}
@@ -124,7 +112,7 @@ export default function EventCard({ event, featured }: Props) {
               </span>
             )}
             {event.venue && (
-              <span className="flex items-center gap-1 truncate">
+              <span className="hidden sm:flex items-center gap-1 truncate">
                 <MapPin className="h-3 w-3 shrink-0" />
                 <span className="truncate">{event.venue}</span>
               </span>

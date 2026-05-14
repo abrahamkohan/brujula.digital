@@ -108,6 +108,7 @@ export default function EventosPage() {
   const [timeFilter, setTimeFilter] = useState("all");
   const [activeSection, setActiveSection] = useState("recitales");
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({});
+  const [showZones, setShowZones] = useState(false);
   const sectionRefs = useRef<Record<string, HTMLElement | null>>({});
 
   // Fecha filter: solo eventos con año entre 2024 y 2028
@@ -285,7 +286,13 @@ export default function EventosPage() {
             })}
           </div>
           {/* Zone filter */}
-          <div className="flex gap-2 overflow-x-auto scrollbar-none pb-1">
+          <div className="space-y-1">
+            <button onClick={() => setShowZones(!showZones)}
+              className="sm:hidden flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-white text-[#5C5B57] border border-[#D4D2C9]">
+              📍 {zonaFilter ? (ZONAS.find((z) => z.id === zonaFilter)?.label ?? zonaFilter) : "Zona"}
+              <span className="text-[10px] ml-1">{showZones ? "▲" : "▼"}</span>
+            </button>
+            <div className={`${showZones ? "flex" : "hidden"} sm:flex gap-2 overflow-x-auto scrollbar-none pb-1`}>
             <button onClick={() => setZonaFilter("")}
               className={`shrink-0 px-3 py-1 rounded-full text-[11px] font-medium transition-all ${
                 !zonaFilter ? "bg-[#C96442] text-white" : "bg-white text-[#5C5B57] border border-[#D4D2C9]"
@@ -326,17 +333,30 @@ export default function EventosPage() {
               return (
                 <section key={sec.id} id={sec.id} ref={(el) => { sectionRefs.current[sec.id] = el; }} className="scroll-mt-28">
                   <SectionHeader icon={<Icon className="h-4 w-4" />} title={sec.label} />
-                  <div className="flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-none">
+                  {/* Mobile: scroll */}
+                  <div className="flex sm:hidden gap-4 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-none">
                     {visibleItems(sec.events, sec.id).map((e) => (
-                      <div key={e.id} className="w-56 sm:w-64 shrink-0 snap-start">
+                      <div key={e.id} className="w-72 shrink-0 snap-start">
                         <EventCard event={e} />
                         {e.zona && <p className="text-[10px] text-[#87867F] mt-1.5 px-1">{ZONAS.find((z) => z.id === e.zona)?.label}</p>}
                       </div>
                     ))}
                     {sec.events.length > 5 && !expandedSections[sec.id] && (
                       <button onClick={() => toggleExpand(sec.id)}
-                        className="w-32 sm:w-36 shrink-0 snap-start rounded-2xl border-2 border-dashed border-[#D4D2C9] flex items-center justify-center text-sm font-medium text-[#87867F] hover:text-[#C96442] hover:border-[#C96442] transition-colors">
-                        Ver todos {sec.events.length} →
+                        className="w-32 shrink-0 snap-start rounded-2xl border-2 border-dashed border-[#D4D2C9] flex items-center justify-center text-sm font-medium text-[#87867F] hover:text-[#C96442] hover:border-[#C96442] transition-colors">
+                        +{sec.events.length - 5}
+                      </button>
+                    )}
+                  </div>
+                  {/* Desktop: grid */}
+                  <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {(expandedSections[sec.id] ? sec.events : sec.events.slice(0, 6)).map((e) => (
+                      <EventCard key={e.id} event={e} />
+                    ))}
+                    {sec.events.length > 6 && !expandedSections[sec.id] && (
+                      <button onClick={() => toggleExpand(sec.id)}
+                        className="rounded-2xl border-2 border-dashed border-[#D4D2C9] flex items-center justify-center text-sm font-medium text-[#87867F] hover:text-[#C96442] hover:border-[#C96442] transition-colors min-h-[200px]">
+                        Ver +{sec.events.length - 6}
                       </button>
                     )}
                   </div>
