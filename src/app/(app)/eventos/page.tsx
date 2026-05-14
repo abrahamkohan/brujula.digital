@@ -64,6 +64,7 @@ function isThisWeekend(d: Date): boolean {
 // ─── Nav sections ──────────────────────────────────────────────
 
 const SECTIONS = [
+  { id: "todos", icon: Search, label: "Todos" },
   { id: "recitales", cat: "concierto", icon: Music, label: "Recitales" },
   { id: "deportes", cat: "deporte", icon: Trophy, label: "Deportes" },
   { id: "cine", icon: Film, label: "Cine", esPeliculas: true },
@@ -256,7 +257,7 @@ export default function EventosPage() {
             {SECTIONS.map((sec) => {
               const Icon = sec.icon;
               return (
-                <button key={sec.id} onClick={() => scrollTo(sec.id)}
+                <button key={sec.id} onClick={() => { if (sec.id === "todos") { setSearch(""); setZonaFilter(""); setTimeFilter("all"); } scrollTo(sec.id); }}
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all shrink-0 ${
                     activeSection === sec.id ? "bg-[#1F1E1D] text-white" : "bg-white text-[#5C5B57] border border-[#D4D2C9] hover:border-[#C96442]"
                   }`}>
@@ -327,7 +328,7 @@ export default function EventosPage() {
 
             {/* ═══ SECCIONES DE EVENTOS ═══════════════ */}
             {eventosPorCategoria.map((sec) => {
-              if (sec.events.length === 0) return null;
+              if (sec.events.length < 2) return null;
               const Icon = sec.icon;
               const visible = sec.events.slice(0, 5);
               return (
