@@ -149,6 +149,23 @@ export async function scrapeSerpapi(): Promise<number> {
         // Zona
         const zona = getZonaFromVenue(venueName) ?? "";
 
+        // Elegir el mejor link: ticket_info > main link, filtrar Spotify
+        const badDomains = ["spotify.com", "open.spotify.com"];
+        let sourceUrl = ev.link;
+
+        // Preferir ticket_info si existe
+        if (ev.ticket_info && ev.ticket_info.length > 0) {
+          const ticketLink = ev.ticket_info.find((t) =>
+            !badDomains.some((d) => t.link.includes(d))
+          );
+          if (ticketLink) sourceUrl = ticketLink.link;
+        }
+
+        // Si el link principal es malo y no hay ticket_info, skip
+        if (badDomains.some((d) => sourceUrl?.includes(d))) {
+          continue;
+        }
+
         // Dedup: verificar si ya existe mismo título + fecha
         const { data: existing } = await supabaseAdmin
           .from("eventos")
