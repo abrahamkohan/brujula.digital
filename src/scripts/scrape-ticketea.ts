@@ -118,14 +118,22 @@ async function scrapeDetail(page: import("playwright").Page, slug: string, title
     const parts = h2Text.split(",").map((s) => s.trim());
     const venueName = parts[0] || "";
 
+    // Imagen principal del evento: buscar la img del hero/cabecera
+    const mainImg = document.querySelector<HTMLImageElement>(
+      'img[src*="ticketea"], img[src*="cloudfront"], img[src*="mcusercontent"], section img, [class*="hero"] img, [class*="banner"] img'
+    );
+    const imageUrl = mainImg?.getAttribute("src") ?? null;
+
     return {
       venueName,
+      imageUrl,
       rawHtml: document.querySelector('[class*="description"]')?.innerHTML ?? null,
     };
   });
 
   return {
     venueName: detail.venueName,
+    imageUrl: detail.imageUrl,
     rawHtml: detail.rawHtml ?? undefined,
   };
 }
@@ -167,11 +175,13 @@ export async function scrapeTicketea(): Promise<ScrapedEvent[]> {
           city: "Asunción",
           category: detectCategory(item.title),
           currency: "PYG",
-          image_url: item.imageUrl?.startsWith("http")
-            ? item.imageUrl
-            : item.imageUrl
-              ? `${BASE}${item.imageUrl}`
-              : undefined,
+          image_url: detail.imageUrl
+            ? (detail.imageUrl.startsWith("http") ? detail.imageUrl : `${BASE}${detail.imageUrl}`)
+            : item.imageUrl?.startsWith("http")
+              ? item.imageUrl
+              : item.imageUrl
+                ? `${BASE}${item.imageUrl}`
+                : undefined,
           source_url: `${BASE}/events/${item.slug}`,
           raw_html: detail.rawHtml,
         });
