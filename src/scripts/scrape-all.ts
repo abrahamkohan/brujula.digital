@@ -11,6 +11,7 @@ import { scrapeTicketea } from "./scrape-ticketea";
 import { scrapeTuti } from "./scrape-tuti";
 import { scrapeAPF } from "./scrape-apf";
 import { scrapeVisitParaguay } from "./scrape-visitparaguay";
+import { scrapeCinemark } from "./scrape-cinemark";
 import { upsertEventsNoImages } from "../lib/scrapers/upsert-events";
 import type { ScrapedEvent, ScrapeResult } from "../lib/scrapers/types";
 
@@ -28,6 +29,7 @@ const SCRAPERS: ScraperDef[] = [
 
 // Scrapers que requieren Playwright (se ejecutan secuencialmente)
 const BROWSER_SCRAPERS: ScraperDef[] = [
+  { name: "cinemark", fn: scrapeCinemark as unknown as () => Promise<ScrapedEvent[]> },
   // { name: "tiketon", fn: scrapeTiketon },
   // { name: "allaccess", fn: scrapeAllAccess },
 ];
