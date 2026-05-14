@@ -100,7 +100,42 @@ export function parseParaguayanDate(raw: string): Date | null {
       let year = new Date().getFullYear();
       const date = new Date(year, month, day);
 
-      // Si ya pasó, asumir año siguiente (para eventos recurrrentes)
+      // Si ya pasó, asumir año siguiente
+      if (date.getTime() < Date.now()) {
+        date.setFullYear(year + 1);
+      }
+
+      return date;
+    }
+  }
+
+  // Intento 5: "DD MMM" formato inglés (13 MAY, 05 JUN, 23 JUL, etc.)
+  {
+    const EN_MONTHS: Record<string, number> = {
+      jan: 0, january: 0,
+      feb: 1, february: 1,
+      mar: 2, march: 2,
+      apr: 3, april: 3,
+      may: 4,
+      jun: 5, june: 5,
+      jul: 6, july: 6,
+      aug: 7, august: 7,
+      sep: 8, september: 8,
+      oct: 9, october: 9,
+      nov: 10, november: 10,
+      dec: 11, december: 11,
+    };
+
+    const m = text.match(/^(\d{1,2})\s+([a-z]{3,9})$/i);
+    if (m) {
+      const day = Number(m[1]);
+      const month = EN_MONTHS[m[2].toLowerCase()];
+      if (month === undefined) return null;
+
+      let year = new Date().getFullYear();
+      const date = new Date(year, month, day);
+
+      // Si ya pasó, asumir año siguiente
       if (date.getTime() < Date.now()) {
         date.setFullYear(year + 1);
       }
