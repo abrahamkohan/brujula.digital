@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { Inter, Playfair_Display, Geist_Mono } from "next/font/google";
+import localFont from "next/font/local";
+import { Inter, Geist_Mono } from "next/font/google";
 import Navbar from "@/components/navbar";
 import PageTransition from "@/components/page-transition";
 import KeyboardShortcuts from "@/components/keyboard-shortcuts";
@@ -8,7 +9,13 @@ import "./globals.css";
 
 const inter = Inter({ variable: "--font-inter", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
-const playfair = Playfair_Display({ variable: "--font-heading", subsets: ["latin"] });
+const satoshi = localFont({
+  src: [
+    { path: "/fonts/Satoshi-Variable.woff2", weight: "300 900", style: "normal" },
+    { path: "/fonts/Satoshi-VariableItalic.woff2", weight: "300 900", style: "italic" },
+  ],
+  variable: "--font-heading",
+});
 
 export const metadata: Metadata = {
   title: "¿Qué hay hoy? — Brújula Digital",
@@ -23,7 +30,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="es" className={`${inter.variable} ${playfair.variable} ${geistMono.variable} h-full antialiased`}>
+    <html lang="es" className={`${inter.variable} ${satoshi.variable} ${geistMono.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col">
         <ToastProvider>
         <KeyboardShortcuts />
