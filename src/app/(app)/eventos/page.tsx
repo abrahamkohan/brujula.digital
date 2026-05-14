@@ -219,25 +219,25 @@ export default function EventosPage() {
     <div className="min-h-screen bg-[#F5F4ED]">
       {/* ─── Hero ─────────────────────────────────── */}
       <div className="bg-[#1F1E1D]">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-16 sm:py-24 text-center">
-          <h1 className="font-[family-name:var(--font-heading)] text-4xl sm:text-6xl font-bold text-white tracking-tight leading-tight">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10 sm:py-14 text-center">
+          <h1 className="font-[family-name:var(--font-heading)] text-3xl sm:text-5xl font-bold text-white tracking-tight leading-tight">
             ¿Qué hay{" "}
             <span className="text-[#C96442] italic">hoy</span>?
           </h1>
-          <p className="text-[#B8B7B2] mt-3 text-sm sm:text-base max-w-lg mx-auto">
+          <p className="text-[#B8B7B2] mt-2 text-sm sm:text-base max-w-lg mx-auto">
             Eventos, recitales, gastronomía, bares y más en Paraguay
           </p>
-          <p className="text-[#87867F] mt-2 text-xs sm:text-sm">
+          <p className="text-[#87867F] mt-1 text-xs sm:text-sm">
             {eventosValidos.length}+ eventos · {GASTRONOMIA.length} restaurantes · actualizado hoy
           </p>
-          <div className="relative max-w-2xl mx-auto mt-8">
+          <div className="relative max-w-2xl mx-auto mt-5">
             <Search className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-[#87867F]" />
             <input type="text" value={search} onChange={(e) => setSearch(e.target.value)}
               placeholder="Events, restaurants, bars in Asunción..."
-              className="w-full bg-white rounded-2xl pl-14 pr-6 py-4 text-base text-[#1F1E1D] placeholder:text-[#87867F] focus:outline-none focus:ring-2 focus:ring-[#C96442] shadow-sm transition-shadow" />
+              className="w-full bg-white rounded-2xl pl-14 pr-6 py-3.5 text-sm text-[#1F1E1D] placeholder:text-[#87867F] focus:outline-none focus:ring-2 focus:ring-[#C96442] shadow-sm transition-shadow" />
           </div>
           {/* Quick filters */}
-          <div className="flex gap-2 justify-center mt-6 flex-wrap">
+          <div className="flex gap-2 justify-center mt-4 flex-wrap">
             {QUICK_FILTERS.map((qf) => (
               <button key={qf.id} onClick={() => setTimeFilter(qf.id)}
                 className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
