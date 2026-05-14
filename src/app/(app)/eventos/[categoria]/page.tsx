@@ -12,6 +12,7 @@ import { GASTRONOMIA, TIPOS_GASTRONOMIA } from "@/lib/directorios/gastronomia";
 import { SHOPPING } from "@/lib/directorios/shopping";
 import { BARES, TIPOS_BARES } from "@/lib/directorios/bares";
 import { HOTELES } from "@/lib/directorios/hoteles";
+import { TEATROS } from "@/lib/directorios/teatros";
 import { ZONAS, type DirectorioItem } from "@/lib/directorios/types";
 import { getZonaFromVenue } from "@/lib/directorios/zonas";
 
@@ -368,14 +369,29 @@ export default function CategoriaPage() {
 
             {/* Eventos: EventCard */}
             {!meta.isDirectorio && !meta.isPeliculas && (
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                {eventosFiltrados.map((e) => (
-                  <EventCard key={e.id} event={e} />
-                ))}
-                {eventosFiltrados.length === 0 && (
-                  <p className="col-span-full text-sm text-[#87867F] py-12 text-center">No hay resultados</p>
+              <>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                  {eventosFiltrados.map((e) => (
+                    <EventCard key={e.id} event={e} />
+                  ))}
+                  {eventosFiltrados.length === 0 && (
+                    <p className="col-span-full text-sm text-[#87867F] py-12 text-center">No hay resultados</p>
+                  )}
+                </div>
+
+                {/* Salas de teatro */}
+                {categoria === "teatro" && (
+                  <div className="mt-10">
+                    <div className="flex items-center gap-3 mb-5">
+                      <h2 className="font-[family-name:var(--font-heading)] text-xl font-bold text-[#1F1E1D]">Salas de teatro en Asunción</h2>
+                      <div className="flex-1 h-px bg-[#D4D2C9]/50" />
+                    </div>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                      {TEATROS.map((t) => renderCard(t))}
+                    </div>
+                  </div>
                 )}
-              </div>
+              </>
             )}
           </>
         )}
