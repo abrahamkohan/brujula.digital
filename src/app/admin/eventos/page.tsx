@@ -8,6 +8,7 @@ import {
   Trophy,
   Globe,
   Calendar,
+  Building2,
   RefreshCw,
   CheckCircle2,
   XCircle,
@@ -84,6 +85,15 @@ const SOURCES: SourceLink[] = [
     category: "Venta de entradas",
     social: [
       { name: "Instagram", url: "https://instagram.com/allaccesspy", icon: <Globe className="h-3.5 w-3.5" /> },
+    ],
+  },
+  {
+    name: "Market Comunicaciones",
+    url: "https://marketcomunicaciones.com",
+    icon: <Building2 className="h-4 w-4" />,
+    category: "Expos y ferias empresariales",
+    social: [
+      { name: "Instagram", url: "https://instagram.com/marketcomunicaciones", icon: <Globe className="h-3.5 w-3.5" /> },
     ],
   },
 ];
