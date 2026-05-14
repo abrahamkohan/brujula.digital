@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Calendar, MapPin, Music, Trophy, Building2, Users, Sparkles, Film, Clapperboard } from "lucide-react";
+import { Calendar, MapPin, Music, Trophy, Building2, Users, Sparkles, Film, Clapperboard, Share2 } from "lucide-react";
 
 interface Evento {
   id: string;
@@ -97,11 +97,24 @@ export default function EventCard({ event, featured, href }: Props) {
           {cat.label}
         </span>
 
-        {hoy && (
-          <span className="absolute top-3 right-3 inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest bg-[#C96442] text-white shadow-xs animate-pulse">
-            Hoy
-          </span>
-        )}
+        <div className="absolute top-3 right-3 flex items-center gap-1.5">
+          {hoy && (
+            <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest bg-[#C96442] text-white shadow-xs animate-pulse">
+              Hoy
+            </span>
+          )}
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              const text = encodeURIComponent(`📍 ${event.titulo}\n${event.venue}\n\nhttps://brujula.digital/eventos/evento/${event.id}`);
+              window.open(`https://wa.me/?text=${text}`, "_blank");
+            }}
+            className="flex items-center justify-center w-7 h-7 rounded-full bg-black/40 backdrop-blur-sm text-white hover:bg-black/60 transition-colors"
+          >
+            <Share2 className="h-3 w-3" />
+          </button>
+        </div>
 
         <div className="absolute bottom-0 left-0 right-0 p-5 space-y-1">
           <h3 className="font-bold text-base text-white leading-snug line-clamp-2 drop-shadow-sm">
