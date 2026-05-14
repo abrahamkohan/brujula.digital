@@ -2,8 +2,8 @@
 
 import { useEffect, useState, useRef, useMemo } from "react";
 import {
-  Search, Music, Trophy, Film, UtensilsCrossed, Hotel, Building2,
-  MapPin, Star, Clock,
+  Search, Music, Trophy, Film, UtensilsCrossed, Hotel,
+  MapPin, Star, Beer, ShoppingBag, Building2,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import EventCard from "@/components/eventos/event-card";
@@ -72,8 +72,8 @@ const SECTIONS = [
   { id: "teatro", cat: "teatro", icon: Film, label: "Teatro" },
   { id: "ferias", cat: "feria", icon: Building2, label: "Ferias" },
   { id: "gastronomia", icon: UtensilsCrossed, label: "Gastronomía", esDirectorio: true },
-  { id: "bares", icon: Clock, label: "Bares", esDirectorio: true }, // Using Clock as placeholder icon
-  { id: "shopping", icon: Building2, label: "Shopping", esDirectorio: true },
+  { id: "bares", icon: Beer, label: "Bares", esDirectorio: true },
+  { id: "shopping", icon: ShoppingBag, label: "Shopping", esDirectorio: true },
   { id: "hoteles", icon: Hotel, label: "Hoteles", esDirectorio: true },
 ];
 
@@ -361,7 +361,7 @@ export default function EventosPage() {
 
             {/* ═══ BARES ══════════════════════════ */}
             <section id="bares" ref={(el) => { sectionRefs.current.bares = el; }} className="scroll-mt-28">
-              <SectionHeader icon={<Clock className="h-4 w-4" />} title="Bares con música" />
+              <SectionHeader icon={<Beer className="h-4 w-4" />} title="Bares con música" />
               <div className="flex gap-2 overflow-x-auto scrollbar-none mb-4">
                 <button onClick={() => setTipoBares("")}
                   className={`shrink-0 px-3 py-1 rounded-full text-[11px] font-medium transition-all ${
@@ -385,7 +385,7 @@ export default function EventosPage() {
 
             {/* ═══ SHOPPING ═════════════════════ */}
             <section id="shopping" ref={(el) => { sectionRefs.current.shopping = el; }} className="scroll-mt-28">
-              <SectionHeader icon={<Building2 className="h-4 w-4" />} title="Shopping" />
+              <SectionHeader icon={<ShoppingBag className="h-4 w-4" />} title="Shopping" />
               {shoppingFiltrados.length === 0 ? (
                 <p className="text-sm text-[#87867F] py-8 text-center">No hay resultados</p>
               ) : (
