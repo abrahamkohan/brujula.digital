@@ -5,6 +5,7 @@ import { Search } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import CategoryFilter from "@/components/eventos/category-filter";
 import EventCard from "@/components/eventos/event-card";
+import MovieCard from "@/components/eventos/movie-card";
 import SectionLabel from "@/components/eventos/section-label";
 import { SkeletonGrid, SkeletonFeatured } from "@/components/eventos/skeleton";
 
@@ -17,6 +18,15 @@ interface Evento {
   fecha: string;
   venue: string;
   image_url?: string | null;
+  source_url?: string | null;
+}
+
+interface Pelicula {
+  id: string;
+  titulo: string;
+  duracion_min?: number | null;
+  clasificacion?: string | null;
+  poster_url?: string | null;
   source_url?: string | null;
 }
 
@@ -44,19 +54,26 @@ function isThisWeek(dateStr: string) {
 
 export default function EventosPage() {
   const [eventos, setEventos] = useState<Evento[]>([]);
+  const [peliculas, setPeliculas] = useState<Pelicula[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("todas");
   const [search, setSearch] = useState("");
 
   useEffect(() => {
-    createClient()
-      .from("eventos")
-      .select("id, titulo, categoria, fecha, venue, image_url, source_url")
-      .order("fecha", { ascending: true })
-      .then(({ data }) => {
-        setEventos(data ?? []);
-        setLoading(false);
-      });
+    Promise.all([
+      createClient()
+        .from("eventos")
+        .select("id, titulo, categoria, fecha, venue, image_url, source_url")
+        .order("fecha", { ascending: true }),
+      createClient()
+        .from("peliculas")
+        .select("id, titulo, duracion_min, clasificacion, poster_url, source_url")
+        .order("fecha_estreno", { ascending: false }),
+    ]).then(([eventosRes, peliculasRes]) => {
+      setEventos(eventosRes.data ?? []);
+      setPeliculas(peliculasRes.data ?? []);
+      setLoading(false);
+    });
   }, []);
 
   // Categorías disponibles (ordenadas como queremos mostrarlas)
@@ -172,6 +189,18 @@ export default function EventosPage() {
                 </div>
               )}
             </section>
+
+            {/* ─── Películas en cartelera ───────── */}
+            {peliculas.length > 0 && (
+              <section>
+                <SectionLabel>🎬 En cartelera</SectionLabel>
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4">
+                  {peliculas.map((p) => (
+                    <MovieCard key={p.id} movie={p} />
+                  ))}
+                </div>
+              </section>
+            )}
 
             {/* ─── Footer count ────────────────── */}
             <p className="text-xs text-[#B8B7B2] text-center">
