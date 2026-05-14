@@ -1,11 +1,10 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
-import { Search, Music, UtensilsCrossed, Hotel, ExternalLink } from "lucide-react";
+import { useEffect, useState, useRef, useMemo } from "react";
+import { Search, Music, Trophy, Film, UtensilsCrossed, Hotel, MapPin, Star } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import EventCard from "@/components/eventos/event-card";
-import SectionLabel from "@/components/eventos/section-label";
-import { SkeletonGrid, SkeletonFeatured } from "@/components/eventos/skeleton";
+import { SkeletonGrid } from "@/components/eventos/skeleton";
 
 // ─── Tipos ─────────────────────────────────────────────────────
 
@@ -20,6 +19,7 @@ interface Evento {
 }
 
 interface Lugar {
+  id: string;
   name: string;
   zone: string;
   desc: string;
@@ -32,44 +32,47 @@ interface Lugar {
 // ─── Datos hardcodeados ────────────────────────────────────────
 
 const GASTRONOMIA: Lugar[] = [
-  { name: "La Paraguayita", zone: "Villa Morra", desc: "Cocina tradicional paraguaya", image: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=400&h=500&fit=crop", url: "https://maps.google.com/?q=La+Paraguayita+Asuncion" },
-  { name: "Bolsi", zone: "Centro", desc: "Histórico, clásico de Asunción", image: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=400&h=500&fit=crop", url: "https://maps.google.com/?q=Bolsi+Asuncion" },
-  { name: "Tierra Colorada", zone: "Carmelitas", desc: "Cocina de autor con identidad local", image: "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=400&h=500&fit=crop", url: "https://maps.google.com/?q=Tierra+Colorada+Asuncion" },
-  { name: "Casa Brizuela", zone: "Villa Morra", desc: "Gastronomía de autor", image: "https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?w=400&h=500&fit=crop", url: "https://maps.google.com/?q=Casa+Brizuela+Asuncion" },
-  { name: "Nuevamente Café", zone: "Las Mercedes", desc: "Café y brunch de especialidad", image: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=400&h=500&fit=crop", url: "https://maps.google.com/?q=Nuevamente+Cafe+Asuncion" },
-  { name: "Lido Bar", zone: "Centro", desc: "Tradicional, emblema de Asunción", image: "https://images.unsplash.com/photo-1559329007-40df8a9345d8?w=400&h=500&fit=crop", url: "https://maps.google.com/?q=Lido+Bar+Asuncion" },
+  { id: "bolsi", name: "Bolsi", zone: "Centro", desc: "Clásico histórico de Asunción", image: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=400&h=533&fit=crop", url: "https://maps.google.com/?q=Bolsi+Asuncion" },
+  { id: "lido", name: "Lido Bar", zone: "Centro", desc: "Tradicional, emblema de la ciudad", image: "https://images.unsplash.com/photo-1559329007-40df8a9345d8?w=400&h=533&fit=crop", url: "https://maps.google.com/?q=Lido+Bar+Asuncion" },
+  { id: "laparaguayita", name: "La Paraguayita", zone: "Villa Morra", desc: "Cocina tradicional paraguaya", image: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=400&h=533&fit=crop", url: "https://maps.google.com/?q=La+Paraguayita+Asuncion" },
+  { id: "tierracolorada", name: "Tierra Colorada", zone: "Carmelitas", desc: "Cocina de autor con identidad local", image: "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=400&h=533&fit=crop", url: "https://maps.google.com/?q=Tierra+Colorada+Asuncion" },
+  { id: "casabrizuela", name: "Casa Brizuela", zone: "Villa Morra", desc: "Gastronomía de autor", image: "https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?w=400&h=533&fit=crop", url: "https://maps.google.com/?q=Casa+Brizuela+Asuncion" },
+  { id: "nuevamente", name: "Nuevamente Café", zone: "Las Mercedes", desc: "Café y brunch de especialidad", image: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=400&h=533&fit=crop", url: "https://maps.google.com/?q=Nuevamente+Cafe+Asuncion" },
 ];
 
 const HOTELES: Lugar[] = [
-  { name: "Sheraton Asunción", zone: "Carmelitas", desc: "Hotel 5 estrellas", image: "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&h=500&fit=crop", url: "https://www.booking.com/search.html?ss=Sheraton+Asuncion", stars: 5, badge: "Recomendado" },
-  { name: "Esplendor by Wyndham", zone: "Villa Morra", desc: "Hotel 4 estrellas", image: "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=400&h=500&fit=crop", url: "https://www.booking.com/search.html?ss=Esplendor+Asuncion", stars: 4 },
-  { name: "Dazzler Asunción", zone: "Villa Morra", desc: "Hotel 4 estrellas", image: "https://images.unsplash.com/photo-1578683010236-d716f9a3f461?w=400&h=500&fit=crop", url: "https://www.booking.com/search.html?ss=Dazzler+Asuncion", stars: 4 },
-  { name: "NH Asunción", zone: "Centro", desc: "Hotel 4 estrellas", image: "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=400&h=500&fit=crop", url: "https://www.booking.com/search.html?ss=NH+Asuncion", stars: 4 },
+  { id: "sheraton", name: "Sheraton Asunción", zone: "Carmelitas", desc: "Hotel 5 estrellas", image: "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&h=533&fit=crop", url: "https://www.booking.com/search.html?ss=Sheraton+Asuncion", stars: 5, badge: "Recomendado" },
+  { id: "esplendor", name: "Esplendor by Wyndham", zone: "Villa Morra", desc: "Hotel 4 estrellas", image: "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=400&h=533&fit=crop", url: "https://www.booking.com/search.html?ss=Esplendor+Asuncion", stars: 4 },
+  { id: "dazzler", name: "Dazzler Asunción", zone: "Villa Morra", desc: "Hotel 4 estrellas", image: "https://images.unsplash.com/photo-1578683010236-d716f9a3f461?w=400&h=533&fit=crop", url: "https://www.booking.com/search.html?ss=Dazzler+Asuncion", stars: 4 },
+  { id: "nh", name: "NH Asunción", zone: "Centro", desc: "Hotel 4 estrellas", image: "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=400&h=533&fit=crop", url: "https://www.booking.com/search.html?ss=NH+Asuncion", stars: 4 },
+];
+
+// ─── Categorías de eventos ─────────────────────────────────────
+
+const CAT_SECTIONS = [
+  { id: "recitales", cat: "concierto", icon: Music, label: "Recitales", emoji: "🎵" },
+  { id: "deportes", cat: "deporte", icon: Trophy, label: "Deportes", emoji: "⚽" },
+  { id: "teatro", cat: "teatro", icon: Film, label: "Teatro", emoji: "🎭" },
+];
+
+const STATIC_SECTIONS = [
+  { id: "gastronomia", icon: UtensilsCrossed, label: "Gastronomía" },
+  { id: "hoteles", icon: Hotel, label: "Hoteles" },
+];
+
+const NAV_ITEMS = [
+  ...CAT_SECTIONS.map((s) => ({ id: s.id, icon: s.icon, label: s.label })),
+  ...STATIC_SECTIONS.map((s) => ({ id: s.id, icon: s.icon, label: s.label })),
 ];
 
 // ─── Helpers ──────────────────────────────────────────────────
 
-function isToday(dateStr: string) {
+function formatDate(dateStr: string) {
   const d = new Date(dateStr);
-  const today = new Date();
-  return d.getDate() === today.getDate() && d.getMonth() === today.getMonth() && d.getFullYear() === today.getFullYear();
+  if (isNaN(d.getTime())) return dateStr;
+  const meses = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
+  return `${d.getDate()} ${meses[d.getMonth()]}`;
 }
-
-function isThisWeek(dateStr: string) {
-  const d = new Date(dateStr);
-  const today = new Date();
-  const end = new Date(today);
-  end.setDate(today.getDate() + (7 - today.getDay()));
-  return d >= today && d <= end;
-}
-
-// ─── Nav pills ─────────────────────────────────────────────────
-
-const NAV_ITEMS = [
-  { id: "eventos", label: "Eventos", icon: Music },
-  { id: "gastronomia", label: "Gastronomía", icon: UtensilsCrossed },
-  { id: "hoteles", label: "Hoteles", icon: Hotel },
-];
 
 // ─── Page ──────────────────────────────────────────────────────
 
@@ -77,13 +80,9 @@ export default function EventosPage() {
   const [eventos, setEventos] = useState<Evento[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
-  const [activeSection, setActiveSection] = useState("eventos");
+  const [activeSection, setActiveSection] = useState("recitales");
 
-  const sectionRefs = {
-    eventos: useRef<HTMLElement>(null),
-    gastronomia: useRef<HTMLElement>(null),
-    hoteles: useRef<HTMLElement>(null),
-  };
+  const sectionRefs = useRef<Record<string, HTMLElement | null>>({});
 
   useEffect(() => {
     createClient()
@@ -96,37 +95,51 @@ export default function EventosPage() {
       });
   }, []);
 
-  // Observer para sticky nav active
+  // Observer for sticky nav
   useEffect(() => {
+    if (loading) return;
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setActiveSection(entry.target.id);
-          }
+          if (entry.isIntersecting) setActiveSection(entry.target.id);
         });
       },
-      { rootMargin: "-100px 0px -50% 0px" }
+      { rootMargin: "-80px 0px -60% 0px" }
     );
 
-    Object.values(sectionRefs).forEach((ref) => {
-      if (ref.current) observer.observe(ref.current);
+    NAV_ITEMS.forEach(({ id }) => {
+      const el = sectionRefs.current[id];
+      if (el) observer.observe(el);
     });
-
     return () => observer.disconnect();
   }, [loading]);
 
   const scrollTo = (id: string) => {
-    sectionRefs[id as keyof typeof sectionRefs]?.current?.scrollIntoView({ behavior: "smooth" });
+    sectionRefs.current[id]?.scrollIntoView({ behavior: "smooth" });
   };
 
   const searchFilter = (e: Evento) =>
     !search || e.titulo?.toLowerCase().includes(search.toLowerCase());
 
-  const estaSemana = eventos.filter((e) => (isToday(e.fecha) || isThisWeek(e.fecha)) && searchFilter(e));
-  const proximos = eventos.filter((e) => !isToday(e.fecha) && !isThisWeek(e.fecha) && searchFilter(e));
-  const featured = estaSemana.slice(0, 1);
-  const restSemana = estaSemana.slice(1, 3);
+  // Eventos agrupados por categoría
+  const eventosPorCategoria = useMemo(
+    () =>
+      CAT_SECTIONS.map((sec) => ({
+        ...sec,
+        events: eventos
+          .filter((e) => e.categoria === sec.cat && searchFilter(e))
+          .sort((a, b) => new Date(a.fecha).getTime() - new Date(b.fecha).getTime()),
+      })),
+    [eventos, search]
+  );
+
+  // Gastronomía + hoteles filtrados por search
+  const gastronomiaFiltrados = GASTRONOMIA.filter(
+    (l) => !search || l.name.toLowerCase().includes(search.toLowerCase())
+  );
+  const hotelesFiltrados = HOTELES.filter(
+    (h) => !search || h.name.toLowerCase().includes(search.toLowerCase())
+  );
 
   return (
     <div className="min-h-screen bg-[#F5F4ED]">
@@ -137,11 +150,9 @@ export default function EventosPage() {
             ¿Qué hay{" "}
             <span className="text-[#C96442] italic">hoy</span>?
           </h1>
-          <p className="text-[#B8B7B2] mt-3 text-sm sm:text-base">
+          <p className="text-[#B8B7B2] mt-3 text-sm sm:text-base max-w-lg mx-auto">
             Eventos, recitales, ferias, teatro, gastronomía y más en Paraguay
           </p>
-
-          {/* Buscador unificado */}
           <div className="relative max-w-2xl mx-auto mt-8">
             <Search className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-[#87867F]" />
             <input
@@ -155,7 +166,7 @@ export default function EventosPage() {
         </div>
       </div>
 
-      {/* ─── Sticky nav pills ──────────────────────── */}
+      {/* ─── Sticky nav ────────────────────────────── */}
       <div className="sticky top-0 z-40 bg-[#F5F4ED]/95 backdrop-blur-sm border-b border-[#D4D2C9]/50">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex gap-2 overflow-x-auto scrollbar-none">
           {NAV_ITEMS.map((item) => {
@@ -179,140 +190,169 @@ export default function EventosPage() {
       </div>
 
       {/* ─── Contenido ────────────────────────────── */}
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 pb-20 space-y-16">
-        {/* ═══ EVENTOS ════════════════════════════════ */}
-        <section id="eventos" ref={sectionRefs.eventos} className="scroll-mt-24">
-          {loading ? (
-            <>
-              <SectionLabel pulse>Esta semana</SectionLabel>
-              <SkeletonFeatured />
-              <div className="mt-12">
-                <SectionLabel>Próximos eventos</SectionLabel>
-                <SkeletonGrid count={6} />
-              </div>
-            </>
-          ) : (
-            <>
-              {estaSemana.length > 0 && (
-                <div className="mb-12">
-                  <SectionLabel pulse>Esta semana</SectionLabel>
-                  {/* Desktop: grid | Mobile: scroll horizontal */}
-                  <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {featured.length > 0 && (
-                      <div className="sm:col-span-2">
-                        <EventCard event={featured[0]} featured />
-                      </div>
-                    )}
-                    {restSemana.map((e) => (
-                      <EventCard key={e.id} event={e} />
-                    ))}
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 pb-20 space-y-14">
+        {/* ═══ SECCIONES DE EVENTOS ═══════════════════ */}
+        {loading ? (
+          <>
+            {[1, 2, 3].map((i) => (
+              <section key={i}>
+                <SkeletonGrid count={4} />
+              </section>
+            ))}
+          </>
+        ) : (
+          eventosPorCategoria.map((sec) => {
+            if (sec.events.length === 0) return null;
+            const Icon = sec.icon;
+            return (
+              <section
+                key={sec.id}
+                id={sec.id}
+                ref={(el) => { sectionRefs.current[sec.id] = el; }}
+                className="scroll-mt-24"
+              >
+                {/* Título de sección */}
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-8 h-8 rounded-lg bg-[#1F1E1D] flex items-center justify-center text-white">
+                    <Icon className="h-4 w-4" />
                   </div>
-                  <div className="flex sm:hidden gap-4 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-none">
-                    {estaSemana.slice(0, 5).map((e) => (
-                      <div key={e.id} className="w-64 shrink-0 snap-start">
-                        <EventCard event={e} />
-                      </div>
-                    ))}
-                  </div>
+                  <h2 className="font-[family-name:var(--font-heading)] text-xl sm:text-2xl font-bold text-[#1F1E1D] tracking-tight">
+                    {sec.emoji} {sec.label}
+                  </h2>
+                  <div className="flex-1 h-px bg-[#D4D2C9]/50" />
                 </div>
-              )}
 
-              <SectionLabel>Próximos eventos</SectionLabel>
-              {proximos.length === 0 ? (
-                <p className="text-sm text-[#87867F] py-12 text-center">
-                  {search ? "No hay resultados" : "No hay eventos próximos"}
-                </p>
-              ) : (
-                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {proximos.map((e) => (
-                    <EventCard key={e.id} event={e} />
+                {/* Horizontal scroll (Netflix-style) */}
+                <div className="flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-none">
+                  {sec.events.map((e) => (
+                    <div key={e.id} className="w-56 sm:w-64 shrink-0 snap-start">
+                      <EventCard event={e} />
+                    </div>
                   ))}
                 </div>
-              )}
-            </>
+              </section>
+            );
+          })
+        )}
+
+        {/* ═══ GASTRONOMÍA ════════════════════════════ */}
+        <section
+          id="gastronomia"
+          ref={(el) => { sectionRefs.current.gastronomia = el; }}
+          className="scroll-mt-24"
+        >
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-8 h-8 rounded-lg bg-[#1F1E1D] flex items-center justify-center text-white">
+              <UtensilsCrossed className="h-4 w-4" />
+            </div>
+            <h2 className="font-[family-name:var(--font-heading)] text-xl sm:text-2xl font-bold text-[#1F1E1D] tracking-tight">
+              🥩 Dónde comer
+            </h2>
+            <div className="flex-1 h-px bg-[#D4D2C9]/50" />
+          </div>
+
+          {gastronomiaFiltrados.length === 0 ? (
+            <p className="text-sm text-[#87867F] py-8 text-center">
+              {search ? "No hay resultados" : "Cargando..."}
+            </p>
+          ) : (
+            <div className="flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-none">
+              {gastronomiaFiltrados.map((l) => (
+                <a
+                  key={l.id}
+                  href={l.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group w-56 sm:w-64 shrink-0 snap-start"
+                >
+                  <div className="relative aspect-[3/4] rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:scale-[1.02]">
+                    <img
+                      src={l.image}
+                      alt={l.name}
+                      className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                    <div className="absolute bottom-0 left-0 right-0 p-4 space-y-1">
+                      <h3 className="font-semibold text-sm text-white drop-shadow-sm">{l.name}</h3>
+                      <p className="text-xs text-white/60">{l.zone}</p>
+                      <p className="text-xs text-white/80">{l.desc}</p>
+                    </div>
+                    <span className="absolute top-3 right-3 inline-flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-medium bg-white/20 backdrop-blur-sm text-white">
+                      <MapPin className="h-3 w-3" />
+                    </span>
+                  </div>
+                </a>
+              ))}
+            </div>
           )}
         </section>
 
-        {/* ═══ GASTRONOMÍA ════════════════════════════ */}
-        <section id="gastronomia" ref={sectionRefs.gastronomia} className="scroll-mt-24">
-          <SectionLabel>Dónde comer</SectionLabel>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-            {GASTRONOMIA.map((l) => (
-              <a
-                key={l.name}
-                href={l.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group relative rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:scale-[1.02]"
-              >
-                <div className="relative aspect-[3/4]">
-                  <img
-                    src={l.image}
-                    alt={l.name}
-                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                  <div className="absolute bottom-0 left-0 right-0 p-4 space-y-1">
-                    <h3 className="font-semibold text-sm text-white drop-shadow-sm">{l.name}</h3>
-                    <p className="text-xs text-white/60">{l.zone}</p>
-                    <p className="text-xs text-white/80">{l.desc}</p>
-                  </div>
-                  <span className="absolute top-3 right-3 inline-flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-medium bg-white/20 backdrop-blur-sm text-white">
-                    <ExternalLink className="h-3 w-3" />
-                  </span>
-                </div>
-              </a>
-            ))}
+        {/* ═══ HOTELES ════════════════════════════════ */}
+        <section
+          id="hoteles"
+          ref={(el) => { sectionRefs.current.hoteles = el; }}
+          className="scroll-mt-24"
+        >
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-8 h-8 rounded-lg bg-[#1F1E1D] flex items-center justify-center text-white">
+              <Hotel className="h-4 w-4" />
+            </div>
+            <h2 className="font-[family-name:var(--font-heading)] text-xl sm:text-2xl font-bold text-[#1F1E1D] tracking-tight">
+              🏨 Dónde quedarse
+            </h2>
+            <div className="flex-1 h-px bg-[#D4D2C9]/50" />
           </div>
-        </section>
 
-        {/* ═══ HOTELES ═══════════════════════════════ */}
-        <section id="hoteles" ref={sectionRefs.hoteles} className="scroll-mt-24">
-          <SectionLabel>Dónde quedarse</SectionLabel>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            {HOTELES.map((h) => (
-              <a
-                key={h.name}
-                href={h.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group relative rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:scale-[1.02]"
-              >
-                <div className="relative aspect-[3/4]">
-                  <img
-                    src={h.image}
-                    alt={h.name}
-                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                  <div className="absolute bottom-0 left-0 right-0 p-4 space-y-1">
-                    {h.badge && (
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#C96442] text-white mb-1">
-                        {h.badge}
-                      </span>
-                    )}
-                    <h3 className="font-semibold text-sm text-white drop-shadow-sm">{h.name}</h3>
-                    <p className="text-xs text-white/60">{h.zone}</p>
-                    {h.stars && (
-                      <p className="text-xs text-amber-400">{'★'.repeat(h.stars)}</p>
-                    )}
+          {hotelesFiltrados.length === 0 ? (
+            <p className="text-sm text-[#87867F] py-8 text-center">
+              {search ? "No hay resultados" : "Cargando..."}
+            </p>
+          ) : (
+            <div className="flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-none">
+              {hotelesFiltrados.map((h) => (
+                <a
+                  key={h.id}
+                  href={h.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group w-56 sm:w-64 shrink-0 snap-start"
+                >
+                  <div className="relative aspect-[3/4] rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:scale-[1.02]">
+                    <img
+                      src={h.image}
+                      alt={h.name}
+                      className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                    <div className="absolute bottom-0 left-0 right-0 p-4 space-y-1">
+                      {h.badge && (
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#C96442] text-white mb-1">
+                          {h.badge}
+                        </span>
+                      )}
+                      <h3 className="font-semibold text-sm text-white drop-shadow-sm">{h.name}</h3>
+                      <p className="text-xs text-white/60">{h.zone}</p>
+                      {h.stars && <p className="text-xs text-amber-400">{'★'.repeat(h.stars)}</p>}
+                    </div>
                   </div>
-                </div>
-              </a>
-            ))}
-          </div>
+                </a>
+              ))}
+            </div>
+          )}
           <p className="text-xs text-[#87867F] mt-3 text-center">
             Precios y disponibilidad en Booking.com
           </p>
         </section>
 
         {/* Footer */}
-        <p className="text-xs text-[#B8B7B2] text-center">
-          {eventos.length} eventos en cartelera ·{" "}
-          <a href="/admin/eventos" className="underline hover:text-[#C96442] transition-colors">
-            Admin
-          </a>
-        </p>
+        {!search && (
+          <p className="text-xs text-[#B8B7B2] text-center pt-4">
+            {eventos.length} eventos en cartelera ·{" "}
+            <a href="/admin/eventos" className="underline hover:text-[#C96442] transition-colors">
+              Admin
+            </a>
+          </p>
+        )}
       </div>
     </div>
   );
