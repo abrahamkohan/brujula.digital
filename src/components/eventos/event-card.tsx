@@ -45,8 +45,7 @@ function formatDate(dateStr: string) {
   const day = d.getDate();
   const month = MONTHS[d.getMonth()];
   const year = d.getFullYear();
-  const today = new Date();
-  return `${day} ${month}${year !== today.getFullYear() ? ` ${year}` : ""}`;
+  return `${day} ${month}${year !== 2026 ? ` ${year}` : ""}`;
 }
 
 function isToday(dateStr: string) {
@@ -70,85 +69,70 @@ export default function EventCard({ event, featured }: Props) {
   const hasImage = event.image_url?.startsWith("http");
 
   const content = (
-    <div
-      className={`group relative bg-white rounded-2xl overflow-hidden border border-[#E5E4DD] transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 cursor-pointer ${
-        featured ? "" : ""
-      }`}
-    >
-      {/* ─── Imagen / Fallback ───────────────────── */}
-      <div className={`relative overflow-hidden ${featured ? "aspect-[4/3]" : "aspect-[3/4]"}`}>
+    <div className="group relative rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:scale-[1.02] cursor-pointer">
+      {/* ─── Imagen ─────────────────────────────── */}
+      <div className={`relative ${featured ? "aspect-[4/3]" : "aspect-[3/4]"}`}>
         {hasImage ? (
           <img
             src={event.image_url!}
             alt={event.titulo}
-            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+            className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
             onError={(ev) => {
               const el = ev.target as HTMLImageElement;
               el.style.display = "none";
-              el.parentElement!.classList.add(
-                "flex",
-                "items-center",
-                "justify-center",
-                `bg-gradient-to-br`,
-                grad
-              );
+              const p = el.parentElement!;
+              p.className = `relative ${featured ? "aspect-[4/3]" : "aspect-[3/4]"} bg-gradient-to-br ${grad}`;
             }}
           />
         ) : (
-          <div
-            className={`w-full h-full bg-gradient-to-br ${grad} flex items-center justify-center`}
-          >
-            <Icon className="h-12 w-12 text-[#B8B7B2]" strokeWidth={1.2} />
+          <div className={`absolute inset-0 bg-gradient-to-br ${grad} flex items-center justify-center`}>
+            <Icon className="h-12 w-12 text-white/40" strokeWidth={1.2} />
           </div>
         )}
 
-        {/* ─── Chip categoría ──────────────────────── */}
-        <span className="absolute top-3 left-3 inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-medium tracking-wide bg-white/85 backdrop-blur-sm text-[#5C5B57] shadow-xs">
+        {/* ─── Overlay gradiente ────────────────── */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+
+        {/* ─── Chip categoría ────────────────────── */}
+        <span className="absolute top-3 left-3 inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-medium tracking-wide bg-white/20 backdrop-blur-sm text-white shadow-xs">
           <Icon className="h-3 w-3" />
           {cat.label}
         </span>
 
-        {/* ─── Badge HOY ──────────────────────────── */}
+        {/* ─── Badge HOY ────────────────────────── */}
         {hoy && (
           <span className="absolute top-3 right-3 inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest bg-[#C96442] text-white shadow-xs animate-pulse">
             Hoy
           </span>
         )}
-      </div>
 
-      {/* ─── Info ──────────────────────────────────── */}
-      <div className="p-4 space-y-1.5">
-        <h3 className="font-semibold text-sm text-[#1F1E1D] leading-snug line-clamp-1">
-          {event.titulo}
-        </h3>
-        {event.fecha && (
-          <p className="flex items-center gap-1.5 text-xs text-[#5C5B57]">
-            <Calendar className="h-3.5 w-3.5 shrink-0" />
-            {formatDate(event.fecha)}
-          </p>
-        )}
-        {event.venue && (
-          <p className="flex items-center gap-1.5 text-xs text-[#87867F]">
-            <MapPin className="h-3.5 w-3.5 shrink-0" />
-            <span className="truncate">{event.venue}</span>
-          </p>
-        )}
+        {/* ─── Info (abajo, sobre gradiente) ─────── */}
+        <div className="absolute bottom-0 left-0 right-0 p-4 space-y-1">
+          <h3 className="font-semibold text-sm text-white leading-snug line-clamp-2 drop-shadow-sm">
+            {event.titulo}
+          </h3>
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-white/80">
+            {event.fecha && (
+              <span className="flex items-center gap-1">
+                <Calendar className="h-3 w-3 shrink-0" />
+                {formatDate(event.fecha)}
+              </span>
+            )}
+            {event.venue && (
+              <span className="flex items-center gap-1 truncate">
+                <MapPin className="h-3 w-3 shrink-0" />
+                <span className="truncate">{event.venue}</span>
+              </span>
+            )}
+          </div>
+        </div>
       </div>
-
-      {/* ─── Hover ring ──────────────────────────── */}
-      <div className="absolute inset-0 rounded-2xl ring-1 ring-inset ring-black/0 group-hover:ring-[#C96442]/15 transition-all pointer-events-none" />
     </div>
   );
 
   if (event.source_url) {
     return (
-      <a
-        key={event.id}
-        href={event.source_url}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="block"
-      >
+      <a key={event.id} href={event.source_url} target="_blank" rel="noopener noreferrer" className="block">
         {content}
       </a>
     );
