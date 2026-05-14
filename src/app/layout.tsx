@@ -11,8 +11,8 @@ const inter = Inter({ variable: "--font-inter", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
 const satoshi = localFont({
   src: [
-    { path: "/fonts/Satoshi-Variable.woff2", weight: "300 900", style: "normal" },
-    { path: "/fonts/Satoshi-VariableItalic.woff2", weight: "300 900", style: "italic" },
+    { path: "./Satoshi-Variable.woff2", weight: "300 900", style: "normal" },
+    { path: "./Satoshi-VariableItalic.woff2", weight: "300 900", style: "italic" },
   ],
   variable: "--font-heading",
 });
