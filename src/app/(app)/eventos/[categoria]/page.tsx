@@ -213,16 +213,20 @@ export default function CategoriaPage() {
 
   return (
     <div className="min-h-screen bg-[#F5F4ED]">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
-        {/* ─── Breadcrumb ─────────────────────── */}
-        <div className="flex items-center gap-2 mb-8">
-          <Link href="/eventos" className="flex items-center gap-1 text-sm text-[#87867F] hover:text-[#C96442] transition-colors">
-            <ArrowLeft className="h-4 w-4" /> Eventos
+      {/* ─── Sticky header ──────────────────── */}
+      <div className="sticky top-0 z-40 bg-[#F5F4ED]/95 backdrop-blur-sm border-b border-[#D4D2C9]/50">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex items-center gap-3">
+          <Link href="/eventos" className="flex items-center gap-1.5 text-sm font-medium text-[#5C5B57] hover:text-[#C96442] transition-colors">
+            <ArrowLeft className="h-4 w-4" />
+            Volver
           </Link>
           <span className="text-[#D4D2C9]">/</span>
-          <span className="text-sm font-medium text-[#1F1E1D]">{meta.label}</span>
+          <span className="text-sm font-semibold text-[#1F1E1D]">{meta.label}</span>
         </div>
+      </div>
 
+      {/* ─── Contenido ──────────────────────── */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
         {/* ─── Search + Filters ───────────────── */}
         <div className="space-y-4 mb-8">
           <div className="relative max-w-md">

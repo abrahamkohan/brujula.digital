@@ -3,16 +3,16 @@
 import { useEffect, useState, useRef, useMemo } from "react";
 import {
   Search, Music, Trophy, Film, UtensilsCrossed, Hotel,
-  MapPin, Star, Beer, ShoppingBag, Building2, X,
+  Beer, ShoppingBag, Building2, X,
 } from "lucide-react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import EventCard from "@/components/eventos/event-card";
 import MovieCard from "@/components/eventos/movie-card";
 import { SkeletonGrid } from "@/components/eventos/skeleton";
-import { GASTRONOMIA, TIPOS_GASTRONOMIA } from "@/lib/directorios/gastronomia";
+import { GASTRONOMIA } from "@/lib/directorios/gastronomia";
 import { SHOPPING } from "@/lib/directorios/shopping";
-import { BARES, TIPOS_BARES } from "@/lib/directorios/bares";
+import { BARES } from "@/lib/directorios/bares";
 import { HOTELES } from "@/lib/directorios/hoteles";
 import { ZONAS, type DirectorioItem } from "@/lib/directorios/types";
 import { getZonaFromVenue } from "@/lib/directorios/zonas";
@@ -89,8 +89,6 @@ export default function EventosPage() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [zonaFilter, setZonaFilter] = useState("");
-  const [tipoGastro, setTipoGastro] = useState("");
-  const [tipoBares, setTipoBares] = useState("");
   const [timeFilter, setTimeFilter] = useState("all");
   const [activeSection, setActiveSection] = useState("recitales");
   const [showZones, setShowZones] = useState(false);
@@ -163,11 +161,11 @@ export default function EventosPage() {
   );
 
   const gastroFiltrados = GASTRONOMIA.filter(
-    (g) => searchPredicate(g.name) && (!zonaFilter || g.zone === zonaFilter) && (!tipoGastro || g.tipo === tipoGastro)
+    (g) => searchPredicate(g.name) && (!zonaFilter || g.zone === zonaFilter)
   );
 
   const baresFiltrados = BARES.filter(
-    (b) => searchPredicate(b.name) && (!zonaFilter || b.zone === zonaFilter) && (!tipoBares || b.tipo === tipoBares)
+    (b) => searchPredicate(b.name) && (!zonaFilter || b.zone === zonaFilter)
   );
 
   const shoppingFiltrados = SHOPPING.filter((s) => searchPredicate(s.name) && (!zonaFilter || s.zone === zonaFilter));
@@ -220,7 +218,7 @@ export default function EventosPage() {
             <span className="text-[#C96442] italic">hoy</span>?
           </h1>
           <p className="text-[#B8B7B2] mt-3 text-sm sm:text-base max-w-lg mx-auto">
-            Events, recitales, gastronomía, bares y más en Paraguay
+            Eventos, recitales, gastronomía, bares y más en Paraguay
           </p>
           <p className="text-[#87867F] mt-2 text-xs sm:text-sm">
             {eventosValidos.length}+ eventos · {GASTRONOMIA.length} restaurantes · actualizado hoy
@@ -283,8 +281,8 @@ export default function EventosPage() {
               </button>
             ))}
             {/* Clear filters */}
-            {(zonaFilter || tipoGastro || tipoBares || timeFilter !== "all") && (
-              <button onClick={() => { setZonaFilter(""); setTipoGastro(""); setTipoBares(""); setTimeFilter("all"); }}
+            {(zonaFilter || timeFilter !== "all") && (
+              <button onClick={() => { setZonaFilter(""); setTimeFilter("all"); }}
                 className="shrink-0 flex items-center gap-1 px-3 py-1 rounded-full text-[11px] font-medium bg-[#1F1E1D] text-white">
                 <X className="h-3 w-3" /> Limpiar
               </button>
@@ -325,16 +323,8 @@ export default function EventosPage() {
                       </Link>
                     )}
                   </div>
-                  {/* Mobile: scroll horizontal */}
-                  <div className="flex sm:hidden gap-4 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-none">
-                    {visible.map((e) => (
-                      <div key={e.id} className="w-72 shrink-0 snap-start">
-                        <EventCard event={e} />
-                      </div>
-                    ))}
-                  </div>
-                  {/* Desktop: grid */}
-                  <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {/* Grid unificado */}
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                     {visible.map((e) => (
                       <EventCard key={e.id} event={e} />
                     ))}
@@ -361,7 +351,9 @@ export default function EventosPage() {
                 </div>
                 <div className="flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-none">
                   {peliculasFiltradas.slice(0, 5).map((p) => (
-                    <MovieCard key={p.id} movie={p} />
+                    <div key={p.id} className="w-40 sm:w-48 shrink-0 snap-start">
+                      <MovieCard movie={p} />
+                    </div>
                   ))}
                 </div>
               </section>
@@ -381,19 +373,6 @@ export default function EventosPage() {
                     Ver todos ({gastroFiltrados.length}) →
                   </Link>
                 )}
-              </div>
-              {/* Tipo filter */}
-              <div className="flex gap-2 overflow-x-auto scrollbar-none mb-4">
-                <button onClick={() => setTipoGastro("")}
-                  className={`shrink-0 px-3 py-1 rounded-full text-[11px] font-medium transition-all ${
-                    !tipoGastro ? "bg-[#1F1E1D] text-white" : "bg-white text-[#5C5B57] border border-[#D4D2C9]"
-                  }`}>Todos</button>
-                {TIPOS_GASTRONOMIA.map((t) => (
-                  <button key={t} onClick={() => setTipoGastro(t)}
-                    className={`shrink-0 px-3 py-1 rounded-full text-[11px] font-medium transition-all ${
-                      tipoGastro === t ? "bg-[#1F1E1D] text-white" : "bg-white text-[#5C5B57] border border-[#D4D2C9]"
-                    }`}>{t}</button>
-                ))}
               </div>
               {gastroFiltrados.length === 0 ? (
                 <p className="text-sm text-[#87867F] py-8 text-center">No hay resultados</p>
@@ -418,18 +397,6 @@ export default function EventosPage() {
                     Ver todos ({baresFiltrados.length}) →
                   </Link>
                 )}
-              </div>
-              <div className="flex gap-2 overflow-x-auto scrollbar-none mb-4">
-                <button onClick={() => setTipoBares("")}
-                  className={`shrink-0 px-3 py-1 rounded-full text-[11px] font-medium transition-all ${
-                    !tipoBares ? "bg-[#1F1E1D] text-white" : "bg-white text-[#5C5B57] border border-[#D4D2C9]"
-                  }`}>Todos</button>
-                {TIPOS_BARES.map((t) => (
-                  <button key={t} onClick={() => setTipoBares(t)}
-                    className={`shrink-0 px-3 py-1 rounded-full text-[11px] font-medium transition-all ${
-                      tipoBares === t ? "bg-[#1F1E1D] text-white" : "bg-white text-[#5C5B57] border border-[#D4D2C9]"
-                    }`}>{t}</button>
-                ))}
               </div>
               {baresFiltrados.length === 0 ? (
                 <p className="text-sm text-[#87867F] py-8 text-center">No hay resultados</p>
