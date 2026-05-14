@@ -18,6 +18,15 @@ interface Evento {
   source_url?: string | null;
 }
 
+interface Pelicula {
+  id: string;
+  titulo: string;
+  duracion_min?: number | null;
+  clasificacion?: string | null;
+  poster_url?: string | null;
+  source_url?: string | null;
+}
+
 interface Lugar {
   id: string;
   name: string;
@@ -52,7 +61,9 @@ const HOTELES: Lugar[] = [
 const CAT_SECTIONS = [
   { id: "recitales", cat: "concierto", icon: Music, label: "Recitales", emoji: "🎵" },
   { id: "deportes", cat: "deporte", icon: Trophy, label: "Deportes", emoji: "⚽" },
+  { id: "cine", cat: "cine", icon: Film, label: "Cine", emoji: "🎬", fromPeliculas: true },
   { id: "teatro", cat: "teatro", icon: Film, label: "Teatro", emoji: "🎭" },
+  { id: "ferias", cat: "feria", icon: UtensilsCrossed, label: "Ferias & Expos", emoji: "🏪" },
 ];
 
 const STATIC_SECTIONS = [
@@ -78,6 +89,7 @@ function formatDate(dateStr: string) {
 
 export default function EventosPage() {
   const [eventos, setEventos] = useState<Evento[]>([]);
+  const [peliculas, setPeliculas] = useState<Pelicula[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [activeSection, setActiveSection] = useState("recitales");
@@ -85,14 +97,20 @@ export default function EventosPage() {
   const sectionRefs = useRef<Record<string, HTMLElement | null>>({});
 
   useEffect(() => {
-    createClient()
-      .from("eventos")
-      .select("id, titulo, categoria, fecha, venue, image_url, source_url")
-      .order("fecha", { ascending: true })
-      .then(({ data }) => {
-        setEventos(data ?? []);
-        setLoading(false);
-      });
+    Promise.all([
+      createClient()
+        .from("eventos")
+        .select("id, titulo, categoria, fecha, venue, image_url, source_url")
+        .order("fecha", { ascending: true }),
+      createClient()
+        .from("peliculas")
+        .select("id, titulo, duracion_min, clasificacion, poster_url, source_url")
+        .order("fecha_estreno", { ascending: false }),
+    ]).then(([eventosRes, peliculasRes]) => {
+      setEventos(eventosRes.data ?? []);
+      setPeliculas(peliculasRes.data ?? []);
+      setLoading(false);
+    });
   }, []);
 
   // Observer for sticky nav
@@ -121,16 +139,20 @@ export default function EventosPage() {
   const searchFilter = (e: Evento) =>
     !search || e.titulo?.toLowerCase().includes(search.toLowerCase());
 
-  // Eventos agrupados por categoría
+  // Eventos agrupados por categoría (excepto cine que va desde peliculas)
   const eventosPorCategoria = useMemo(
     () =>
-      CAT_SECTIONS.map((sec) => ({
+      CAT_SECTIONS.filter((s) => !s.fromPeliculas).map((sec) => ({
         ...sec,
         events: eventos
           .filter((e) => e.categoria === sec.cat && searchFilter(e))
           .sort((a, b) => new Date(a.fecha).getTime() - new Date(b.fecha).getTime()),
       })),
     [eventos, search]
+  );
+
+  const peliculasFiltradas = peliculas.filter(
+    (p) => !search || p.titulo?.toLowerCase().includes(search.toLowerCase())
   );
 
   // Gastronomía + hoteles filtrados por search
@@ -233,6 +255,67 @@ export default function EventosPage() {
               </section>
             );
           })
+        )}
+
+        {/* ═══ CINE ═══════════════════════════════════ */}
+        {!loading && (
+          <section
+            id="cine"
+            ref={(el) => { sectionRefs.current.cine = el; }}
+            className="scroll-mt-24"
+          >
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-8 h-8 rounded-lg bg-[#1F1E1D] flex items-center justify-center text-white">
+                <Film className="h-4 w-4" />
+              </div>
+              <h2 className="font-[family-name:var(--font-heading)] text-xl sm:text-2xl font-bold text-[#1F1E1D] tracking-tight">
+                🎬 Cine
+              </h2>
+              <div className="flex-1 h-px bg-[#D4D2C9]/50" />
+            </div>
+            {peliculasFiltradas.length === 0 ? (
+              <p className="text-sm text-[#87867F] py-8 text-center">
+                {search ? "No hay resultados" : "Cargando..."}
+              </p>
+            ) : (
+              <div className="flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-none">
+                {peliculasFiltradas.map((p) => (
+                  <a
+                    key={p.id}
+                    href={p.source_url ?? "#"}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group w-44 sm:w-48 shrink-0 snap-start"
+                  >
+                    <div className="relative aspect-[2/3] rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:scale-[1.02]">
+                      {p.poster_url ? (
+                        <img
+                          src={p.poster_url}
+                          alt={p.titulo}
+                          className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        />
+                      ) : (
+                        <div className="absolute inset-0 bg-gradient-to-br from-blue-200 to-indigo-100 flex items-center justify-center">
+                          <Film className="h-10 w-10 text-white/40" />
+                        </div>
+                      )}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
+                      <div className="absolute bottom-0 left-0 right-0 p-3 space-y-0.5">
+                        <h3 className="font-semibold text-xs text-white leading-snug line-clamp-2 drop-shadow-sm">
+                          {p.titulo}
+                        </h3>
+                        {p.clasificacion && (
+                          <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-white/20 text-white">
+                            {p.clasificacion}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </a>
+                ))}
+              </div>
+            )}
+          </section>
         )}
 
         {/* ═══ GASTRONOMÍA ════════════════════════════ */}
