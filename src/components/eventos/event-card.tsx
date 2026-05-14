@@ -1,6 +1,6 @@
 "use client";
 
-import { Calendar, MapPin, Music, Trophy, Building2, Users, Sparkles, Film } from "lucide-react";
+import { Calendar, MapPin, Music, Trophy, Building2, Users, Sparkles, Film, Clapperboard } from "lucide-react";
 
 interface Evento {
   id: string;
@@ -18,12 +18,13 @@ interface Props {
 }
 
 const CAT_META: Record<string, { icon: typeof Music; label: string }> = {
-  concierto:        { icon: Music,     label: "Concierto" },
-  deporte:          { icon: Trophy,    label: "Deporte" },
-  teatro:           { icon: Film,      label: "Teatro" },
-  feria:            { icon: Building2, label: "Feria" },
-  entretenimiento:  { icon: Sparkles,  label: "Entretenimiento" },
-  congreso:         { icon: Users,     label: "Congreso" },
+  concierto:        { icon: Music,        label: "Concierto" },
+  deporte:          { icon: Trophy,       label: "Deporte" },
+  teatro:           { icon: Film,         label: "Teatro" },
+  feria:            { icon: Building2,    label: "Feria" },
+  entretenimiento:  { icon: Sparkles,     label: "Entretenimiento" },
+  congreso:         { icon: Users,        label: "Congreso" },
+  cine:             { icon: Clapperboard, label: "Cine" },
 };
 
 const GRADIENTS: Record<string, string> = {
@@ -33,6 +34,7 @@ const GRADIENTS: Record<string, string> = {
   feria:            "from-amber-200 to-orange-100",
   entretenimiento:  "from-rose-200 to-red-100",
   congreso:         "from-blue-200 to-indigo-100",
+  cine:             "from-yellow-200 to-amber-100",
 };
 
 const MONTHS = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
@@ -74,7 +76,7 @@ export default function EventCard({ event, featured }: Props) {
       }`}
     >
       {/* ─── Imagen / Fallback ───────────────────── */}
-      <div className={`relative overflow-hidden ${featured ? "aspect-[4/3]" : "aspect-[4/5]"}`}>
+      <div className={`relative overflow-hidden ${featured ? "aspect-[4/3]" : "aspect-[3/4]"}`}>
         {hasImage ? (
           <img
             src={event.image_url!}

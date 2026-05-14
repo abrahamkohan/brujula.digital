@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Search } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import CategoryFilter from "@/components/eventos/category-filter";
 import EventCard from "@/components/eventos/event-card";
@@ -45,6 +46,7 @@ export default function EventosPage() {
   const [eventos, setEventos] = useState<Evento[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("todas");
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
     createClient()
@@ -62,6 +64,7 @@ export default function EventosPage() {
     "concierto",
     "deporte",
     "teatro",
+    "cine",
     "feria",
     "entretenimiento",
     "congreso",
@@ -70,10 +73,9 @@ export default function EventosPage() {
     eventos.some((e) => e.categoria?.toLowerCase() === c)
   );
 
-  const filtered =
-    filter === "todas"
-      ? eventos
-      : eventos.filter((e) => e.categoria?.toLowerCase() === filter);
+  const filtered = eventos
+    .filter((e) => filter === "todas" || e.categoria?.toLowerCase() === filter)
+    .filter((e) => !search || e.titulo?.toLowerCase().includes(search.toLowerCase()));
 
   // Separar por período
   const estaSemana = filtered.filter((e) => isToday(e.fecha) || isThisWeek(e.fecha));
@@ -99,12 +101,26 @@ export default function EventosPage() {
       </div>
 
       {/* ─── Filtros ──────────────────────────────── */}
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 -mt-5 mb-8">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 -mt-5 mb-4">
         <CategoryFilter
           categories={categoriasDisponibles}
           active={filter}
           onChange={setFilter}
         />
+      </div>
+
+      {/* ─── Buscador ─────────────────────────────── */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 mb-8">
+        <div className="relative max-w-md">
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#87867F] pointer-events-none" />
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Buscar evento..."
+            className="w-full bg-white border border-[#D4D2C9] rounded-xl pl-10 pr-4 py-2.5 text-sm text-[#1F1E1D] placeholder:text-[#87867F] focus:outline-none focus:border-[#C96442] transition-colors"
+          />
+        </div>
       </div>
 
       {/* ─── Contenido ────────────────────────────── */}
