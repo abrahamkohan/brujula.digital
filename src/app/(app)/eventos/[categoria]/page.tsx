@@ -181,11 +181,11 @@ export default function CategoriaPage() {
     >
       <div className="relative aspect-[4/3] rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:scale-[1.02]">
         <img src={item.image} alt={item.name} className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent" />
         <div className="absolute bottom-0 left-0 right-0 p-4 space-y-1">
           {item.badge && <span className="inline-flex px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#C96442] text-white mb-1">{item.badge}</span>}
           <h3 className="font-semibold text-sm text-white drop-shadow-sm leading-snug">{item.name}</h3>
-          <p className="text-xs text-white/60">{ZONAS.find((z) => z.id === item.zone)?.label ?? item.zone}</p>
+          <p className="text-xs text-white/80">{ZONAS.find((z) => z.id === item.zone)?.label ?? item.zone}</p>
           <p className="text-xs text-white/80 line-clamp-1">{item.desc}</p>
           {item.horario && <p className="text-[10px] text-white/50">{item.horario}</p>}
           {item.stars && <p className="text-xs text-amber-400">{'★'.repeat(item.stars)}{item.stars < 5 ? '☆'.repeat(5 - item.stars) : ''}</p>}
@@ -236,10 +236,10 @@ export default function CategoriaPage() {
               className="w-full bg-white rounded-xl pl-11 pr-4 py-3 text-sm text-[#1F1E1D] placeholder:text-[#87867F] focus:outline-none focus:ring-2 focus:ring-[#C96442] shadow-sm" />
           </div>
 
-          <div className="flex gap-2 flex-wrap items-center">
-            {/* Time filters (solo eventos) */}
+          <div className="space-y-3">
+            {/* Time filters — solo eventos */}
             {!meta.isDirectorio && !meta.isPeliculas && (
-              <>
+              <div className="flex gap-2 flex-wrap items-center">
                 {(["all", "hoy", "maniana", "finde"] as const).map((qf) => (
                   <button key={qf} onClick={() => setTimeFilter(qf)}
                     className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
@@ -248,57 +248,68 @@ export default function CategoriaPage() {
                     {qf === "all" ? "Todas las fechas" : qf === "hoy" ? "Hoy" : qf === "maniana" ? "Mañana" : "Este finde"}
                   </button>
                 ))}
-              </>
+              </div>
             )}
 
-            {/* Zone filter */}
+            {/* Zona */}
             {zonasDisponibles.length > 0 && (
-              <>
+              <div className="flex gap-2 flex-wrap items-center">
+                <span className="text-xs font-medium text-[#87867F] shrink-0">Zona</span>
                 <button onClick={() => setZonaFilter("")}
                   className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
                     !zonaFilter ? "bg-[#1F1E1D] text-white" : "bg-white text-[#5C5B57] border border-[#D4D2C9]"
-                  }`}>
-                  📍 Todas
-                </button>
+                  }`}>Todas</button>
                 {zonasDisponibles.map((z) => (
                   <button key={z.id} onClick={() => setZonaFilter(z.id)}
                     className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
                       zonaFilter === z.id ? "bg-[#1F1E1D] text-white" : "bg-white text-[#5C5B57] border border-[#D4D2C9]"
-                    }`}>
-                    {z.label}
-                  </button>
+                    }`}>{z.label}</button>
                 ))}
-              </>
+              </div>
             )}
 
-            {/* Tipo filter (gastronomia / bares) */}
+            {/* Tipo — Gastronomía */}
             {categoria === "gastronomia" && (
-              <>
+              <div className="flex gap-2 flex-wrap items-center">
+                <span className="text-xs font-medium text-[#87867F] shrink-0">Tipo</span>
+                <button onClick={() => setTipoGastro("")}
+                  className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+                    !tipoGastro ? "bg-[#1F1E1D] text-white" : "bg-white text-[#5C5B57] border border-[#D4D2C9]"
+                  }`}>Todos</button>
                 {TIPOS_GASTRONOMIA.map((t) => (
                   <button key={t} onClick={() => setTipoGastro(t)}
                     className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
                       tipoGastro === t ? "bg-[#1F1E1D] text-white" : "bg-white text-[#5C5B57] border border-[#D4D2C9]"
                     }`}>{t}</button>
                 ))}
-              </>
+              </div>
             )}
+
+            {/* Tipo — Bares */}
             {categoria === "bares" && (
-              <>
+              <div className="flex gap-2 flex-wrap items-center">
+                <span className="text-xs font-medium text-[#87867F] shrink-0">Tipo</span>
+                <button onClick={() => setTipoBares("")}
+                  className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+                    !tipoBares ? "bg-[#1F1E1D] text-white" : "bg-white text-[#5C5B57] border border-[#D4D2C9]"
+                  }`}>Todos</button>
                 {TIPOS_BARES.map((t) => (
                   <button key={t} onClick={() => setTipoBares(t)}
                     className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
                       tipoBares === t ? "bg-[#1F1E1D] text-white" : "bg-white text-[#5C5B57] border border-[#D4D2C9]"
                     }`}>{t}</button>
                 ))}
-              </>
+              </div>
             )}
 
-            {/* Clear */}
+            {/* Limpiar */}
             {(zonaFilter || tipoGastro || tipoBares || timeFilter !== "all") && (
-              <button onClick={() => { setZonaFilter(""); setTipoGastro(""); setTipoBares(""); setTimeFilter("all"); }}
-                className="flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium bg-[#1F1E1D] text-white">
-                <X className="h-3 w-3" /> Limpiar
-              </button>
+              <div>
+                <button onClick={() => { setZonaFilter(""); setTipoGastro(""); setTipoBares(""); setTimeFilter("all"); }}
+                  className="flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium bg-[#1F1E1D] text-white">
+                  <X className="h-3 w-3" /> Limpiar filtros
+                </button>
+              </div>
             )}
           </div>
         </div>

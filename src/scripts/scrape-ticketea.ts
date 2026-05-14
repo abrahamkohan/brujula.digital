@@ -118,11 +118,9 @@ async function scrapeDetail(page: import("playwright").Page, slug: string, title
     const parts = h2Text.split(",").map((s) => s.trim());
     const venueName = parts[0] || "";
 
-    // Imagen principal del evento: buscar la img del hero/cabecera
-    const mainImg = document.querySelector<HTMLImageElement>(
-      'img[src*="cloudfront"], img[src*="mcusercontent"], [class*="hero"] img, [class*="banner"] img, section img, img[src*="ticketea"]:not([src*="logo"])'
-    );
-    const imageUrl = mainImg?.getAttribute("src") ?? null;
+    // Imagen principal: og:image es el meta tag que Ticketea define para redes sociales
+    const ogImage = document.querySelector<HTMLMetaElement>('meta[property="og:image"]');
+    const imageUrl = ogImage?.getAttribute("content") ?? null;
 
     return {
       venueName,
