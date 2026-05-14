@@ -314,6 +314,7 @@ export default function EventosPage() {
                 <X className="h-3 w-3" /> Limpiar
               </button>
             )}
+            </div>
           </div>
         </div>
       </div>
@@ -391,7 +392,7 @@ export default function EventosPage() {
                   {peliculasFiltradas.length > 5 && !expandedSections.cine && (
                     <button onClick={() => toggleExpand("cine")}
                       className="w-32 sm:w-36 shrink-0 snap-start rounded-2xl border-2 border-dashed border-[#D4D2C9] flex items-center justify-center text-sm font-medium text-[#87867F] hover:text-[#C96442] hover:border-[#C96442] transition-colors">
-                      Ver todas →
+                      Ver todas {'>'}
                     </button>
                   )}
                 </div>
@@ -422,7 +423,7 @@ export default function EventosPage() {
                   {gastroFiltrados.length > 5 && !expandedSections.gastronomia && (
                     <button onClick={() => toggleExpand("gastronomia")}
                       className="w-32 sm:w-36 shrink-0 snap-start rounded-2xl border-2 border-dashed border-[#D4D2C9] flex items-center justify-center text-sm font-medium text-[#87867F] hover:text-[#C96442] hover:border-[#C96442] transition-colors">
-                      Ver todos {gastroFiltrados.length} →
+                      Ver todos {gastroFiltrados.length} {'>'}
                     </button>
                   )}
                 </div>
@@ -452,7 +453,7 @@ export default function EventosPage() {
                   {baresFiltrados.length > 5 && !expandedSections.bares && (
                     <button onClick={() => toggleExpand("bares")}
                       className="w-32 sm:w-36 shrink-0 snap-start rounded-2xl border-2 border-dashed border-[#D4D2C9] flex items-center justify-center text-sm font-medium text-[#87867F] hover:text-[#C96442] hover:border-[#C96442] transition-colors">
-                      Ver todos {baresFiltrados.length} →
+                      Ver todos {baresFiltrados.length} {'>'}
                     </button>
                   )}
                 </div>
@@ -470,7 +471,7 @@ export default function EventosPage() {
                   {shoppingFiltrados.length > 5 && !expandedSections.shopping && (
                     <button onClick={() => toggleExpand("shopping")}
                       className="w-32 sm:w-36 shrink-0 snap-start rounded-2xl border-2 border-dashed border-[#D4D2C9] flex items-center justify-center text-sm font-medium text-[#87867F] hover:text-[#C96442] hover:border-[#C96442] transition-colors">
-                      Ver todos {shoppingFiltrados.length} →
+                      Ver todos {shoppingFiltrados.length} {'>'}
                     </button>
                   )}
                 </div>
@@ -488,7 +489,7 @@ export default function EventosPage() {
                   {hotelesFiltrados.length > 5 && !expandedSections.hoteles && (
                     <button onClick={() => toggleExpand("hoteles")}
                       className="w-32 sm:w-36 shrink-0 snap-start rounded-2xl border-2 border-dashed border-[#D4D2C9] flex items-center justify-center text-sm font-medium text-[#87867F] hover:text-[#C96442] hover:border-[#C96442] transition-colors">
-                      Ver todos {hotelesFiltrados.length} →
+                      Ver todos {hotelesFiltrados.length} {'>'}
                     </button>
                   )}
                 </div>
