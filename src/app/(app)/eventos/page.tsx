@@ -28,6 +28,7 @@ interface Evento {
   image_url?: string | null;
   source_url?: string | null;
   zona?: string;
+  editorial_pick?: boolean;
 }
 
 interface Pelicula {
@@ -105,7 +106,7 @@ export default function EventosPage() {
 
   useEffect(() => {
     Promise.all([
-      createClient().from("eventos").select("id, titulo, categoria, fecha, venue, image_url, source_url").order("fecha"),
+      createClient().from("eventos").select("id, titulo, categoria, fecha, venue, image_url, source_url, editorial_pick").order("fecha"),
       createClient().from("peliculas").select("id, titulo, duracion_min, clasificacion, poster_url, source_url").order("fecha_estreno", { ascending: false }),
     ]).then(([er, pr]) => {
       const events = (er.data ?? []) as Evento[];
@@ -143,6 +144,12 @@ export default function EventosPage() {
   };
 
   const zoneFilter = (zona?: string) => !zonaFilter || zona === zonaFilter;
+
+  // Editorial picks — sin filtros de usuario, siempre se muestran
+  const eventosPick = useMemo(
+    () => eventosValidos.filter((e) => e.editorial_pick),
+    [eventosValidos]
+  );
 
   // Eventos por categoría
   const eventosPorCategoria = useMemo(
@@ -300,6 +307,24 @@ export default function EventosPage() {
           </>
         ) : (
           <>
+            {/* ═══ SELECCIÓN BRÚJULA ══════════════════ */}
+            {eventosPick.length > 0 && (
+              <section>
+                <div className="flex items-center gap-3 mb-4">
+                  <span className="text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full bg-[#C96442] text-white">★ Selección Brújula</span>
+                  <div className="flex-1 h-px bg-[#D4D2C9]/50" />
+                </div>
+                <h2 className="font-[family-name:var(--font-heading)] text-2xl sm:text-3xl font-bold text-[#1F1E1D] tracking-tight mb-4">
+                  Lo que vale la pena
+                </h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                  {eventosPick.slice(0, 3).map((e) => (
+                    <EventCard key={e.id} event={e} featured href={`/eventos/evento/${e.id}`} />
+                  ))}
+                </div>
+              </section>
+            )}
+
             {/* ═══ SECCIONES DE EVENTOS ═══════════════ */}
             {eventosPorCategoria.map((sec) => {
               if (sec.events.length === 0) return null;

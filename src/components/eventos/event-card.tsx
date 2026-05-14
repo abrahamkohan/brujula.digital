@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { Calendar, MapPin, Music, Trophy, Building2, Users, Sparkles, Film, Clapperboard } from "lucide-react";
 
 interface Evento {
@@ -16,6 +17,7 @@ interface Evento {
 interface Props {
   event: Evento;
   featured?: boolean;
+  href?: string;
 }
 
 const CAT_META: Record<string, { icon: typeof Music; label: string }> = {
@@ -56,7 +58,7 @@ function isToday(dateStr: string) {
   return d.getDate() === today.getDate() && d.getMonth() === today.getMonth() && d.getFullYear() === today.getFullYear();
 }
 
-export default function EventCard({ event, featured }: Props) {
+export default function EventCard({ event, featured, href }: Props) {
   const cat = CAT_META[event.categoria?.toLowerCase()] ?? { icon: Calendar, label: "Evento" };
   const Icon = cat.icon;
   const gradStyle = GRADIENT_STYLES[event.categoria?.toLowerCase()] ?? "linear-gradient(135deg, #6b7280, #4b5563)";
@@ -129,13 +131,18 @@ export default function EventCard({ event, featured }: Props) {
     </div>
   );
 
-  if (event.source_url) {
+  const linkHref = href ?? event.source_url;
+
+  if (linkHref) {
+    if (linkHref.startsWith("/")) {
+      return <Link href={linkHref} className="block">{content}</Link>;
+    }
     return (
-      <a key={event.id} href={event.source_url} target="_blank" rel="noopener noreferrer" className="block">
+      <a href={linkHref} target="_blank" rel="noopener noreferrer" className="block">
         {content}
       </a>
     );
   }
 
-  return <div key={event.id}>{content}</div>;
+  return <div>{content}</div>;
 }
