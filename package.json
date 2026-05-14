@@ -13,7 +13,8 @@
     "scrape:apf": "npx tsx src/scripts/scrape-apf.ts",
     "scrape:visitparaguay": "npx tsx src/scripts/scrape-visitparaguay.ts",
     "scrape:cinemark": "npx tsx src/scripts/scrape-cinemark.ts",
-    "scrape:market": "npx tsx src/scripts/scrape-market.ts"
+    "scrape:market": "npx tsx src/scripts/scrape-market.ts",
+    "scrape:serpapi": "npx tsx src/scripts/scrape-serpapi.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.4.1",

@@ -13,6 +13,7 @@ import { scrapeAPF } from "./scrape-apf";
 import { scrapeVisitParaguay } from "./scrape-visitparaguay";
 import { scrapeCinemark } from "./scrape-cinemark";
 import { scrapeMarket } from "./scrape-market";
+import { scrapeSerpapi } from "./scrape-serpapi";
 import { upsertEventsNoImages } from "../lib/scrapers/upsert-events";
 import type { ScrapedEvent, ScrapeResult } from "../lib/scrapers/types";
 
@@ -26,6 +27,7 @@ const SCRAPERS: ScraperDef[] = [
   { name: "tuti", fn: scrapeTuti },
   { name: "apf", fn: scrapeAPF },
   { name: "visitparaguay", fn: scrapeVisitParaguay },
+  { name: "serpapi", fn: scrapeSerpapi as unknown as () => Promise<ScrapedEvent[]> },
 ];
 
 // Scrapers que requieren Playwright (se ejecutan secuencialmente)
