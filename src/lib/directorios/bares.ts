@@ -1,0 +1,21 @@
+import type { DirectorioItem } from "./types";
+
+export const BARES: DirectorioItem[] = [
+  { id: "the-kilkenny", name: "The Kilkenny", zone: "centro", desc: "Pub irlandés, música en vivo los fines de semana.", image: "https://images.unsplash.com/photo-1514933651103-005eec06c04b?w=400&h=533&fit=crop", url: "https://maps.google.com/?q=Kilkenny+Asuncion", tipo: "Pub", horario: "18:00 - 02:00" },
+  { id: "voodoo", name: "Voodoo Bar", zone: "villa-morra", desc: "Rock en vivo, bandas locales y cerveza artesanal.", image: "https://images.unsplash.com/photo-1566417713940-fe7c7370c282?w=400&h=533&fit=crop", url: "https://maps.google.com/?q=Voodoo+Bar+Asuncion", tipo: "Rock", horario: "20:00 - 03:00" },
+  { id: "absoluto-rock", name: "Absoluto Rock Bar", zone: "centro", desc: "Rock bar, bandas en vivo, ambiente pesado.", image: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=533&fit=crop", url: "https://maps.google.com/?q=Absoluto+Rock+Bar+Asuncion", tipo: "Rock", horario: "21:00 - 04:00" },
+  { id: "la-otra-bar", name: "La Otra Bar", zone: "carmelitas", desc: "Bar cultural con música en vivo, exposiciones y buena onda.", image: "https://images.unsplash.com/photo-1470337458703-46ad1756a187?w=400&h=533&fit=crop", url: "https://maps.google.com/?q=La+Otra+Bar+Asuncion", tipo: "Cultural", horario: "19:00 - 02:00" },
+  { id: "community-berlin", name: "Community Berlin", zone: "villa-morra", desc: "Bar alemán, música electrónica y cerveza importada.", image: "https://images.unsplash.com/photo-1572116469696-31de0f17cc34?w=400&h=533&fit=crop", url: "https://maps.google.com/?q=Community+Berlin+Asuncion", tipo: "Electrónica", horario: "20:00 - 04:00" },
+  { id: "madarae", name: "MadaRae Lounge", zone: "villa-morra", desc: "Lounge bar, música variada y cócteles.", image: "https://images.unsplash.com/photo-1470337458703-46ad1756a187?w=400&h=533&fit=crop", url: "https://maps.google.com/?q=MadaRae+Lounge+Asuncion", tipo: "Lounge", horario: "19:00 - 02:00" },
+  { id: "bourbon-street", name: "Bourbon Street", zone: "carmelitas", desc: "Blues y jazz en vivo, ambiente íntimo.", image: "https://images.unsplash.com/photo-1511192336575-5a79af67a629?w=400&h=533&fit=crop", url: "https://maps.google.com/?q=Bourbon+Street+Asuncion", tipo: "Jazz", horario: "20:00 - 02:00" },
+  { id: "garland", name: "Garland", zone: "villa-morra", desc: "Coctelería de autor, música ambiente.", image: "https://images.unsplash.com/photo-1536935338788-846bb9981813?w=400&h=533&fit=crop", url: "https://maps.google.com/?q=Garland+Asuncion", tipo: "Coctelería", horario: "18:00 - 01:00" },
+  { id: "salon-cervecero", name: "Salón Cervecero", zone: "centro", desc: "Cerveza artesanal paraguaya, música en vivo los jueves.", image: "https://images.unsplash.com/photo-1558642452-9d2a7deb7f62?w=400&h=533&fit=crop", url: "https://maps.google.com/?q=Salon+Cervecero+Asuncion", tipo: "Cerveza", horario: "17:00 - 00:00" },
+  { id: "cocina-centro", name: "La Cocina del Centro", zone: "centro", desc: "Bar escondido, cócteles, música acústica.", image: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=400&h=533&fit=crop", url: "https://maps.google.com/?q=La+Cocina+del+Centro+Asuncion", tipo: "Coctelería", horario: "19:00 - 02:00" },
+  { id: "dandy", name: "Dandy", zone: "villa-morra", desc: "Bar de moda en Villa Morra, música urbana.", image: "https://images.unsplash.com/photo-1529504426707-d1d7a0dc458a?w=400&h=533&fit=crop", url: "https://maps.google.com/?q=Dandy+Asuncion", tipo: "Urbano", horario: "21:00 - 04:00" },
+  { id: "salon-mate", name: "Salón del Mate", zone: "villa-morra", desc: "Bar de té, mate y cócteles con música en vivo.", image: "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=400&h=533&fit=crop", url: "https://maps.google.com/?q=Salon+del+Mate+Asuncion", tipo: "Bar", horario: "17:00 - 01:00" },
+  { id: "ananda", name: "Ananda Retreat", zone: "otras", desc: "Espacio cultural con eventos musicales al aire libre.", image: "https://images.unsplash.com/photo-1517457373958-b7bdd4587205?w=400&h=533&fit=crop", url: "https://maps.google.com/?q=Ananda+Retreat+Asuncion", tipo: "Cultural", horario: "Variable" },
+];
+
+export const TIPOS_BARES = [
+  "Pub", "Rock", "Cultural", "Electrónica", "Lounge", "Jazz", "Coctelería", "Cerveza", "Urbano", "Bar",
+];
