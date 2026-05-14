@@ -5,8 +5,10 @@ import {
   Search, Music, Trophy, Film, UtensilsCrossed, Hotel,
   MapPin, Star, Beer, ShoppingBag, Building2, X,
 } from "lucide-react";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import EventCard from "@/components/eventos/event-card";
+import MovieCard from "@/components/eventos/movie-card";
 import { SkeletonGrid } from "@/components/eventos/skeleton";
 import { GASTRONOMIA, TIPOS_GASTRONOMIA } from "@/lib/directorios/gastronomia";
 import { SHOPPING } from "@/lib/directorios/shopping";
@@ -38,11 +40,6 @@ interface Pelicula {
 }
 
 // ─── Helpers ──────────────────────────────────────────────────
-
-function formatDate(d: Date): string {
-  const meses = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
-  return `${d.getDate()} ${meses[d.getMonth()]}`;
-}
 
 function isSameDay(d1: Date, d2: Date): boolean {
   return d1.getDate() === d2.getDate() && d1.getMonth() === d2.getMonth() && d1.getFullYear() === d2.getFullYear();
@@ -84,17 +81,6 @@ const QUICK_FILTERS = [
   { id: "finde", label: "Este finde" },
 ];
 
-const CLASIFICACION_MAP: Record<string, string> = {
-  C: "Apto para todos",
-  ATP: "Apto para todo público",
-  S07: "Mayores de 7",
-  S12: "Mayores de 12",
-  S13: "Mayores de 13",
-  S16: "Mayores de 16",
-  S18: "Mayores de 18",
-  R: "Restringido",
-};
-
 // ─── Page ──────────────────────────────────────────────────────
 
 export default function EventosPage() {
@@ -107,7 +93,6 @@ export default function EventosPage() {
   const [tipoBares, setTipoBares] = useState("");
   const [timeFilter, setTimeFilter] = useState("all");
   const [activeSection, setActiveSection] = useState("recitales");
-  const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({});
   const [showZones, setShowZones] = useState(false);
   const sectionRefs = useRef<Record<string, HTMLElement | null>>({});
 
@@ -119,10 +104,6 @@ export default function EventosPage() {
     }),
     [eventos]
   );
-
-  const toggleExpand = (id: string) => setExpandedSections((prev) => ({ ...prev, [id]: !prev[id] }));
-  const visibleItems = <T,>(items: T[], sectionId: string) =>
-    expandedSections[sectionId] ? items : items.slice(0, 5);
 
   useEffect(() => {
     Promise.all([
@@ -181,15 +162,6 @@ export default function EventosPage() {
     (p) => searchPredicate(p.titulo ?? "") && (!zonaFilter || zonaFilter === "centro" || zonaFilter === "villa-morra" || zonaFilter === "carmelitas")
   );
 
-  // Directorios
-  const filtrarDirectorio = (items: DirectorioItem[]) =>
-    items.filter(
-      (i) =>
-        searchPredicate(i.name) &&
-        (!zonaFilter || i.zone === zonaFilter) &&
-        (i.tipo === undefined || true)
-    );
-
   const gastroFiltrados = GASTRONOMIA.filter(
     (g) => searchPredicate(g.name) && (!zonaFilter || g.zone === zonaFilter) && (!tipoGastro || g.tipo === tipoGastro)
   );
@@ -214,15 +186,15 @@ export default function EventosPage() {
 
   // ─── Render card genérico para directorios ──
 
-  const renderCard = (item: DirectorioItem, extra?: React.ReactNode) => (
+  const renderCard = (item: DirectorioItem, extra?: React.ReactNode, variant: "carousel" | "grid" = "carousel") => (
     <a
       key={item.id}
       href={item.url}
       target="_blank"
       rel="noopener noreferrer"
-      className="group w-56 sm:w-64 shrink-0 snap-start"
+      className={`group ${variant === "carousel" ? "w-56 sm:w-64 shrink-0 snap-start" : "w-full"}`}
     >
-      <div className="relative aspect-[3/4] rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:scale-[1.02]">
+      <div className={`relative ${variant === "carousel" ? "aspect-[3/4]" : "aspect-[4/3]"} rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:scale-[1.02]`}>
         <img src={item.image} alt={item.name} className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
         <div className="absolute bottom-0 left-0 right-0 p-4 space-y-1">
@@ -248,12 +220,15 @@ export default function EventosPage() {
             <span className="text-[#C96442] italic">hoy</span>?
           </h1>
           <p className="text-[#B8B7B2] mt-3 text-sm sm:text-base max-w-lg mx-auto">
-            Eventos, recitales, gastronomía, bares y más en Paraguay
+            Events, recitales, gastronomía, bares y más en Paraguay
+          </p>
+          <p className="text-[#87867F] mt-2 text-xs sm:text-sm">
+            {eventosValidos.length}+ eventos · {GASTRONOMIA.length} restaurantes · actualizado hoy
           </p>
           <div className="relative max-w-2xl mx-auto mt-8">
             <Search className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-[#87867F]" />
             <input type="text" value={search} onChange={(e) => setSearch(e.target.value)}
-              placeholder="Buscar eventos, restaurantes, bares..."
+              placeholder="Events, restaurants, bars in Asunción..."
               className="w-full bg-white rounded-2xl pl-14 pr-6 py-4 text-base text-[#1F1E1D] placeholder:text-[#87867F] focus:outline-none focus:ring-2 focus:ring-[#C96442] shadow-sm transition-shadow" />
           </div>
           {/* Quick filters */}
@@ -331,35 +306,38 @@ export default function EventosPage() {
             {eventosPorCategoria.map((sec) => {
               if (sec.events.length === 0) return null;
               const Icon = sec.icon;
+              const visible = sec.events.slice(0, 5);
               return (
                 <section key={sec.id} id={sec.id} ref={(el) => { sectionRefs.current[sec.id] = el; }} className="scroll-mt-28">
-                  <SectionHeader icon={<Icon className="h-4 w-4" />} title={sec.label} />
-                  {/* Mobile: scroll */}
+                  {/* Header con link Ver todos */}
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-8 h-8 rounded-lg bg-[#1F1E1D] flex items-center justify-center text-white">
+                      <Icon className="h-4 w-4" />
+                    </div>
+                    <h2 className="font-[family-name:var(--font-heading)] text-xl sm:text-2xl font-bold text-[#1F1E1D] tracking-tight">
+                      {sec.label}
+                    </h2>
+                    <div className="flex-1 h-px bg-[#D4D2C9]/50" />
+                    {sec.events.length > 5 && (
+                      <Link href={`/eventos/${sec.id}`}
+                        className="shrink-0 flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium bg-white text-[#5C5B57] border border-[#D4D2C9] hover:border-[#C96442] hover:text-[#C96442] transition-all whitespace-nowrap">
+                        Ver todos ({sec.events.length}) →
+                      </Link>
+                    )}
+                  </div>
+                  {/* Mobile: scroll horizontal */}
                   <div className="flex sm:hidden gap-4 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-none">
-                    {visibleItems(sec.events, sec.id).map((e) => (
+                    {visible.map((e) => (
                       <div key={e.id} className="w-72 shrink-0 snap-start">
                         <EventCard event={e} />
-                        {e.zona && <p className="text-[10px] text-[#87867F] mt-1.5 px-1">{ZONAS.find((z) => z.id === e.zona)?.label}</p>}
                       </div>
                     ))}
-                    {sec.events.length > 5 && !expandedSections[sec.id] && (
-                      <button onClick={() => toggleExpand(sec.id)}
-                        className="w-32 shrink-0 snap-start rounded-2xl border-2 border-dashed border-[#D4D2C9] flex items-center justify-center text-sm font-medium text-[#87867F] hover:text-[#C96442] hover:border-[#C96442] transition-colors">
-                        +{sec.events.length - 5}
-                      </button>
-                    )}
                   </div>
                   {/* Desktop: grid */}
                   <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {(expandedSections[sec.id] ? sec.events : sec.events.slice(0, 6)).map((e) => (
+                    {visible.map((e) => (
                       <EventCard key={e.id} event={e} />
                     ))}
-                    {sec.events.length > 6 && !expandedSections[sec.id] && (
-                      <button onClick={() => toggleExpand(sec.id)}
-                        className="rounded-2xl border-2 border-dashed border-[#D4D2C9] flex items-center justify-center text-sm font-medium text-[#87867F] hover:text-[#C96442] hover:border-[#C96442] transition-colors min-h-[200px]">
-                        Ver +{sec.events.length - 6}
-                      </button>
-                    )}
                   </div>
                 </section>
               );
@@ -368,40 +346,42 @@ export default function EventosPage() {
             {/* ═══ CINE ═════════════════════════════ */}
             {peliculasFiltradas.length > 0 && (
               <section id="cine" ref={(el) => { sectionRefs.current.cine = el; }} className="scroll-mt-28">
-                <SectionHeader icon={<Film className="h-4 w-4" />} title="Cine" />
-                <div className="flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-none">
-                  {visibleItems(peliculasFiltradas, "cine").map((p) => (
-                    <a key={p.id} href={p.source_url ?? "#"} target="_blank" rel="noopener noreferrer"
-                      className="group w-44 sm:w-48 shrink-0 snap-start">
-                      <div className="relative aspect-[2/3] rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:scale-[1.02]">
-                        {p.poster_url ? (
-                          <img src={p.poster_url} alt={p.titulo} className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
-                        ) : (
-                          <div className="absolute inset-0 bg-gradient-to-br from-blue-200 to-indigo-100 flex items-center justify-center">
-                            <Film className="h-10 w-10 text-white/40" />
-                          </div>
-                        )}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
-                        <div className="absolute bottom-0 left-0 right-0 p-3 space-y-0.5">
-                          <h3 className="font-semibold text-xs text-white leading-snug line-clamp-2 drop-shadow-sm">{p.titulo}</h3>
-                          {p.clasificacion && <span className="inline-flex px-1.5 py-0.5 rounded text-[10px] font-bold bg-white/20 text-white">{CLASIFICACION_MAP[p.clasificacion] ?? p.clasificacion}</span>}
-                        </div>
-                      </div>
-                    </a>
-                  ))}
-                  {peliculasFiltradas.length > 5 && !expandedSections.cine && (
-                    <button onClick={() => toggleExpand("cine")}
-                      className="w-32 sm:w-36 shrink-0 snap-start rounded-2xl border-2 border-dashed border-[#D4D2C9] flex items-center justify-center text-sm font-medium text-[#87867F] hover:text-[#C96442] hover:border-[#C96442] transition-colors">
-                      Ver todas {'>'}
-                    </button>
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-8 h-8 rounded-lg bg-[#1F1E1D] flex items-center justify-center text-white">
+                    <Film className="h-4 w-4" />
+                  </div>
+                  <h2 className="font-[family-name:var(--font-heading)] text-xl sm:text-2xl font-bold text-[#1F1E1D] tracking-tight">Cine</h2>
+                  <div className="flex-1 h-px bg-[#D4D2C9]/50" />
+                  {peliculasFiltradas.length > 5 && (
+                    <Link href="/eventos/cine"
+                      className="shrink-0 flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium bg-white text-[#5C5B57] border border-[#D4D2C9] hover:border-[#C96442] hover:text-[#C96442] transition-all whitespace-nowrap">
+                      Ver todas ({peliculasFiltradas.length}) →
+                    </Link>
                   )}
+                </div>
+                <div className="flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-none">
+                  {peliculasFiltradas.slice(0, 5).map((p) => (
+                    <MovieCard key={p.id} movie={p} />
+                  ))}
                 </div>
               </section>
             )}
 
             {/* ═══ GASTRONOMÍA ═════════════════════ */}
             <section id="gastronomia" ref={(el) => { sectionRefs.current.gastronomia = el; }} className="scroll-mt-28">
-              <SectionHeader icon={<UtensilsCrossed className="h-4 w-4" />} title="Gastronomía" />
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-8 h-8 rounded-lg bg-[#1F1E1D] flex items-center justify-center text-white">
+                  <UtensilsCrossed className="h-4 w-4" />
+                </div>
+                <h2 className="font-[family-name:var(--font-heading)] text-xl sm:text-2xl font-bold text-[#1F1E1D] tracking-tight">Gastronomía</h2>
+                <div className="flex-1 h-px bg-[#D4D2C9]/50" />
+                {gastroFiltrados.length > 4 && (
+                  <Link href="/eventos/gastronomia"
+                    className="shrink-0 flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium bg-white text-[#5C5B57] border border-[#D4D2C9] hover:border-[#C96442] hover:text-[#C96442] transition-all whitespace-nowrap">
+                    Ver todos ({gastroFiltrados.length}) →
+                  </Link>
+                )}
+              </div>
               {/* Tipo filter */}
               <div className="flex gap-2 overflow-x-auto scrollbar-none mb-4">
                 <button onClick={() => setTipoGastro("")}
@@ -418,21 +398,27 @@ export default function EventosPage() {
               {gastroFiltrados.length === 0 ? (
                 <p className="text-sm text-[#87867F] py-8 text-center">No hay resultados</p>
               ) : (
-                <div className="flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-none">
-                  {visibleItems(gastroFiltrados, "gastronomia").map((g) => renderCard(g, g.tipo ? <span className="inline-flex px-2 py-0.5 rounded-full text-[10px] font-medium bg-white/20 text-white mt-1">{g.tipo}</span> : undefined))}
-                  {gastroFiltrados.length > 5 && !expandedSections.gastronomia && (
-                    <button onClick={() => toggleExpand("gastronomia")}
-                      className="w-32 sm:w-36 shrink-0 snap-start rounded-2xl border-2 border-dashed border-[#D4D2C9] flex items-center justify-center text-sm font-medium text-[#87867F] hover:text-[#C96442] hover:border-[#C96442] transition-colors">
-                      Ver todos {gastroFiltrados.length} {'>'}
-                    </button>
-                  )}
+                <div className="grid grid-cols-2 gap-4">
+                  {gastroFiltrados.slice(0, 4).map((g) => renderCard(g, g.tipo ? <span className="inline-flex px-2 py-0.5 rounded-full text-[10px] font-medium bg-white/20 text-white mt-1">{g.tipo}</span> : undefined, "grid"))}
                 </div>
               )}
             </section>
 
             {/* ═══ BARES ══════════════════════════ */}
             <section id="bares" ref={(el) => { sectionRefs.current.bares = el; }} className="scroll-mt-28">
-              <SectionHeader icon={<Beer className="h-4 w-4" />} title="Bares con música" />
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-8 h-8 rounded-lg bg-[#1F1E1D] flex items-center justify-center text-white">
+                  <Beer className="h-4 w-4" />
+                </div>
+                <h2 className="font-[family-name:var(--font-heading)] text-xl sm:text-2xl font-bold text-[#1F1E1D] tracking-tight">Bares con música</h2>
+                <div className="flex-1 h-px bg-[#D4D2C9]/50" />
+                {baresFiltrados.length > 4 && (
+                  <Link href="/eventos/bares"
+                    className="shrink-0 flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium bg-white text-[#5C5B57] border border-[#D4D2C9] hover:border-[#C96442] hover:text-[#C96442] transition-all whitespace-nowrap">
+                    Ver todos ({baresFiltrados.length}) →
+                  </Link>
+                )}
+              </div>
               <div className="flex gap-2 overflow-x-auto scrollbar-none mb-4">
                 <button onClick={() => setTipoBares("")}
                   className={`shrink-0 px-3 py-1 rounded-full text-[11px] font-medium transition-all ${
@@ -448,50 +434,56 @@ export default function EventosPage() {
               {baresFiltrados.length === 0 ? (
                 <p className="text-sm text-[#87867F] py-8 text-center">No hay resultados</p>
               ) : (
-                <div className="flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-none">
-                  {visibleItems(baresFiltrados, "bares").map((b) => renderCard(b, b.tipo ? <span className="inline-flex px-2 py-0.5 rounded-full text-[10px] font-medium bg-white/20 text-white mt-1">{b.tipo}</span> : undefined))}
-                  {baresFiltrados.length > 5 && !expandedSections.bares && (
-                    <button onClick={() => toggleExpand("bares")}
-                      className="w-32 sm:w-36 shrink-0 snap-start rounded-2xl border-2 border-dashed border-[#D4D2C9] flex items-center justify-center text-sm font-medium text-[#87867F] hover:text-[#C96442] hover:border-[#C96442] transition-colors">
-                      Ver todos {baresFiltrados.length} {'>'}
-                    </button>
-                  )}
+                <div className="grid grid-cols-2 gap-4">
+                  {baresFiltrados.slice(0, 4).map((b) => renderCard(b, b.tipo ? <span className="inline-flex px-2 py-0.5 rounded-full text-[10px] font-medium bg-white/20 text-white mt-1">{b.tipo}</span> : undefined, "grid"))}
                 </div>
               )}
             </section>
 
             {/* ═══ SHOPPING ═════════════════════ */}
             <section id="shopping" ref={(el) => { sectionRefs.current.shopping = el; }} className="scroll-mt-28">
-              <SectionHeader icon={<ShoppingBag className="h-4 w-4" />} title="Shopping" />
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-8 h-8 rounded-lg bg-[#1F1E1D] flex items-center justify-center text-white">
+                  <ShoppingBag className="h-4 w-4" />
+                </div>
+                <h2 className="font-[family-name:var(--font-heading)] text-xl sm:text-2xl font-bold text-[#1F1E1D] tracking-tight">Shopping</h2>
+                <div className="flex-1 h-px bg-[#D4D2C9]/50" />
+                {shoppingFiltrados.length > 4 && (
+                  <Link href="/eventos/shopping"
+                    className="shrink-0 flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium bg-white text-[#5C5B57] border border-[#D4D2C9] hover:border-[#C96442] hover:text-[#C96442] transition-all whitespace-nowrap">
+                    Ver todos ({shoppingFiltrados.length}) →
+                  </Link>
+                )}
+              </div>
               {shoppingFiltrados.length === 0 ? (
                 <p className="text-sm text-[#87867F] py-8 text-center">No hay resultados</p>
               ) : (
-                <div className="flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-none">
-                  {visibleItems(shoppingFiltrados, "shopping").map((s) => renderCard(s))}
-                  {shoppingFiltrados.length > 5 && !expandedSections.shopping && (
-                    <button onClick={() => toggleExpand("shopping")}
-                      className="w-32 sm:w-36 shrink-0 snap-start rounded-2xl border-2 border-dashed border-[#D4D2C9] flex items-center justify-center text-sm font-medium text-[#87867F] hover:text-[#C96442] hover:border-[#C96442] transition-colors">
-                      Ver todos {shoppingFiltrados.length} {'>'}
-                    </button>
-                  )}
+                <div className="grid grid-cols-2 gap-4">
+                  {shoppingFiltrados.slice(0, 4).map((s) => renderCard(s, undefined, "grid"))}
                 </div>
               )}
             </section>
 
             {/* ═══ HOTELES ═══════════════════════ */}
             <section id="hoteles" ref={(el) => { sectionRefs.current.hoteles = el; }} className="scroll-mt-28">
-              <SectionHeader icon={<Hotel className="h-4 w-4" />} title="Hoteles" />
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-8 h-8 rounded-lg bg-[#1F1E1D] flex items-center justify-center text-white">
+                  <Hotel className="h-4 w-4" />
+                </div>
+                <h2 className="font-[family-name:var(--font-heading)] text-xl sm:text-2xl font-bold text-[#1F1E1D] tracking-tight">Hoteles</h2>
+                <div className="flex-1 h-px bg-[#D4D2C9]/50" />
+                {hotelesFiltrados.length > 4 && (
+                  <Link href="/eventos/hoteles"
+                    className="shrink-0 flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium bg-white text-[#5C5B57] border border-[#D4D2C9] hover:border-[#C96442] hover:text-[#C96442] transition-all whitespace-nowrap">
+                    Ver todos ({hotelesFiltrados.length}) →
+                  </Link>
+                )}
+              </div>
               {hotelesFiltrados.length === 0 ? (
                 <p className="text-sm text-[#87867F] py-8 text-center">No hay resultados</p>
               ) : (
-                <div className="flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-none">
-                  {visibleItems(hotelesFiltrados, "hoteles").map((h) => renderCard(h))}
-                  {hotelesFiltrados.length > 5 && !expandedSections.hoteles && (
-                    <button onClick={() => toggleExpand("hoteles")}
-                      className="w-32 sm:w-36 shrink-0 snap-start rounded-2xl border-2 border-dashed border-[#D4D2C9] flex items-center justify-center text-sm font-medium text-[#87867F] hover:text-[#C96442] hover:border-[#C96442] transition-colors">
-                      Ver todos {hotelesFiltrados.length} {'>'}
-                    </button>
-                  )}
+                <div className="grid grid-cols-2 gap-4">
+                  {hotelesFiltrados.slice(0, 4).map((h) => renderCard(h, undefined, "grid"))}
                 </div>
               )}
               <p className="text-xs text-[#87867F] mt-3 text-center">Precios y disponibilidad en Booking.com</p>
@@ -509,14 +501,4 @@ export default function EventosPage() {
   );
 }
 
-// ─── Section Header component ──────────────────────────────────
 
-function SectionHeader({ icon, title }: { icon: React.ReactNode; title: string }) {
-  return (
-    <div className="flex items-center gap-3 mb-4">
-      <div className="w-8 h-8 rounded-lg bg-[#1F1E1D] flex items-center justify-center text-white">{icon}</div>
-      <h2 className="font-[family-name:var(--font-heading)] text-xl sm:text-2xl font-bold text-[#1F1E1D] tracking-tight">{title}</h2>
-      <div className="flex-1 h-px bg-[#D4D2C9]/50" />
-    </div>
-  );
-}

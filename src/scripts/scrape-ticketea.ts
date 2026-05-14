@@ -120,7 +120,7 @@ async function scrapeDetail(page: import("playwright").Page, slug: string, title
 
     // Imagen principal del evento: buscar la img del hero/cabecera
     const mainImg = document.querySelector<HTMLImageElement>(
-      'img[src*="ticketea"], img[src*="cloudfront"], img[src*="mcusercontent"], section img, [class*="hero"] img, [class*="banner"] img'
+      'img[src*="cloudfront"], img[src*="mcusercontent"], [class*="hero"] img, [class*="banner"] img, section img, img[src*="ticketea"]:not([src*="logo"])'
     );
     const imageUrl = mainImg?.getAttribute("src") ?? null;
 

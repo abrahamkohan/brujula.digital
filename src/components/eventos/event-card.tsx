@@ -10,6 +10,7 @@ interface Evento {
   venue: string;
   image_url?: string | null;
   source_url?: string | null;
+  zona?: string;
 }
 
 interface Props {
@@ -112,12 +113,17 @@ export default function EventCard({ event, featured }: Props) {
               </span>
             )}
             {event.venue && (
-              <span className="hidden sm:flex items-center gap-1 truncate">
+              <span className="flex items-center gap-1 truncate min-w-0">
                 <MapPin className="h-3 w-3 shrink-0" />
                 <span className="truncate">{event.venue}</span>
               </span>
             )}
           </div>
+          {event.zona && (
+            <p className="text-[10px] text-white/50">
+              📍 {event.zona}
+            </p>
+          )}
         </div>
       </div>
     </div>
