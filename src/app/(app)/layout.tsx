@@ -52,15 +52,17 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-screen bg-[#F5F4ED]">
-      {/* Mobile header */}
-      <div className="lg:hidden flex items-center justify-between bg-white border-b border-[#D4D2C9] px-4 h-14">
-        <Link href="/" className="text-lg font-bold text-[#1F1E1D] tracking-tight">
-          Bru<span className="text-[#C96442] italic">jula</span>
-        </Link>
-        <button onClick={() => setSidebarOpen(!sidebarOpen)} className="p-2 text-[#5C5B57]">
-          {sidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-        </button>
-      </div>
+      {/* Mobile header — oculto en eventos */}
+      {!pathname.startsWith("/eventos") && (
+        <div className="lg:hidden flex items-center justify-between bg-white border-b border-[#D4D2C9] px-4 h-14">
+          <Link href="/" className="text-lg font-bold text-[#1F1E1D] tracking-tight">
+            Bru<span className="text-[#C96442] italic">jula</span>
+          </Link>
+          <button onClick={() => setSidebarOpen(!sidebarOpen)} className="p-2 text-[#5C5B57]">
+            {sidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </button>
+        </div>
+      )}
 
       {sidebarOpen && <div className="lg:hidden fixed inset-0 bg-black/20 z-40" onClick={() => setSidebarOpen(false)} />}
 
