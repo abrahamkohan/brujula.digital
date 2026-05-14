@@ -63,6 +63,7 @@ function isThisWeekend(d: Date): boolean {
 // ─── Nav sections ──────────────────────────────────────────────
 
 const SECTIONS = [
+  { id: "todos", icon: Search, label: "Todos" },
   { id: "recitales", cat: "concierto", icon: Music, label: "Recitales" },
   { id: "deportes", cat: "deporte", icon: Trophy, label: "Deportes" },
   { id: "cine", icon: Film, label: "Cine", esPeliculas: true },
@@ -147,7 +148,7 @@ export default function EventosPage() {
   // Eventos por categoría
   const eventosPorCategoria = useMemo(
     () =>
-      SECTIONS.filter((s) => !s.esDirectorio && !s.esPeliculas).map((sec) => ({
+      SECTIONS.filter((s) => s.id !== "todos" && !s.esDirectorio && !s.esPeliculas).map((sec) => ({
         ...sec,
         events: eventosValidos
           .filter((e) => e.categoria === sec.cat && searchPredicate(e.titulo) && dateFilter(e.fecha) && zoneFilter(e.zona))
@@ -249,7 +250,7 @@ export default function EventosPage() {
             {SECTIONS.map((sec) => {
               const Icon = sec.icon;
               return (
-                <button key={sec.id} onClick={() => scrollTo(sec.id)}
+                <button key={sec.id} onClick={() => { if (sec.id === "todos") { setSearch(""); setZonaFilter(""); setTimeFilter("all"); } scrollTo(sec.id); }}
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all shrink-0 ${
                     activeSection === sec.id ? "bg-[#1F1E1D] text-white" : "bg-white text-[#5C5B57] border border-[#D4D2C9] hover:border-[#C96442]"
                   }`}>
@@ -300,6 +301,25 @@ export default function EventosPage() {
           </>
         ) : (
           <>
+            {/* ═══ TODOS — resetear filtros ════════ */}
+            <section id="todos" ref={(el) => { sectionRefs.current.todos = el; }} className="scroll-mt-28">
+              <button onClick={() => { setSearch(""); setZonaFilter(""); setTimeFilter("all"); }}
+                className="w-full group text-left">
+                <div className="flex items-center gap-4 p-5 rounded-2xl bg-white border-2 border-dashed border-[#D4D2C9] hover:border-[#C96442] hover:bg-[#C96442]/5 transition-all">
+                  <div className="w-12 h-12 rounded-xl bg-[#1F1E1D] flex items-center justify-center group-hover:bg-[#C96442] transition-colors">
+                    <Search className="h-6 w-6 text-white" />
+                  </div>
+                  <div className="flex-1">
+                    <h2 className="font-[family-name:var(--font-heading)] text-lg sm:text-xl font-bold text-[#1F1E1D] group-hover:text-[#C96442] transition-colors">Todos los eventos</h2>
+                    <p className="text-sm text-[#87867F] mt-0.5">Ver todo sin filtros · {eventosValidos.length} eventos disponibles</p>
+                  </div>
+                  <span className="shrink-0 text-sm font-medium text-[#C96442] opacity-0 group-hover:opacity-100 transition-opacity">
+                    Ver todo →
+                  </span>
+                </div>
+              </button>
+            </section>
+
             {/* ═══ SECCIONES DE EVENTOS ═══════════════ */}
             {eventosPorCategoria.map((sec) => {
               if (sec.events.length === 0) return null;
