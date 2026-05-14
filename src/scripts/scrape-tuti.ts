@@ -63,7 +63,12 @@ async function scrapeList(
 
       // Imagen
       const elImg = link.querySelector("img");
-      const imageUrl = elImg?.getAttribute("src") ?? null;
+      let imageUrl = elImg?.getAttribute("src") ?? null;
+      // Limpiar URLs de Next.js (_next/image?url=REAL_URL&w=...)
+      if (imageUrl && imageUrl.includes('/_next/image')) {
+        const match = imageUrl.match(/[?&]url=([^&]+)/);
+        if (match) imageUrl = decodeURIComponent(match[1]);
+      }
       const imgAlt = elImg?.getAttribute("alt") ?? "";
 
       // Saltar banners del carousel
