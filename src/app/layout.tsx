@@ -11,12 +11,13 @@ const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"]
 const playfair = Playfair_Display({ variable: "--font-heading", subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Brujula — Datos públicos del Estado paraguayo",
-  description: "Verificación de funcionarios, precios de licitaciones, KYC empresarial y más. Datos oficiales de Paraguay.",
+  title: "¿Qué hay hoy? — Brújula Digital",
+  description: "Descubrí eventos, recitales, gastronomía, bares, cine y más en Paraguay. La guía del turista para saber qué hacer hoy.",
   openGraph: {
-    title: "Brujula — Datos públicos, dirección clara",
-    description: "Consultá datos del Estado paraguayo en segundos.",
-    url: "https://brujula.digital",
+    title: "¿Qué hay hoy? — Brújula Digital",
+    description: "Eventos, recitales, gastronomía, bares, cine y más en Paraguay. Actualizado hoy.",
+    siteName: "Brújula Digital",
+    type: "website",
   },
 };
 
