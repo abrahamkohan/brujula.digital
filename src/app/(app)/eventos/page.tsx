@@ -96,7 +96,12 @@ export default function EventosPage() {
   const [tipoBares, setTipoBares] = useState("");
   const [timeFilter, setTimeFilter] = useState("all");
   const [activeSection, setActiveSection] = useState("recitales");
+  const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({});
   const sectionRefs = useRef<Record<string, HTMLElement | null>>({});
+
+  const toggleExpand = (id: string) => setExpandedSections((prev) => ({ ...prev, [id]: !prev[id] }));
+  const visibleItems = <T,>(items: T[], sectionId: string) =>
+    expandedSections[sectionId] ? items : items.slice(0, 5);
 
   useEffect(() => {
     Promise.all([
@@ -302,12 +307,18 @@ export default function EventosPage() {
                 <section key={sec.id} id={sec.id} ref={(el) => { sectionRefs.current[sec.id] = el; }} className="scroll-mt-28">
                   <SectionHeader icon={<Icon className="h-4 w-4" />} title={sec.label} />
                   <div className="flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-none">
-                    {sec.events.map((e) => (
+                    {visibleItems(sec.events, sec.id).map((e) => (
                       <div key={e.id} className="w-56 sm:w-64 shrink-0 snap-start">
                         <EventCard event={e} />
                         {e.zona && <p className="text-[10px] text-[#87867F] mt-1.5 px-1">{ZONAS.find((z) => z.id === e.zona)?.label}</p>}
                       </div>
                     ))}
+                    {sec.events.length > 5 && !expandedSections[sec.id] && (
+                      <button onClick={() => toggleExpand(sec.id)}
+                        className="w-32 sm:w-36 shrink-0 snap-start rounded-2xl border-2 border-dashed border-[#D4D2C9] flex items-center justify-center text-sm font-medium text-[#87867F] hover:text-[#C96442] hover:border-[#C96442] transition-colors">
+                        Ver todos {sec.events.length} →
+                      </button>
+                    )}
                   </div>
                 </section>
               );
@@ -318,7 +329,7 @@ export default function EventosPage() {
               <section id="cine" ref={(el) => { sectionRefs.current.cine = el; }} className="scroll-mt-28">
                 <SectionHeader icon={<Film className="h-4 w-4" />} title="Cine" />
                 <div className="flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-none">
-                  {peliculasFiltradas.map((p) => (
+                  {visibleItems(peliculasFiltradas, "cine").map((p) => (
                     <a key={p.id} href={p.source_url ?? "#"} target="_blank" rel="noopener noreferrer"
                       className="group w-44 sm:w-48 shrink-0 snap-start">
                       <div className="relative aspect-[2/3] rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:scale-[1.02]">
@@ -337,6 +348,12 @@ export default function EventosPage() {
                       </div>
                     </a>
                   ))}
+                  {peliculasFiltradas.length > 5 && !expandedSections.cine && (
+                    <button onClick={() => toggleExpand("cine")}
+                      className="w-32 sm:w-36 shrink-0 snap-start rounded-2xl border-2 border-dashed border-[#D4D2C9] flex items-center justify-center text-sm font-medium text-[#87867F] hover:text-[#C96442] hover:border-[#C96442] transition-colors">
+                      Ver todas →
+                    </button>
+                  )}
                 </div>
               </section>
             )}
@@ -361,7 +378,13 @@ export default function EventosPage() {
                 <p className="text-sm text-[#87867F] py-8 text-center">No hay resultados</p>
               ) : (
                 <div className="flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-none">
-                  {gastroFiltrados.map((g) => renderCard(g, g.tipo ? <span className="inline-flex px-2 py-0.5 rounded-full text-[10px] font-medium bg-white/20 text-white mt-1">{g.tipo}</span> : undefined))}
+                  {visibleItems(gastroFiltrados, "gastronomia").map((g) => renderCard(g, g.tipo ? <span className="inline-flex px-2 py-0.5 rounded-full text-[10px] font-medium bg-white/20 text-white mt-1">{g.tipo}</span> : undefined))}
+                  {gastroFiltrados.length > 5 && !expandedSections.gastronomia && (
+                    <button onClick={() => toggleExpand("gastronomia")}
+                      className="w-32 sm:w-36 shrink-0 snap-start rounded-2xl border-2 border-dashed border-[#D4D2C9] flex items-center justify-center text-sm font-medium text-[#87867F] hover:text-[#C96442] hover:border-[#C96442] transition-colors">
+                      Ver todos {gastroFiltrados.length} →
+                    </button>
+                  )}
                 </div>
               )}
             </section>
@@ -385,7 +408,13 @@ export default function EventosPage() {
                 <p className="text-sm text-[#87867F] py-8 text-center">No hay resultados</p>
               ) : (
                 <div className="flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-none">
-                  {baresFiltrados.map((b) => renderCard(b, b.tipo ? <span className="inline-flex px-2 py-0.5 rounded-full text-[10px] font-medium bg-white/20 text-white mt-1">{b.tipo}</span> : undefined))}
+                  {visibleItems(baresFiltrados, "bares").map((b) => renderCard(b, b.tipo ? <span className="inline-flex px-2 py-0.5 rounded-full text-[10px] font-medium bg-white/20 text-white mt-1">{b.tipo}</span> : undefined))}
+                  {baresFiltrados.length > 5 && !expandedSections.bares && (
+                    <button onClick={() => toggleExpand("bares")}
+                      className="w-32 sm:w-36 shrink-0 snap-start rounded-2xl border-2 border-dashed border-[#D4D2C9] flex items-center justify-center text-sm font-medium text-[#87867F] hover:text-[#C96442] hover:border-[#C96442] transition-colors">
+                      Ver todos {baresFiltrados.length} →
+                    </button>
+                  )}
                 </div>
               )}
             </section>
@@ -397,7 +426,13 @@ export default function EventosPage() {
                 <p className="text-sm text-[#87867F] py-8 text-center">No hay resultados</p>
               ) : (
                 <div className="flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-none">
-                  {shoppingFiltrados.map((s) => renderCard(s))}
+                  {visibleItems(shoppingFiltrados, "shopping").map((s) => renderCard(s))}
+                  {shoppingFiltrados.length > 5 && !expandedSections.shopping && (
+                    <button onClick={() => toggleExpand("shopping")}
+                      className="w-32 sm:w-36 shrink-0 snap-start rounded-2xl border-2 border-dashed border-[#D4D2C9] flex items-center justify-center text-sm font-medium text-[#87867F] hover:text-[#C96442] hover:border-[#C96442] transition-colors">
+                      Ver todos {shoppingFiltrados.length} →
+                    </button>
+                  )}
                 </div>
               )}
             </section>
@@ -409,7 +444,13 @@ export default function EventosPage() {
                 <p className="text-sm text-[#87867F] py-8 text-center">No hay resultados</p>
               ) : (
                 <div className="flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-none">
-                  {hotelesFiltrados.map((h) => renderCard(h))}
+                  {visibleItems(hotelesFiltrados, "hoteles").map((h) => renderCard(h))}
+                  {hotelesFiltrados.length > 5 && !expandedSections.hoteles && (
+                    <button onClick={() => toggleExpand("hoteles")}
+                      className="w-32 sm:w-36 shrink-0 snap-start rounded-2xl border-2 border-dashed border-[#D4D2C9] flex items-center justify-center text-sm font-medium text-[#87867F] hover:text-[#C96442] hover:border-[#C96442] transition-colors">
+                      Ver todos {hotelesFiltrados.length} →
+                    </button>
+                  )}
                 </div>
               )}
               <p className="text-xs text-[#87867F] mt-3 text-center">Precios y disponibilidad en Booking.com</p>
