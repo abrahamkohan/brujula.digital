@@ -1,15 +1,16 @@
 // ============================================================
 // Radar de Eventos Paraguay — Scraper VisitParaguay.travel
 // ============================================================
-// Portal oficial de turismo. Fetch + cheerio.
+// Portal oficial de turismo. Usa Playwright porque la página
+// carga los eventos con JS (Next.js).
 //
 // Uso: npx tsx src/scripts/scrape-visitparaguay.ts
 // ============================================================
 
-import * as cheerio from "cheerio";
-import { upsertEventsNoImages } from "../lib/scrapers/upsert-events";
+import { chromium } from "playwright";
 import { parseParaguayanDate } from "../lib/scrapers/parse-date";
-import { normalizeCategory } from "../lib/scrapers/types";
+import { detectCategory } from "../lib/scrapers/types";
+import { upsertEventsNoImages } from "../lib/scrapers/upsert-events";
 import type { ScrapedEvent } from "../lib/scrapers/types";
 
 const BASE = "https://visitparaguay.travel";
@@ -18,106 +19,95 @@ export async function scrapeVisitParaguay(): Promise<ScrapedEvent[]> {
   console.log("\n🏛️ [visitparaguay] Iniciando scraper...");
   const start = Date.now();
 
+  const browser = await chromium.launch({ headless: true });
+  const context = await browser.newContext({
+    userAgent:
+      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36",
+    viewport: { width: 1280, height: 900 },
+  });
+  const page = await context.newPage();
+
   try {
-    const response = await fetch(`${BASE}/events`, {
-      headers: {
-        "User-Agent":
-          "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36",
-        Accept: "text/html",
-      },
-    });
+    await page.goto(BASE, { waitUntil: "networkidle", timeout: 20000 });
+    await page.waitForTimeout(2000);
 
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-    }
+    const items = await page.evaluate(() => {
+      // Buscar links a /events/ en el homepage
+      const links = document.querySelectorAll<HTMLAnchorElement>(
+        'a[href*="/events/"]'
+      );
+      const seen = new Set<string>();
+      const events: Array<{
+        slug: string;
+        title: string;
+        dateText: string;
+        imageUrl: string | null;
+      }> = [];
 
-    const html = await response.text();
-    const $ = cheerio.load(html);
+      links.forEach((link) => {
+        const href = link.getAttribute("href") ?? "";
+        const match = href.match(/\/events\/([^/]+)/);
+        if (!match) return;
 
-    const events: ScrapedEvent[] = [];
+        const slug = match[1];
+        if (seen.has(slug)) return;
+        seen.add(slug);
 
-    // Buscar tarjetas de eventos (estructura típica de WP)
-    $("article, .event-card, .evento-card, [class*='event'], .post-card").each(
-      (_, el) => {
-        const $el = $(el);
-
-        // Título
+        // Título del link text o del heading
+        const heading = link.querySelector("h1, h2, h3, h4");
         const title =
-          $el.find("h1, h2, h3, h4, .title, .entry-title").first().text().trim() ||
-          $el.find("a").first().text().trim();
+          (heading?.textContent?.trim() || slug)
+            .replace(/\s+/g, ' ')  // múltiples espacios → uno
+            .trim();
 
-        if (!title) return;
-
-        // Slug / external_id
-        const link = $el.find("a").first().attr("href") || "";
-        const slug =
-          link.split("/").filter(Boolean).pop() ||
-          title.toLowerCase().replace(/\s+/g, "-");
-
-        // Fecha
-        const dateText =
-          $el.find(".date, .fecha, time, [class*='date'], [class*='fecha']")
-            .first()
-            .text()
-            .trim() ||
-          $el.find("time").attr("datetime") ||
-          "";
-
-        const eventDate = parseParaguayanDate(dateText);
+        // Fecha del texto del link
+        const dateMatch = link.textContent?.match(
+          /(\d{1,2})\s*\/\s*([a-zñé]+)\s*\.\s*(\d{4})/i
+        );
+        const dateText = dateMatch
+          ? `${dateMatch[1]} de ${dateMatch[2]} de ${dateMatch[3]}`
+          : "";
 
         // Imagen
-        const img =
-          $el.find("img").first().attr("src") ||
-          $el.find("img").first().attr("data-src") ||
-          "";
-
-        // Descripción corta
-        const desc =
-          $el.find("p, .description, .excerpt, .resumen").first().text().trim() || "";
-
-        // Categoría
-        const catText =
-          $el.find(".category, .cat, .tag, [class*='category']").first().text().trim() ||
-          "Otro";
-
-        const category = normalizeCategory(catText);
-
-        // Venue
-        const venue =
-          $el.find(".venue, .location, .lugar, [class*='venue'], [class*='lugar']")
-            .first()
-            .text()
-            .trim() || "";
-
-        events.push({
-          source: "visitparaguay",
-          external_id: slug,
-          title,
-          event_date: eventDate?.toISOString() ?? new Date().toISOString(),
-          venue_name: venue,
-          city: venue.toLowerCase().includes("asunción")
-            ? "Asunción"
-            : "Asunción",
-          category,
-          currency: "PYG",
-          image_url: img.startsWith("http") ? img : img ? `${BASE}${img}` : undefined,
-          source_url: link.startsWith("http") ? link : `${BASE}${link}`,
-        });
-
-        // RAW debug
-        if (events.length <= 3) {
-          console.log(`  📄 "${title}" → ${eventDate?.toISOString() ?? "sin fecha"}`);
+        const img = link.querySelector("img");
+        let imageUrl = img?.getAttribute("src") ?? null;
+        if (imageUrl && imageUrl.startsWith("/")) {
+          imageUrl = `https://visitparaguay.travel${imageUrl}`;
         }
-      }
-    );
+
+        events.push({ slug, title, dateText, imageUrl });
+      });
+
+      return events;
+    });
+
+    console.log(`[visitparaguay] ${items.length} eventos encontrados`);
+
+    const events: ScrapedEvent[] = items.map((item) => {
+      const eventDate = item.dateText
+        ? parseParaguayanDate(item.dateText)
+        : null;
+
+      return {
+        source: "visitparaguay",
+        external_id: item.slug,
+        title: item.title,
+        event_date: eventDate?.toISOString() ?? new Date().toISOString(),
+        venue_name: "",
+        city: "Asunción",
+        category: detectCategory(item.title),
+        currency: "PYG",
+        image_url: item.imageUrl ?? undefined,
+        source_url: `${BASE}/events/${item.slug}`,
+      };
+    });
 
     const duration = ((Date.now() - start) / 1000).toFixed(1);
-    console.log(`[visitparaguay] ${events.length} eventos encontrados en ${duration}s`);
+    console.log(`[visitparaguay] ✅ ${events.length} eventos scrapeados en ${duration}s`);
 
     return events;
-  } catch (err) {
-    console.error(`[visitparaguay] ❌ Error: ${(err as Error).message}`);
-    return [];
+  } finally {
+    await browser.close();
   }
 }
 
