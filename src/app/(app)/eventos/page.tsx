@@ -251,8 +251,13 @@ export default function EventosPage() {
       {/* ─── Sticky nav ────────────────────────────── */}
       <div className="sticky top-0 z-40 bg-[#F5F4ED]/95 backdrop-blur-sm border-b border-[#D4D2C9]/50">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-2 space-y-2">
+          {/* Logo */}
+          <div className="flex items-center gap-2 pt-1 pb-0.5">
+            <span className="text-xl">🧭</span>
+            <span className="font-[family-name:var(--font-heading)] text-sm font-bold text-[#1F1E1D] tracking-tight">Brújula</span>
+          </div>
           {/* Sections */}
-          <div className="flex gap-2 overflow-x-auto scrollbar-none">
+          <div className="flex gap-2 flex-wrap">
             {SECTIONS.map((sec) => {
               const Icon = sec.icon;
               return (
