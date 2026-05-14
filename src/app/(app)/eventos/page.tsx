@@ -257,7 +257,7 @@ export default function EventosPage() {
             {SECTIONS.map((sec) => {
               const Icon = sec.icon;
               return (
-                <button key={sec.id} onClick={() => { if (sec.id === "todos") { setSearch(""); setZonaFilter(""); setTimeFilter("all"); } scrollTo(sec.id); }}
+                <button key={sec.id} onClick={() => scrollTo(sec.id)}
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all shrink-0 ${
                     activeSection === sec.id ? "bg-[#1F1E1D] text-white" : "bg-white text-[#5C5B57] border border-[#D4D2C9] hover:border-[#C96442]"
                   }`}>
