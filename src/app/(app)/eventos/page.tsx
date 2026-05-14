@@ -84,6 +84,17 @@ const QUICK_FILTERS = [
   { id: "finde", label: "Este finde" },
 ];
 
+const CLASIFICACION_MAP: Record<string, string> = {
+  C: "Apto para todos",
+  ATP: "Apto para todo público",
+  S07: "Mayores de 7",
+  S12: "Mayores de 12",
+  S13: "Mayores de 13",
+  S16: "Mayores de 16",
+  S18: "Mayores de 18",
+  R: "Restringido",
+};
+
 // ─── Page ──────────────────────────────────────────────────────
 
 export default function EventosPage() {
@@ -98,6 +109,15 @@ export default function EventosPage() {
   const [activeSection, setActiveSection] = useState("recitales");
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({});
   const sectionRefs = useRef<Record<string, HTMLElement | null>>({});
+
+  // Fecha filter: solo eventos con año entre 2024 y 2028
+  const eventosValidos = useMemo(
+    () => eventos.filter((e) => {
+      const year = new Date(e.fecha).getFullYear();
+      return year >= 2024 && year <= 2028;
+    }),
+    [eventos]
+  );
 
   const toggleExpand = (id: string) => setExpandedSections((prev) => ({ ...prev, [id]: !prev[id] }));
   const visibleItems = <T,>(items: T[], sectionId: string) =>
@@ -149,11 +169,11 @@ export default function EventosPage() {
     () =>
       SECTIONS.filter((s) => !s.esDirectorio && !s.esPeliculas).map((sec) => ({
         ...sec,
-        events: eventos
+        events: eventosValidos
           .filter((e) => e.categoria === sec.cat && searchPredicate(e.titulo) && dateFilter(e.fecha) && zoneFilter(e.zona))
           .sort((a, b) => new Date(a.fecha).getTime() - new Date(b.fecha).getTime()),
       })),
-    [eventos, search, timeFilter, zonaFilter]
+    [eventosValidos, search, timeFilter, zonaFilter]
   );
 
   const peliculasFiltradas = peliculas.filter(
@@ -343,7 +363,7 @@ export default function EventosPage() {
                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
                         <div className="absolute bottom-0 left-0 right-0 p-3 space-y-0.5">
                           <h3 className="font-semibold text-xs text-white leading-snug line-clamp-2 drop-shadow-sm">{p.titulo}</h3>
-                          {p.clasificacion && <span className="inline-flex px-1.5 py-0.5 rounded text-[10px] font-bold bg-white/20 text-white">{p.clasificacion}</span>}
+                          {p.clasificacion && <span className="inline-flex px-1.5 py-0.5 rounded text-[10px] font-bold bg-white/20 text-white">{CLASIFICACION_MAP[p.clasificacion] ?? p.clasificacion}</span>}
                         </div>
                       </div>
                     </a>
@@ -458,7 +478,7 @@ export default function EventosPage() {
 
             {/* Footer */}
             <p className="text-xs text-[#B8B7B2] text-center pt-4">
-              {eventos.length} eventos · {GASTRONOMIA.length} restaurantes · {BARES.length} bares · {HOTELES.length} hoteles ·{" "}
+              {eventosValidos.length} eventos · {GASTRONOMIA.length} restaurantes · {BARES.length} bares · {HOTELES.length} hoteles ·{" "}
               <a href="/admin/eventos" className="underline hover:text-[#C96442] transition-colors">Admin</a>
             </p>
           </>

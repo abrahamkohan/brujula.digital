@@ -45,7 +45,8 @@ function formatDate(dateStr: string) {
   const day = d.getDate();
   const month = MONTHS[d.getMonth()];
   const year = d.getFullYear();
-  return `${day} ${month}${year !== 2026 ? ` ${year}` : ""}`;
+  const currentYear = new Date().getFullYear();
+  return `${day} ${month}${year !== currentYear ? ` ${year}` : ""}`;
 }
 
 function isToday(dateStr: string) {
@@ -66,7 +67,11 @@ export default function EventCard({ event, featured }: Props) {
   const Icon = cat.icon;
   const grad = GRADIENTS[event.categoria?.toLowerCase()] ?? "from-gray-200 to-gray-100";
   const hoy = isToday(event.fecha);
-  const hasImage = event.image_url?.startsWith("http");
+  const hasImage =
+    event.image_url?.startsWith("http") &&
+    !event.image_url.includes("ticketea.com.py") &&
+    !event.image_url.includes("tuti.com.py") &&
+    !event.image_url.includes("data:");
 
   const content = (
     <div className="group relative rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:scale-[1.02] cursor-pointer">
@@ -91,7 +96,7 @@ export default function EventCard({ event, featured }: Props) {
         )}
 
         {/* ─── Overlay gradiente ────────────────── */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
 
         {/* ─── Chip categoría ────────────────────── */}
         <span className="absolute top-3 left-3 inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-medium tracking-wide bg-white/20 backdrop-blur-sm text-white shadow-xs">
@@ -107,8 +112,8 @@ export default function EventCard({ event, featured }: Props) {
         )}
 
         {/* ─── Info (abajo, sobre gradiente) ─────── */}
-        <div className="absolute bottom-0 left-0 right-0 p-4 space-y-1">
-          <h3 className="font-semibold text-sm text-white leading-snug line-clamp-2 drop-shadow-sm">
+        <div className="absolute bottom-0 left-0 right-0 p-5 space-y-1">
+          <h3 className="font-bold text-base text-white leading-snug line-clamp-2 drop-shadow-sm">
             {event.titulo}
           </h3>
           <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-white/80">
