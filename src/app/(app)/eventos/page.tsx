@@ -137,7 +137,6 @@ export default function EventosPage() {
   const scrollTo = (id: string) => {
     if (id === "todos") {
       window.scrollTo({ top: 0, behavior: "smooth" });
-      setActiveSection("todos");
     } else {
       sectionRefs.current[id]?.scrollIntoView({ behavior: "smooth" });
     }
