@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { Inter, Geist_Mono } from "next/font/google";
-import Navbar from "@/components/navbar";
 import PageTransition from "@/components/page-transition";
 import KeyboardShortcuts from "@/components/keyboard-shortcuts";
 import { ToastProvider } from "@/components/toast";
@@ -34,7 +33,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="min-h-full flex flex-col">
         <ToastProvider>
         <KeyboardShortcuts />
-        <Navbar />
         <main className="flex-1"><PageTransition>{children}</PageTransition></main>
         </ToastProvider>
       </body>
