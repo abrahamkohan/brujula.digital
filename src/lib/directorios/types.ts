@@ -39,6 +39,7 @@ export const ZONAS: ZonaInfo[] = [
   { id: "loma-taruma", label: "Loma Tarumá" },
   { id: "ykua-sati", label: "Ykua Sati" },
   { id: "mariano-roque-alonso", label: "Mariano Roque Alonso" },
+  { id: "recoleta", label: "Recoleta" },
   { id: "aregua", label: "Areguá" },
   { id: "otras", label: "Otras" },
 ];
