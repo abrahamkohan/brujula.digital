@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import type { Metadata } from "next";
 import { ShareButton } from "@/components/share-button";
+import { ImageWithFallback } from "@/components/image-fallback";
 
 // ─── Config ────────────────────────────────────────────────────
 // ⚠️ Reemplazá con tu número de WhatsApp (formato internacional sin +)
@@ -171,9 +172,16 @@ export default async function ZonaPage({ params }: { params: Promise<{ id: strin
                   >
                     <div className="aspect-[16/9] bg-[#F5F4ED] overflow-hidden relative">
                       {item.image ? (
-                        <img src={item.image} alt={item.name}
+                        <ImageWithFallback
+                          src={item.image}
+                          alt={item.name}
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                          onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                          fallback={
+                            <div className="w-full h-full flex items-center justify-center text-[#D4D2C9]">
+                              <Icon className="h-10 w-10" />
+                            </div>
+                          }
+                        />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center text-[#D4D2C9]">
                           <Icon className="h-10 w-10" />
