@@ -269,7 +269,11 @@ export default async function HomePage() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 mt-14 mb-14">
         <div className="bg-gradient-to-br from-[#1F1E1D] to-[#2D2827] rounded-3xl p-8 sm:p-12 text-center">
           <div className="max-w-xl mx-auto space-y-4">
-            <div className="text-4xl">🏠</div>
+            <img
+              src="https://kohancampos.com.py/logo-navbar.svg"
+              alt="Kohan Campos"
+              className="h-8 mx-auto mb-1 brightness-0 invert"
+            />
             <h2 className="font-[family-name:var(--font-heading)] text-2xl sm:text-3xl font-bold text-white tracking-tight">
               ¿Buscás propiedad en Asunción?
             </h2>
@@ -303,6 +307,14 @@ export default async function HomePage() {
             <span className="ml-2">· Guía de Asunción</span>
           </div>
           <div className="flex items-center gap-4">
+            <a href="https://kohancampos.com.py" target="_blank" rel="noopener noreferrer"
+              className="hover:opacity-80 transition-opacity">
+              <img
+                src="https://kohancampos.com.py/logo-navbar.svg"
+                alt="Kohan Campos"
+                className="h-5"
+              />
+            </a>
             <Link href="/guia" className="hover:text-[#C96442] transition-colors">Guía</Link>
             <Link href="/eventos" className="hover:text-[#C96442] transition-colors">Eventos</Link>
           </div>
