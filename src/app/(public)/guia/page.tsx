@@ -101,11 +101,11 @@ export default async function GuiaPage() {
           })}
         </div>
 
-        <div className="mt-14 bg-gradient-to-br from-[#1F1E1D] to-[#2D2827] rounded-3xl p-8 sm:p-12 text-center">
+        <div className="mt-14 bg-gradient-to-br from-[#1F1E1D] to-[#2A2825] rounded-3xl py-14 px-8 sm:py-16 sm:px-12 text-center">
           <img
             src="https://kohancampos.com.py/logo-navbar.svg"
-            alt="Kohan Campos"
-            className="h-8 mx-auto mb-2 brightness-0 invert"
+            alt="Kohan & Campos"
+            className="h-9 mx-auto mb-3"
           />
           <h2 className="font-[family-name:var(--font-heading)] text-xl sm:text-2xl font-bold text-white">
             ¿Buscás propiedad en Asunción?

@@ -268,12 +268,12 @@ export default async function HomePage() {
            CTA PROPIEDADES
          ═══════════════════════════════════════════ */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 mt-14 mb-14">
-        <div className="bg-gradient-to-br from-[#1F1E1D] to-[#2D2827] rounded-3xl p-8 sm:p-12 text-center">
+        <div className="bg-gradient-to-br from-[#1F1E1D] to-[#2A2825] rounded-3xl py-14 px-8 sm:py-16 sm:px-12 text-center">
           <div className="max-w-xl mx-auto space-y-4">
             <img
               src="https://kohancampos.com.py/logo-navbar.svg"
-              alt="Kohan Campos"
-              className="h-8 mx-auto mb-1 brightness-0 invert"
+              alt="Kohan & Campos"
+              className="h-9 mx-auto mb-2"
             />
             <h2 className="font-[family-name:var(--font-heading)] text-2xl sm:text-3xl font-bold text-white tracking-tight">
               ¿Buscás propiedad en Asunción?
@@ -309,12 +309,8 @@ export default async function HomePage() {
           </div>
           <div className="flex items-center gap-4">
             <a href="https://kohancampos.com.py" target="_blank" rel="noopener noreferrer"
-              className="hover:opacity-80 transition-opacity">
-              <img
-                src="https://kohancampos.com.py/logo-navbar.svg"
-                alt="Kohan Campos"
-                className="h-5"
-              />
+              className="text-sm font-semibold text-[#5C5B57] hover:text-[#1F1E1D] transition-colors">
+              Kohan &amp; Campos
             </a>
             <Link href="/guia" className="hover:text-[#C96442] transition-colors">Guía</Link>
             <Link href="/eventos" className="hover:text-[#C96442] transition-colors">Eventos</Link>
