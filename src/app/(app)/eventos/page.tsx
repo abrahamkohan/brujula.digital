@@ -92,7 +92,7 @@ export default function EventosPage() {
   const [search, setSearch] = useState("");
   const [zonaFilter, setZonaFilter] = useState("");
   const [timeFilter, setTimeFilter] = useState("all");
-  const [activeSection, setActiveSection] = useState("recitales");
+  const [activeSection, setActiveSection] = useState("");
   const [showZones, setShowZones] = useState(false);
   const sectionRefs = useRef<Record<string, HTMLElement | null>>({});
 
@@ -120,15 +120,28 @@ export default function EventosPage() {
   // Observer
   useEffect(() => {
     if (loading) return;
+    const sentinel = document.getElementById("top-sentinel");
     const obs = new IntersectionObserver(
-      (entries) => { entries.forEach((e) => { if (e.isIntersecting) setActiveSection(e.target.id); }); },
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) setActiveSection(e.target.id === "top-sentinel" ? "todos" : e.target.id);
+        });
+      },
       { rootMargin: "-80px 0px -60% 0px" }
     );
+    if (sentinel) obs.observe(sentinel);
     SECTIONS.forEach(({ id }) => { const el = sectionRefs.current[id]; if (el) obs.observe(el); });
     return () => obs.disconnect();
   }, [loading]);
 
-  const scrollTo = (id: string) => sectionRefs.current[id]?.scrollIntoView({ behavior: "smooth" });
+  const scrollTo = (id: string) => {
+    if (id === "todos") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      setActiveSection("todos");
+    } else {
+      sectionRefs.current[id]?.scrollIntoView({ behavior: "smooth" });
+    }
+  };
 
   // ─── Filters ──────────────────────────────
 
@@ -165,7 +178,7 @@ export default function EventosPage() {
   );
 
   const peliculasFiltradas = peliculas.filter(
-    (p) => searchPredicate(p.titulo ?? "") && (!zonaFilter || zonaFilter === "centro" || zonaFilter === "villa-morra" || zonaFilter === "carmelitas")
+    (p) => searchPredicate(p.titulo ?? "")
   );
 
   const gastroFiltrados = GASTRONOMIA.filter(
@@ -245,7 +258,7 @@ export default function EventosPage() {
           <div className="relative max-w-2xl mx-auto mt-5">
             <Search className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-[#87867F]" />
             <input type="text" value={search} onChange={(e) => setSearch(e.target.value)}
-              placeholder="Events, restaurants, bars in Asunción..."
+              placeholder="Buscá eventos, restaurantes, bares y más..."
               className="w-full bg-white rounded-2xl pl-14 pr-6 py-3.5 text-sm text-[#1F1E1D] placeholder:text-[#87867F] focus:outline-none focus:ring-2 focus:ring-[#C96442] shadow-sm transition-shadow" />
           </div>
           {/* Quick filters */}
@@ -313,6 +326,8 @@ export default function EventosPage() {
 
       {/* ─── Contenido ────────────────────────────── */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 pb-20 space-y-14 pt-8">
+        {/* Sentinel para detección de scroll al inicio */}
+        <div id="top-sentinel" className="-mt-8 h-1" />
         {loading ? (
           <>
             {[1, 2, 3].map((i) => <SkeletonGrid key={i} count={4} />)}
