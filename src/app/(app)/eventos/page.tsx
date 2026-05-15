@@ -3,7 +3,7 @@
 import { useEffect, useState, useRef, useMemo } from "react";
 import {
   Search, Music, Trophy, Film, UtensilsCrossed, Hotel,
-  Beer, ShoppingBag, Building2, X,
+  Beer, ShoppingBag, Building2, X, Share2,
 } from "lucide-react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
@@ -203,6 +203,17 @@ export default function EventosPage() {
       <div className={`relative ${variant === "carousel" ? "aspect-[3/4]" : "aspect-[4/3]"} rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:scale-[1.02]`}>
         <img src={item.image} alt={item.name} className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const text = encodeURIComponent(`📍 ${item.name}\n${item.desc}\n\n${item.url}`);
+            window.open(`https://wa.me/?text=${text}`, "_blank");
+          }}
+          className="absolute top-3 right-3 z-10 flex items-center justify-center w-7 h-7 rounded-full bg-black/40 backdrop-blur-sm text-white hover:bg-black/60 transition-colors"
+        >
+          <Share2 className="h-3 w-3" />
+        </button>
         <div className="absolute bottom-0 left-0 right-0 p-4 space-y-1">
           {item.badge && <span className="inline-flex px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#C96442] text-white mb-1">{item.badge}</span>}
           <h3 className="font-semibold text-sm text-white drop-shadow-sm leading-snug">{item.name}</h3>
@@ -328,33 +339,35 @@ export default function EventosPage() {
 
             {/* ═══ SECCIONES DE EVENTOS ═══════════════ */}
             {eventosPorCategoria.map((sec) => {
-              if (sec.events.length < 2) return null;
               const Icon = sec.icon;
+              const hasEvents = sec.events.length > 0;
               const visible = sec.events.slice(0, 5);
               return (
                 <section key={sec.id} id={sec.id} ref={(el) => { sectionRefs.current[sec.id] = el; }} className="scroll-mt-28">
-                  {/* Header con link Ver todos */}
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-8 h-8 rounded-lg bg-[#1F1E1D] flex items-center justify-center text-white">
-                      <Icon className="h-4 w-4" />
-                    </div>
-                    <h2 className="font-[family-name:var(--font-heading)] text-xl sm:text-2xl font-bold text-[#1F1E1D] tracking-tight">
-                      {sec.label}
-                    </h2>
-                    <div className="flex-1 h-px bg-[#D4D2C9]/50" />
-                    {sec.events.length > 5 && (
-                      <Link href={`/eventos/${sec.id}`}
-                        className="shrink-0 flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium bg-white text-[#5C5B57] border border-[#D4D2C9] hover:border-[#C96442] hover:text-[#C96442] transition-all whitespace-nowrap">
-                        Ver todos ({sec.events.length}) →
-                      </Link>
-                    )}
-                  </div>
-                  {/* Grid unificado */}
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                    {visible.map((e) => (
-                      <EventCard key={e.id} event={e} />
-                    ))}
-                  </div>
+                  {hasEvents ? (
+                    <>
+                      <div className="flex items-center gap-3 mb-4">
+                        <div className="w-8 h-8 rounded-lg bg-[#1F1E1D] flex items-center justify-center text-white">
+                          <Icon className="h-4 w-4" />
+                        </div>
+                        <h2 className="font-[family-name:var(--font-heading)] text-xl sm:text-2xl font-bold text-[#1F1E1D] tracking-tight">
+                          {sec.label}
+                        </h2>
+                        <div className="flex-1 h-px bg-[#D4D2C9]/50" />
+                        {sec.events.length > 5 && (
+                          <Link href={`/eventos/${sec.id}`}
+                            className="shrink-0 flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium bg-white text-[#5C5B57] border border-[#D4D2C9] hover:border-[#C96442] hover:text-[#C96442] transition-all whitespace-nowrap">
+                            Ver todos ({sec.events.length}) →
+                          </Link>
+                        )}
+                      </div>
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                        {visible.map((e) => (
+                          <EventCard key={e.id} event={e} />
+                        ))}
+                      </div>
+                    </>
+                  ) : null}
                 </section>
               );
             })}

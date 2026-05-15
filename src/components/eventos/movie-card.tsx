@@ -1,3 +1,5 @@
+import { Share2 } from "lucide-react";
+
 interface Pelicula {
   id: string;
   titulo: string;
@@ -45,12 +47,25 @@ export default function MovieCard({ movie }: { movie: Pelicula }) {
           </div>
         )}
 
-        {/* Badge clasificación */}
-        {movie.clasificacion && (
-          <span className="absolute top-3 right-3 inline-flex items-center px-2 py-1 rounded-full text-[10px] font-bold tracking-wide bg-white/85 backdrop-blur-sm text-[#5C5B57] shadow-xs">
-            {movie.clasificacion}
-          </span>
-        )}
+        {/* Top row: clasificación + share */}
+        <div className="absolute top-3 right-3 flex items-center gap-1.5">
+          {movie.clasificacion && (
+            <span className="inline-flex items-center px-2 py-1 rounded-full text-[10px] font-bold tracking-wide bg-white/85 backdrop-blur-sm text-[#5C5B57] shadow-xs">
+              {movie.clasificacion}
+            </span>
+          )}
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              const text = encodeURIComponent(`🎬 ${movie.titulo}\n\n${movie.source_url ?? `https://brujula.digital/eventos/cine`}`);
+              window.open(`https://wa.me/?text=${text}`, "_blank");
+            }}
+            className="flex items-center justify-center w-7 h-7 rounded-full bg-black/40 backdrop-blur-sm text-white hover:bg-black/60 transition-colors"
+          >
+            <Share2 className="h-3 w-3" />
+          </button>
+        </div>
       </div>
 
       {/* Info */}

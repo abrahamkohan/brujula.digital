@@ -3,7 +3,7 @@
 import { useEffect, useState, useMemo } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Search, X } from "lucide-react";
+import { ArrowLeft, Search, X, Share2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import EventCard from "@/components/eventos/event-card";
 import MovieCard from "@/components/eventos/movie-card";
@@ -183,6 +183,17 @@ export default function CategoriaPage() {
       <div className="relative aspect-[4/3] rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:scale-[1.02]">
         <img src={item.image} alt={item.name} className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent" />
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const text = encodeURIComponent(`📍 ${item.name}\n${item.desc}\n\n${item.url}`);
+            window.open(`https://wa.me/?text=${text}`, "_blank");
+          }}
+          className="absolute top-3 right-3 z-10 flex items-center justify-center w-7 h-7 rounded-full bg-black/40 backdrop-blur-sm text-white hover:bg-black/60 transition-colors"
+        >
+          <Share2 className="h-3 w-3" />
+        </button>
         <div className="absolute bottom-0 left-0 right-0 p-4 space-y-1">
           {item.badge && <span className="inline-flex px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#C96442] text-white mb-1">{item.badge}</span>}
           <h3 className="font-semibold text-sm text-white drop-shadow-sm leading-snug">{item.name}</h3>
