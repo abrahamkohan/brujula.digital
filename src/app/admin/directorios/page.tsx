@@ -6,6 +6,7 @@ import {
   ShoppingBag, UtensilsCrossed, Beer, Hotel, Film,
   Landmark, TreePine, Building2, Trophy, MicVocal,
   Palmtree, BookOpen, MapPin, Compass,
+  Image as ImageIcon,
 } from "lucide-react";
 import { ZONAS } from "@/lib/directorios/types";
 
@@ -85,6 +86,8 @@ export default function AdminDirectoriosPage() {
   const [modal, setModal] = useState<ModalMode>(null);
   const [editItem, setEditItem] = useState<DirectorioItem | null>(null);
   const [saving, setSaving] = useState(false);
+  const [fixing, setFixing] = useState(false);
+  const [fixResult, setFixResult] = useState<string | null>(null);
   const [notification, setNotification] = useState<{ type: "success" | "error"; message: string } | null>(null);
 
   // ── Form state ──
@@ -251,6 +254,35 @@ export default function AdminDirectoriosPage() {
           </button>
         </div>
       )}
+
+      {/* ── Tools ── */}
+      <div className="flex items-center gap-3 mb-6">
+        <button
+          onClick={async () => {
+            setFixing(true);
+            setFixResult(null);
+            try {
+              const res = await fetch("/api/admin/fix-images", { method: "POST" });
+              const data = await res.json();
+              setFixResult(
+                `✅ ${data.actualizados} actualizados · ❌ ${data.noEncontrados} sin imagen · ⚠️ ${data.errores} errores`
+              );
+              fetchItems();
+            } catch {
+              setFixResult("❌ Error al ejecutar");
+            }
+            setFixing(false);
+          }}
+          disabled={fixing}
+          className="flex items-center gap-1.5 px-4 py-2 rounded-xl border border-[#D4D2C9] text-sm font-medium text-[#5C5B57] hover:bg-[#F5F4ED] transition-colors disabled:opacity-50"
+        >
+          {fixing ? <Loader2 className="h-4 w-4 animate-spin" /> : <ImageIcon className="h-4 w-4" />}
+          {fixing ? "Buscando imágenes..." : "🖼️ Fix imágenes faltantes"}
+        </button>
+        {fixResult && (
+          <span className="text-xs text-[#87867F]">{fixResult}</span>
+        )}
+      </div>
 
       {/* ── Tabs ── */}
       <div className="flex gap-1 mb-6 border-b border-[#D4D2C9]">
