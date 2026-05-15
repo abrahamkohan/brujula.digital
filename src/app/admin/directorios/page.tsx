@@ -6,7 +6,7 @@ import {
   ShoppingBag, UtensilsCrossed, Beer, Hotel, Film,
   Landmark, TreePine, Building2, Trophy, MicVocal,
   Palmtree, BookOpen, MapPin, Compass,
-  Image as ImageIcon,
+  Image as ImageIcon, Star,
 } from "lucide-react";
 import { ZONAS } from "@/lib/directorios/types";
 
@@ -25,6 +25,7 @@ interface DirectorioItem {
   badge: string | null;
   stars: number | null;
   active: boolean;
+  featured: boolean;
   sort_order: number;
   created_at: string;
   updated_at: string;
@@ -214,6 +215,15 @@ export default function AdminDirectoriosPage() {
     if (res.ok) fetchItems();
   }
 
+  async function handleToggleFeatured(item: DirectorioItem) {
+    const res = await fetch("/api/admin/directorios", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: item.id, featured: !item.featured }),
+    });
+    if (res.ok) fetchItems();
+  }
+
   async function handleDelete(item: DirectorioItem) {
     if (!confirm(`¿Eliminar "${item.name}" definitivamente?`)) return;
     const res = await fetch(`/api/admin/directorios?id=${item.id}`, { method: "DELETE" });
@@ -324,17 +334,18 @@ export default function AdminDirectoriosPage() {
       ) : (
         <div className="bg-white rounded-xl border border-[#D4D2C9] overflow-hidden">
           {/* Table header */}
-          <div className="grid grid-cols-[1fr_100px_100px_60px_120px] gap-3 px-5 py-3 text-xs font-medium text-[#87867F] border-b border-[#D4D2C9]">
+          <div className="grid grid-cols-[1fr_100px_100px_50px_50px_120px] gap-3 px-5 py-3 text-xs font-medium text-[#87867F] border-b border-[#D4D2C9]">
             <span>Nombre</span>
             <span>Zona</span>
             <span>Tipo</span>
             <span>Activo</span>
+            <span>★</span>
             <span>Acciones</span>
           </div>
 
           {items.map((item) => (
             <div key={item.id}
-              className="grid grid-cols-[1fr_100px_100px_60px_120px] gap-3 px-5 py-3 text-sm border-b border-[#D4D2C9] last:border-0 items-center">
+              className="grid grid-cols-[1fr_100px_100px_50px_50px_120px] gap-3 px-5 py-3 text-sm border-b border-[#D4D2C9] last:border-0 items-center">
               <div className="flex items-center gap-2 min-w-0">
                 <div className="w-8 h-8 rounded-lg bg-[#F5F4ED] overflow-hidden shrink-0">
                   {item.image ? (
@@ -368,6 +379,12 @@ export default function AdminDirectoriosPage() {
                     item.active ? "bg-[#5A7D5A] border-[#5A7D5A]" : "border-[#D4D2C9]"
                   }`}>
                   {item.active && <Check className="h-3 w-3 text-white" />}
+                </button>
+              </div>
+              <div>
+                <button onClick={() => handleToggleFeatured(item)}
+                  className={`transition-colors ${item.featured ? "text-[#C96442]" : "text-[#D4D2C9] hover:text-[#87867F]"}`}>
+                  <Star className={`h-4 w-4 ${item.featured ? "fill-[#C96442]" : ""}`} />
                 </button>
               </div>
               <div className="flex items-center gap-1">
