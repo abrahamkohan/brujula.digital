@@ -92,7 +92,7 @@ export async function scrapeVisitParaguay(): Promise<ScrapedEvent[]> {
         source: "visitparaguay",
         external_id: item.slug,
         title: item.title,
-        event_date: eventDate?.toISOString() ?? new Date().toISOString(),
+        event_date: eventDate?.toISOString() ?? undefined,
         venue_name: "",
         city: "Asunción",
         category: detectCategory(item.title),

@@ -207,7 +207,7 @@ async function scrapeDetail(
     source: "tuti",
     external_id: item.slug,
     title: item.title,
-    event_date: eventDate?.toISOString() ?? new Date().toISOString(),
+    event_date: eventDate?.toISOString() ?? undefined,
     venue_name: item.venue || detail.venueDetail,
     city: item.venue.toLowerCase().includes("asunción") ||
       item.venue.toLowerCase().includes("asuncion")
