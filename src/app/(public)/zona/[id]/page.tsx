@@ -6,9 +6,10 @@ import {
   ShoppingBag, UtensilsCrossed, Beer, Hotel, Film,
   Landmark, TreePine, Building2, Trophy, MicVocal,
   Palmtree, BookOpen, Compass, MessageCircle,
-  ArrowRight, Share2,
+  ArrowRight,
 } from "lucide-react";
 import type { Metadata } from "next";
+import { ShareButton } from "@/components/share-button";
 
 // ─── Config ────────────────────────────────────────────────────
 // ⚠️ Reemplazá con tu número de WhatsApp (formato internacional sin +)
@@ -188,17 +189,7 @@ export default async function ZonaPage({ params }: { params: Promise<{ id: strin
                           {item.badge}
                         </span>
                       )}
-                      <button
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          const msg = encodeURIComponent(`📍 ${item.name}\n${item.descripcion}\n\n${item.url}`);
-                          window.open(`https://wa.me/?text=${msg}`, "_blank");
-                        }}
-                        className="absolute top-2 right-2 flex items-center justify-center w-9 h-9 rounded-full bg-black/40 backdrop-blur-sm text-white hover:bg-black/60 transition-colors"
-                      >
-                        <Share2 className="h-4 w-4" />
-                      </button>
+                      <ShareButton name={item.name} descripcion={item.descripcion} url={item.url} />
                     </div>
                     <div className="p-4 space-y-1.5">
                       <h3 className="font-semibold text-sm text-[#1F1E1D] group-hover:text-[#C96442] transition-colors">
