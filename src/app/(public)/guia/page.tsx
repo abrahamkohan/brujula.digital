@@ -30,6 +30,16 @@ const TIPO_ORDER = [
   "parque", "edificio", "estadio", "venue", "centro-cultural", "libreria",
 ];
 
+const TIPO_COVER: Record<string, string> = {
+  museo: "",
+  parque: "",
+  edificio: "",
+  estadio: "https://upload.wikimedia.org/wikipedia/commons/9/93/Estadio_Defensores_del_Chaco_en_2019.jpg",
+  venue: "",
+  "centro-cultural": "https://upload.wikimedia.org/wikipedia/commons/0/03/Entrada_Principal_Manzana_de_la_Rivera.jpg",
+  libreria: "",
+};
+
 const GRADIENTS: Record<string, string> = {
   shopping: "linear-gradient(135deg, #e11d48, #f43f5e)",
   gastronomia: "linear-gradient(135deg, #ea580c, #f97316)",
@@ -79,25 +89,23 @@ export default async function GuiaPage() {
           {TIPO_ORDER.map((tipo) => {
             const count = counts[tipo] ?? 0;
             const label = TIPO_LABELS[tipo] ?? tipo;
-            const imagen = primeraImagen[tipo];
+            const imagen = primeraImagen[tipo] ?? TIPO_COVER[tipo] ?? "";
             const grad = GRADIENTS[tipo] ?? "linear-gradient(135deg, #6b7280, #4b5563)";
             return (
               <Link
                 key={tipo}
                 href={`/guia/${tipo}`}
-                className="group rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all hover:scale-[1.02] block"
+                className="group relative rounded-2xl overflow-hidden aspect-[4/3] block shadow-sm hover:shadow-xl transition-all hover:scale-[1.02]"
               >
-                <div className="aspect-[4/3] relative">
-                  {imagen ? (
-                    <img src={imagen} alt={label} className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                  ) : (
-                    <div className="absolute inset-0" style={{ background: grad }} />
-                  )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                  <div className="absolute bottom-0 left-0 right-0 p-4">
-                    <p className="font-bold text-white text-base">{label}</p>
-                    <p className="text-white/60 text-xs mt-1">{count} lugares</p>
-                  </div>
+                {imagen ? (
+                  <img src={imagen} alt={label} className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                ) : (
+                  <div className="absolute inset-0" style={{ background: grad }} />
+                )}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                <div className="absolute bottom-0 left-0 right-0 p-4">
+                  <p className="font-bold text-white text-base">{label}</p>
+                  <p className="text-white/60 text-xs mt-1">{count} lugares</p>
                 </div>
               </Link>
             );

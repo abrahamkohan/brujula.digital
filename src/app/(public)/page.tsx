@@ -26,6 +26,16 @@ export const metadata: Metadata = {
 
 // ─── Gradientes de fallback por tipo ──────────────────────────
 
+const TIPO_COVER: Record<string, string> = {
+  museo: "",
+  parque: "",
+  edificio: "",
+  estadio: "https://upload.wikimedia.org/wikipedia/commons/9/93/Estadio_Defensores_del_Chaco_en_2019.jpg",
+  venue: "",
+  "centro-cultural": "https://upload.wikimedia.org/wikipedia/commons/0/03/Entrada_Principal_Manzana_de_la_Rivera.jpg",
+  libreria: "",
+};
+
 const GRADIENTS: Record<string, string> = {
   shopping: "linear-gradient(135deg, #e11d48, #f43f5e)",
   gastronomia: "linear-gradient(135deg, #ea580c, #f97316)",
@@ -122,30 +132,28 @@ export default async function HomePage() {
           {TIPO_ORDER.map((tipo) => {
             const count = tipoCounts[tipo] ?? 0;
             const label = TIPO_LABELS[tipo] ?? tipo;
-            const imagen = primeraImagen[tipo];
+            const imagen = primeraImagen[tipo] ?? TIPO_COVER[tipo] ?? "";
             const grad = GRADIENTS[tipo] ?? "linear-gradient(135deg, #6b7280, #4b5563)";
 
             return (
               <Link
                 key={tipo}
                 href={`/guia/${tipo}`}
-                className="group relative rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all hover:scale-[1.02]"
+                className="group relative rounded-2xl overflow-hidden aspect-[4/3] block shadow-sm hover:shadow-xl transition-all hover:scale-[1.02]"
               >
-                <div className="aspect-[4/3] relative">
-                  {imagen ? (
-                    <img
-                      src={imagen}
-                      alt={label}
-                      className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
-                  ) : (
-                    <div className="absolute inset-0" style={{ background: grad }} />
-                  )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                  <div className="absolute bottom-0 left-0 right-0 p-4">
-                    <p className="font-bold text-white text-sm">{label}</p>
-                    <p className="text-white/60 text-xs">{count} lugares</p>
-                  </div>
+                {imagen ? (
+                  <img
+                    src={imagen}
+                    alt={label}
+                    className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                ) : (
+                  <div className="absolute inset-0" style={{ background: grad }} />
+                )}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                <div className="absolute bottom-0 left-0 right-0 p-4">
+                  <p className="font-bold text-white text-sm">{label}</p>
+                  <p className="text-white/60 text-xs">{count} lugares</p>
                 </div>
               </Link>
             );
@@ -172,15 +180,12 @@ export default async function HomePage() {
                 href={item.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group relative rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all hover:scale-[1.02]"
+                className="group relative rounded-2xl overflow-hidden aspect-[4/3] block shadow-sm hover:shadow-xl transition-all hover:scale-[1.02]"
               >
-                <div className="aspect-[4/3] relative">
                   {item.image ? (
                     <img src={item.image} alt={item.name} className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                   ) : (
-                    <div className="absolute inset-0 flex items-center justify-center text-white/40 text-3xl" style={{ background: GRADIENTS[item.tipo] ?? "#6b7280" }}>
-                      <Compass className="h-10 w-10" />
-                    </div>
+                    <div className="absolute inset-0" style={{ background: GRADIENTS[item.tipo] ?? "#6b7280" }} />
                   )}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
                   {item.badge && (
@@ -192,7 +197,6 @@ export default async function HomePage() {
                     <p className="font-bold text-white text-sm">{item.name}</p>
                     <p className="text-white/60 text-xs">{TIPO_LABELS[item.tipo] ?? item.tipo}</p>
                   </div>
-                </div>
               </a>
             ))}
           </div>
