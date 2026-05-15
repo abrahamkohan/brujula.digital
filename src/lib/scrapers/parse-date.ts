@@ -46,10 +46,13 @@ export function parseParaguayanDate(raw: string): Date | null {
 
   const text = raw.trim();
 
-  // Intento 1: ISO date (2026-07-15)
+  // Intento 1: ISO date estricto (YYYY-MM-DD o ISO8601 completo)
   {
-    const iso = Date.parse(text);
-    if (!Number.isNaN(iso)) return new Date(iso);
+    // Solo permitir formatos que empiecen con 4 dígitos (año) o ISO completo
+    if (/^\d{4}-\d{2}-\d{2}/.test(text)) {
+      const iso = Date.parse(text);
+      if (!Number.isNaN(iso)) return new Date(iso);
+    }
   }
 
   // Intento 2: DD/MM/YYYY o DD/MM/YY
