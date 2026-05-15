@@ -23,9 +23,6 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
             <Link href="/eventos" className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm text-[#5C5B57] hover:text-[#1F1E1D] hover:bg-[#F5F4ED] transition-colors">
               <Calendar className="h-4 w-4" /> Eventos
             </Link>
-            <Link href="/admin" className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm text-[#87867F] hover:text-[#1F1E1D] hover:bg-[#F5F4ED] transition-colors">
-              Admin
-            </Link>
           </nav>
         </div>
       </header>

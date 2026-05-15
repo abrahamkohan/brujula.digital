@@ -233,6 +233,7 @@ export default async function HomePage() {
                   categoria: e.categoria,
                   image_url: e.image_url,
                 }}
+                featured
                 href={`/eventos/evento/${e.id}`}
               />
             ))}
