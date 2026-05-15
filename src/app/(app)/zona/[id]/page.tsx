@@ -12,7 +12,7 @@ import type { Metadata } from "next";
 
 // ─── Config ────────────────────────────────────────────────────
 // ⚠️ Reemplazá con tu número de WhatsApp (formato internacional sin +)
-const WHATSAPP_NUMBER = "595982000808";
+const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "595982000808";
 
 // ─── Tipos ─────────────────────────────────────────────────────
 

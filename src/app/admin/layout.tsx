@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import type { ComponentType, SVGProps } from "react";
-import { Home, Database, Calendar, Plus, Shield } from "lucide-react";
+import { Home, Database, Calendar, Plus, Shield, Building2 } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Admin — Brújula Digital",
@@ -19,6 +19,7 @@ const navLinks: NavLink[] = [
   { href: "/admin/fuentes", label: "Fuentes", icon: Database },
   { href: "/admin/eventos", label: "Eventos", icon: Calendar },
   { href: "/admin/eventos/nuevo", label: "+ Nuevo", icon: Plus },
+  { href: "/admin/directorios", label: "Directorios", icon: Building2 },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {

@@ -10,8 +10,7 @@ import {
 import type { Metadata } from "next";
 
 // ─── Config ────────────────────────────────────────────────────
-// ⚠️ Reemplazá con tu número de WhatsApp (formato internacional sin +)
-const WHATSAPP_NUMBER = "595982000808";
+const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "595982000808";
 
 // ─── Metadata ─────────────────────────────────────────────────
 
@@ -95,16 +94,14 @@ export default async function HomePage() {
           </div>
 
           {/* Search */}
-          <div className="relative max-w-2xl mx-auto mt-6">
-            <Search className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-[#87867F]" />
-            <input
-              type="text"
-              placeholder="Buscá shoppings, museos, restaurantes..."
-              className="w-full bg-white rounded-2xl pl-14 pr-6 py-3.5 text-sm text-[#1F1E1D] placeholder:text-[#87867F] focus:outline-none focus:ring-2 focus:ring-[#C96442] shadow-sm"
-              readOnly
-              onClick={() => {}} // Will be made interactive later
-            />
-          </div>
+          {/* Search */}
+          <Link
+            href="/guia"
+            className="relative max-w-2xl mx-auto mt-6 flex items-center bg-white rounded-2xl pl-14 pr-6 py-3.5 text-sm text-[#87867F] shadow-sm hover:shadow-md transition-shadow"
+          >
+            <Search className="absolute left-5 h-5 w-5 text-[#87867F]" />
+            Buscá shoppings, museos, restaurantes...
+          </Link>
         </div>
       </div>
 

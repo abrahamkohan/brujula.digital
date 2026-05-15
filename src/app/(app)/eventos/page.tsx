@@ -2,19 +2,13 @@
 
 import { useEffect, useState, useRef, useMemo } from "react";
 import {
-  Search, Music, Trophy, Film, UtensilsCrossed, Hotel,
-  Beer, ShoppingBag, Building2, X, Share2,
+  Search, Music, Trophy, Film, Building2, X,
 } from "lucide-react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import EventCard from "@/components/eventos/event-card";
 import MovieCard from "@/components/eventos/movie-card";
 import { SkeletonGrid } from "@/components/eventos/skeleton";
-import { GASTRONOMIA } from "@/lib/directorios/gastronomia";
-import { SHOPPING } from "@/lib/directorios/shopping";
-import { BARES } from "@/lib/directorios/bares";
-import { HOTELES } from "@/lib/directorios/hoteles";
-import { ZONAS, type DirectorioItem } from "@/lib/directorios/types";
 import { getZonaFromVenue } from "@/lib/directorios/zonas";
 
 // ─── Tipos ─────────────────────────────────────────────────────
@@ -70,10 +64,6 @@ const SECTIONS = [
   { id: "cine", icon: Film, label: "Cine", esPeliculas: true },
   { id: "teatro", cat: "teatro", icon: Film, label: "Teatro" },
   { id: "ferias", cat: "feria", icon: Building2, label: "Ferias" },
-  { id: "gastronomia", icon: UtensilsCrossed, label: "Gastronomía", esDirectorio: true },
-  { id: "bares", icon: Beer, label: "Bares", esDirectorio: true },
-  { id: "shopping", icon: ShoppingBag, label: "Shopping", esDirectorio: true },
-  { id: "hoteles", icon: Hotel, label: "Hoteles", esDirectorio: true },
 ];
 
 const QUICK_FILTERS = [
@@ -90,10 +80,8 @@ export default function EventosPage() {
   const [peliculas, setPeliculas] = useState<Pelicula[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
-  const [zonaFilter, setZonaFilter] = useState("");
   const [timeFilter, setTimeFilter] = useState("all");
   const [activeSection, setActiveSection] = useState("");
-  const [showZones, setShowZones] = useState(false);
   const sectionRefs = useRef<Record<string, HTMLElement | null>>({});
 
   // Fecha filter: solo eventos con año entre 2024 y 2028
@@ -156,8 +144,6 @@ export default function EventosPage() {
     return true;
   };
 
-  const zoneFilter = (zona?: string) => !zonaFilter || zona === zonaFilter;
-
   // Editorial picks — sin filtros de usuario, siempre se muestran
   const eventosPick = useMemo(
     () => eventosValidos.filter((e) => e.editorial_pick),
@@ -167,76 +153,17 @@ export default function EventosPage() {
   // Eventos por categoría
   const eventosPorCategoria = useMemo(
     () =>
-      SECTIONS.filter((s) => !s.esDirectorio && !s.esPeliculas).map((sec) => ({
+      SECTIONS.filter((s) => !s.esPeliculas).map((sec) => ({
         ...sec,
         events: eventosValidos
-          .filter((e) => e.categoria === sec.cat && searchPredicate(e.titulo) && dateFilter(e.fecha) && zoneFilter(e.zona))
+          .filter((e) => e.categoria === sec.cat && searchPredicate(e.titulo) && dateFilter(e.fecha))
           .sort((a, b) => new Date(a.fecha).getTime() - new Date(b.fecha).getTime()),
       })),
-    [eventosValidos, search, timeFilter, zonaFilter]
+    [eventosValidos, search, timeFilter]
   );
 
   const peliculasFiltradas = peliculas.filter(
     (p) => searchPredicate(p.titulo ?? "")
-  );
-
-  const gastroFiltrados = GASTRONOMIA.filter(
-    (g) => searchPredicate(g.name) && (!zonaFilter || g.zone === zonaFilter)
-  );
-
-  const baresFiltrados = BARES.filter(
-    (b) => searchPredicate(b.name) && (!zonaFilter || b.zone === zonaFilter)
-  );
-
-  const shoppingFiltrados = SHOPPING.filter((s) => searchPredicate(s.name) && (!zonaFilter || s.zone === zonaFilter));
-  const hotelesFiltrados = HOTELES.filter((h) => searchPredicate(h.name) && (!zonaFilter || h.zone === zonaFilter));
-
-  // Zonas disponibles (de todos los datos)
-  const zonasDisponibles = useMemo(() => {
-    const set = new Set<string>();
-    eventos.forEach((e) => { if (e.zona) set.add(e.zona); });
-    GASTRONOMIA.forEach((g) => set.add(g.zone));
-    BARES.forEach((b) => set.add(b.zone));
-    SHOPPING.forEach((s) => set.add(s.zone));
-    HOTELES.forEach((h) => set.add(h.zone));
-    return ZONAS.filter((z) => set.has(z.id));
-  }, [eventos]);
-
-  // ─── Render card genérico para directorios ──
-
-  const renderCard = (item: DirectorioItem, extra?: React.ReactNode, variant: "carousel" | "grid" = "carousel") => (
-    <a
-      key={item.id}
-      href={item.url}
-      target="_blank"
-      rel="noopener noreferrer"
-      className={`group ${variant === "carousel" ? "w-56 sm:w-64 shrink-0 snap-start" : "w-full"}`}
-    >
-      <div className={`relative ${variant === "carousel" ? "aspect-[3/4]" : "aspect-[4/3]"} rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:scale-[1.02]`}>
-        <img src={item.image} alt={item.name} className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-        <button
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            const text = encodeURIComponent(`📍 ${item.name}\n${item.desc}\n\n${item.url}`);
-            window.open(`https://wa.me/?text=${text}`, "_blank");
-          }}
-          className="absolute top-3 right-3 z-10 flex items-center justify-center w-7 h-7 rounded-full bg-black/40 backdrop-blur-sm text-white hover:bg-black/60 transition-colors"
-        >
-          <Share2 className="h-3 w-3" />
-        </button>
-        <div className="absolute bottom-0 left-0 right-0 p-4 space-y-1">
-          {item.badge && <span className="inline-flex px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#C96442] text-white mb-1">{item.badge}</span>}
-          <h3 className="font-semibold text-sm text-white drop-shadow-sm leading-snug">{item.name}</h3>
-          <p className="text-xs text-white/60">{ZONAS.find((z) => z.id === item.zone)?.label ?? item.zone}</p>
-          <p className="text-xs text-white/80 line-clamp-1">{item.desc}</p>
-          {item.horario && <p className="text-[10px] text-white/50">{item.horario}</p>}
-          {item.stars && <p className="text-xs text-amber-400">{'★'.repeat(item.stars)}{item.stars < 5 ? '☆'.repeat(5 - item.stars) : ''}</p>}
-          {extra}
-        </div>
-      </div>
-    </a>
   );
 
   return (
@@ -249,15 +176,15 @@ export default function EventosPage() {
             <span className="text-[#C96442] italic">hoy</span>?
           </h1>
           <p className="text-[#B8B7B2] mt-2 text-sm sm:text-base max-w-lg mx-auto">
-            Eventos, recitales, gastronomía, bares y más en Paraguay
+            Eventos en Paraguay — recitales, teatro, deportes y más
           </p>
           <p className="text-[#87867F] mt-1 text-xs sm:text-sm">
-            {eventosValidos.length}+ eventos · {GASTRONOMIA.length} restaurantes · actualizado hoy
+            {eventosValidos.length} eventos · actualizado hoy
           </p>
           <div className="relative max-w-2xl mx-auto mt-5">
             <Search className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-[#87867F]" />
             <input type="text" value={search} onChange={(e) => setSearch(e.target.value)}
-              placeholder="Buscá eventos, restaurantes, bares y más..."
+              placeholder="Buscá eventos..."
               className="w-full bg-white rounded-2xl pl-14 pr-6 py-3.5 text-sm text-[#1F1E1D] placeholder:text-[#87867F] focus:outline-none focus:ring-2 focus:ring-[#C96442] shadow-sm transition-shadow" />
           </div>
           {/* Quick filters */}
@@ -274,8 +201,7 @@ export default function EventosPage() {
 
       {/* ─── Sticky nav ────────────────────────────── */}
       <div className="sticky top-0 z-40 bg-[#F5F4ED]/95 backdrop-blur-sm border-b border-[#D4D2C9]/50">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-2 space-y-2">
-          {/* Sections */}
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-2">
           <div className="flex gap-2 flex-wrap">
             {SECTIONS.map((sec) => {
               const Icon = sec.icon;
@@ -289,43 +215,11 @@ export default function EventosPage() {
               );
             })}
           </div>
-          {/* Zone filter */}
-          <div className="space-y-1">
-            <button onClick={() => setShowZones(!showZones)}
-              className="sm:hidden flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-white text-[#5C5B57] border border-[#D4D2C9]">
-              📍 {zonaFilter ? (ZONAS.find((z) => z.id === zonaFilter)?.label ?? zonaFilter) : "Zona"}
-              <span className="text-[10px] ml-1">{showZones ? "▲" : "▼"}</span>
-            </button>
-            <div className={`${showZones ? "flex" : "hidden"} sm:flex gap-2 overflow-x-auto scrollbar-none pb-1`}>
-            <button onClick={() => setZonaFilter("")}
-              className={`shrink-0 px-3 py-1 rounded-full text-[11px] font-medium transition-all ${
-                !zonaFilter ? "bg-[#C96442] text-white" : "bg-white text-[#5C5B57] border border-[#D4D2C9]"
-              }`}>
-              📍 Todas
-            </button>
-            {zonasDisponibles.map((z) => (
-              <button key={z.id} onClick={() => setZonaFilter(z.id)}
-                className={`shrink-0 px-3 py-1 rounded-full text-[11px] font-medium transition-all ${
-                  zonaFilter === z.id ? "bg-[#C96442] text-white" : "bg-white text-[#5C5B57] border border-[#D4D2C9]"
-                }`}>
-                {z.label}
-              </button>
-            ))}
-            {/* Clear filters */}
-            {(zonaFilter || timeFilter !== "all") && (
-              <button onClick={() => { setZonaFilter(""); setTimeFilter("all"); }}
-                className="shrink-0 flex items-center gap-1 px-3 py-1 rounded-full text-[11px] font-medium bg-[#1F1E1D] text-white">
-                <X className="h-3 w-3" /> Limpiar
-              </button>
-            )}
-            </div>
-          </div>
         </div>
       </div>
 
       {/* ─── Contenido ────────────────────────────── */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 pb-20 space-y-14 pt-8">
-        {/* Sentinel para detección de scroll al inicio */}
         <div id="top-sentinel" className="-mt-8 h-1" />
         {loading ? (
           <>
@@ -412,106 +306,11 @@ export default function EventosPage() {
               </section>
             )}
 
-            {/* ═══ GASTRONOMÍA ═════════════════════ */}
-            <section id="gastronomia" ref={(el) => { sectionRefs.current.gastronomia = el; }} className="scroll-mt-28">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-8 h-8 rounded-lg bg-[#1F1E1D] flex items-center justify-center text-white">
-                  <UtensilsCrossed className="h-4 w-4" />
-                </div>
-                <h2 className="font-[family-name:var(--font-heading)] text-xl sm:text-2xl font-bold text-[#1F1E1D] tracking-tight">Gastronomía</h2>
-                <div className="flex-1 h-px bg-[#D4D2C9]/50" />
-                {gastroFiltrados.length > 4 && (
-                  <Link href="/eventos/gastronomia"
-                    className="shrink-0 flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium bg-white text-[#5C5B57] border border-[#D4D2C9] hover:border-[#C96442] hover:text-[#C96442] transition-all whitespace-nowrap">
-                    Ver todos ({gastroFiltrados.length}) →
-                  </Link>
-                )}
-              </div>
-              {gastroFiltrados.length === 0 ? (
-                <p className="text-sm text-[#87867F] py-8 text-center">No hay resultados</p>
-              ) : (
-                <div className="grid grid-cols-2 gap-4">
-                  {gastroFiltrados.slice(0, 4).map((g) => renderCard(g, g.tipo ? <span className="inline-flex px-2 py-0.5 rounded-full text-[10px] font-medium bg-white/20 text-white mt-1">{g.tipo}</span> : undefined, "grid"))}
-                </div>
-              )}
-            </section>
-
-            {/* ═══ BARES ══════════════════════════ */}
-            <section id="bares" ref={(el) => { sectionRefs.current.bares = el; }} className="scroll-mt-28">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-8 h-8 rounded-lg bg-[#1F1E1D] flex items-center justify-center text-white">
-                  <Beer className="h-4 w-4" />
-                </div>
-                <h2 className="font-[family-name:var(--font-heading)] text-xl sm:text-2xl font-bold text-[#1F1E1D] tracking-tight">Bares con música</h2>
-                <div className="flex-1 h-px bg-[#D4D2C9]/50" />
-                {baresFiltrados.length > 4 && (
-                  <Link href="/eventos/bares"
-                    className="shrink-0 flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium bg-white text-[#5C5B57] border border-[#D4D2C9] hover:border-[#C96442] hover:text-[#C96442] transition-all whitespace-nowrap">
-                    Ver todos ({baresFiltrados.length}) →
-                  </Link>
-                )}
-              </div>
-              {baresFiltrados.length === 0 ? (
-                <p className="text-sm text-[#87867F] py-8 text-center">No hay resultados</p>
-              ) : (
-                <div className="grid grid-cols-2 gap-4">
-                  {baresFiltrados.slice(0, 4).map((b) => renderCard(b, b.tipo ? <span className="inline-flex px-2 py-0.5 rounded-full text-[10px] font-medium bg-white/20 text-white mt-1">{b.tipo}</span> : undefined, "grid"))}
-                </div>
-              )}
-            </section>
-
-            {/* ═══ SHOPPING ═════════════════════ */}
-            <section id="shopping" ref={(el) => { sectionRefs.current.shopping = el; }} className="scroll-mt-28">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-8 h-8 rounded-lg bg-[#1F1E1D] flex items-center justify-center text-white">
-                  <ShoppingBag className="h-4 w-4" />
-                </div>
-                <h2 className="font-[family-name:var(--font-heading)] text-xl sm:text-2xl font-bold text-[#1F1E1D] tracking-tight">Shopping</h2>
-                <div className="flex-1 h-px bg-[#D4D2C9]/50" />
-                {shoppingFiltrados.length > 4 && (
-                  <Link href="/eventos/shopping"
-                    className="shrink-0 flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium bg-white text-[#5C5B57] border border-[#D4D2C9] hover:border-[#C96442] hover:text-[#C96442] transition-all whitespace-nowrap">
-                    Ver todos ({shoppingFiltrados.length}) →
-                  </Link>
-                )}
-              </div>
-              {shoppingFiltrados.length === 0 ? (
-                <p className="text-sm text-[#87867F] py-8 text-center">No hay resultados</p>
-              ) : (
-                <div className="grid grid-cols-2 gap-4">
-                  {shoppingFiltrados.slice(0, 4).map((s) => renderCard(s, undefined, "grid"))}
-                </div>
-              )}
-            </section>
-
-            {/* ═══ HOTELES ═══════════════════════ */}
-            <section id="hoteles" ref={(el) => { sectionRefs.current.hoteles = el; }} className="scroll-mt-28">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-8 h-8 rounded-lg bg-[#1F1E1D] flex items-center justify-center text-white">
-                  <Hotel className="h-4 w-4" />
-                </div>
-                <h2 className="font-[family-name:var(--font-heading)] text-xl sm:text-2xl font-bold text-[#1F1E1D] tracking-tight">Hoteles</h2>
-                <div className="flex-1 h-px bg-[#D4D2C9]/50" />
-                {hotelesFiltrados.length > 4 && (
-                  <Link href="/eventos/hoteles"
-                    className="shrink-0 flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium bg-white text-[#5C5B57] border border-[#D4D2C9] hover:border-[#C96442] hover:text-[#C96442] transition-all whitespace-nowrap">
-                    Ver todos ({hotelesFiltrados.length}) →
-                  </Link>
-                )}
-              </div>
-              {hotelesFiltrados.length === 0 ? (
-                <p className="text-sm text-[#87867F] py-8 text-center">No hay resultados</p>
-              ) : (
-                <div className="grid grid-cols-2 gap-4">
-                  {hotelesFiltrados.slice(0, 4).map((h) => renderCard(h, undefined, "grid"))}
-                </div>
-              )}
-              <p className="text-xs text-[#87867F] mt-3 text-center">Precios y disponibilidad en Booking.com</p>
-            </section>
-
             {/* Footer */}
             <p className="text-xs text-[#B8B7B2] text-center pt-4">
-              {eventosValidos.length} eventos · {GASTRONOMIA.length} restaurantes · {BARES.length} bares · {HOTELES.length} hoteles ·{" "}
+              {eventosValidos.length} eventos ·{" "}
+              <Link href="/guia" className="underline hover:text-[#C96442] transition-colors">Guía de Asunción</Link>
+              {" · "}
               <a href="/admin/eventos" className="underline hover:text-[#C96442] transition-colors">Admin</a>
             </p>
           </>
@@ -520,5 +319,3 @@ export default function EventosPage() {
     </div>
   );
 }
-
-

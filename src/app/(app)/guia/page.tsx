@@ -97,7 +97,7 @@ export default async function GuiaPage() {
             Consultame sin compromiso — te ayudo a encontrar en la zona que te interesa.
           </p>
           <a
-            href={`https://wa.me/595982000808?text=${encodeURIComponent("Hola, vi la Guía de Asunción en Brújula Digital y me interesa saber sobre propiedades.")}`}
+            href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "595982000808"}?text=${encodeURIComponent("Hola, vi la Guía de Asunción en Brújula Digital y me interesa saber sobre propiedades.")}`}
             target="_blank" rel="noopener noreferrer"
             className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-[#25D366] text-white font-semibold text-sm hover:bg-[#22c35e] transition-colors mt-4"
           >
