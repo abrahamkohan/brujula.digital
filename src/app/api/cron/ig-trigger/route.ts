@@ -1,9 +1,11 @@
 import { createClient } from "@supabase/supabase-js";
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+function getSupabase() {
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  );
+}
 
 const CUENTAS = [
   // Conciertos / Nightlife
@@ -50,7 +52,7 @@ export async function GET() {
       const runId = data.data?.id;
 
       if (runId) {
-        await supabase.from("ig_scraper_runs").insert({
+        await getSupabase().from("ig_scraper_runs").insert({
           run_id: runId,
           handle: cuenta.handle,
           venue_hint: cuenta.venue,

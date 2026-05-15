@@ -1,12 +1,16 @@
 import { createClient } from "@supabase/supabase-js";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+function getSupabase() {
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  );
+}
 
-const genai = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
+function getGenAI() {
+  return new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
+}
 
 const delay = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
@@ -59,7 +63,7 @@ async function procesarConGemini(
   venueHint: string,
   categoriaHint: string
 ) {
-  const model = genai.getGenerativeModel({ model: "gemini-2.5-flash" });
+  const model = getGenAI().getGenerativeModel({ model: "gemini-2.5-flash" });
   const today = new Date().toISOString().split("T")[0];
 
   const prompt = buildPrompt(
@@ -130,7 +134,7 @@ export async function GET() {
       );
 
       if (resultado.es_evento) {
-        await supabase.from("eventos").upsert(
+        await getSupabase().from("eventos").upsert(
           {
             fuente: `instagram_${run.handle}`,
             external_id: post.id,
