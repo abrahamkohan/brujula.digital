@@ -27,13 +27,13 @@ export const metadata: Metadata = {
 // ─── Gradientes de fallback por tipo ──────────────────────────
 
 const TIPO_COVER: Record<string, string> = {
-  museo: "",
-  parque: "",
-  edificio: "",
+  museo: "https://visitparaguay.travel/storage/places/1046-1.webp",
+  parque: "https://visitparaguay.travel/storage/places/2187-1.webp",
+  edificio: "https://visitparaguay.travel/storage/places/67ee99c03fe63.webp",
   estadio: "https://upload.wikimedia.org/wikipedia/commons/9/93/Estadio_Defensores_del_Chaco_en_2019.jpg",
-  venue: "",
+  venue: "https://visitparaguay.travel/storage/places/680bf456d2436.webp",
   "centro-cultural": "https://upload.wikimedia.org/wikipedia/commons/0/03/Entrada_Principal_Manzana_de_la_Rivera.jpg",
-  libreria: "",
+  libreria: "https://visitparaguay.travel/storage/places/630cc4ff52825_1661781247.jpg",
 };
 
 const GRADIENTS: Record<string, string> = {
