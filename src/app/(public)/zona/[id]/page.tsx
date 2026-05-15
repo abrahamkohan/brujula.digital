@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import type { Metadata } from "next";
 import { ShareButton } from "@/components/share-button";
+import { getZonaHero, getZonaDesc } from "@/lib/zonas-images";
 import { ImageWithFallback } from "@/components/image-fallback";
 
 // ─── Config ────────────────────────────────────────────────────
@@ -126,17 +127,26 @@ export default async function ZonaPage({ params }: { params: Promise<{ id: strin
 
   return (
     <div className="min-h-screen bg-[#F5F4ED] font-sans">
-      {/* ─── Hero ─────────────────────────────── */}
-      <div className="bg-[#1F1E1D]">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
-          <Link href="/" className="inline-flex items-center gap-1 text-[#87867F] text-sm hover:text-white transition-colors mb-4">
+      {/* ─── Hero con imagen ──────────────────────── */}
+      <div className="relative h-48 sm:h-64 overflow-hidden">
+        {(() => {
+          const hero = getZonaHero(id);
+          return hero ? (
+            <img src={hero} alt={zona.label} className="absolute inset-0 w-full h-full object-cover" />
+          ) : (
+            <div className="absolute inset-0 bg-gradient-to-br from-[#1F1E1D] to-[#2A2825]" />
+          );
+        })()}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
+        <div className="absolute bottom-0 left-0 right-0 max-w-6xl mx-auto px-4 sm:px-6 pb-6 sm:pb-8">
+          <Link href="/" className="inline-flex items-center gap-1 text-[#87867F] text-sm hover:text-white transition-colors mb-2">
             <ArrowRight className="h-3.5 w-3.5 rotate-180" /> Volver al inicio
           </Link>
           <h1 className="font-[family-name:var(--font-heading)] text-3xl sm:text-5xl font-bold text-white tracking-tight">
-            📍 {zona.label}
+            {zona.label}
           </h1>
-          <p className="text-[#B8B7B2] mt-2 text-sm sm:text-base max-w-xl">
-            {totalLugares} lugares · Guía completa de {zona.label}, Asunción
+          <p className="text-[#B8B7B2] mt-1 text-sm sm:text-base max-w-xl">
+            {getZonaDesc(id) ?? ""}{getZonaDesc(id) ? " · " : ""}{totalLugares} lugares
           </p>
         </div>
       </div>

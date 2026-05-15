@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { ZONAS } from "@/lib/directorios/types";
+import { getZonaHero, getZonaDesc } from "@/lib/zonas-images";
 import Link from "next/link";
 import { Compass, MessageCircle, ArrowRight, Sparkles } from "lucide-react";
 import type { Metadata } from "next";
@@ -247,17 +248,47 @@ export default async function HomePage() {
             Explorá por zona
           </h2>
         </div>
-        <div className="flex flex-wrap gap-2">
-          {zonasConData.map((z) => (
-            <Link
-              key={z.id}
-              href={`/zona/${z.id}`}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-white border border-[#D4D2C9] text-sm text-[#5C5B57] hover:border-[#C96442] hover:text-[#C96442] transition-all"
-            >
-              📍 {z.label}
-            </Link>
-          ))}
+
+        {/* Zonas principales con foto hero */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 mb-4">
+          {zonasConData.slice(0, 8).map((z) => {
+            const hero = getZonaHero(z.id);
+            const desc = getZonaDesc(z.id);
+            return (
+              <Link
+                key={z.id}
+                href={`/zona/${z.id}`}
+                className="group relative rounded-2xl overflow-hidden aspect-[4/3] block shadow-sm hover:shadow-xl transition-all hover:scale-[1.02]"
+              >
+                {hero ? (
+                  <img src={hero} alt={z.label} className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                ) : (
+                  <div className="absolute inset-0 bg-gradient-to-br from-[#1F1E1D] to-[#2A2825]" />
+                )}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                <div className="absolute bottom-0 left-0 right-0 p-4">
+                  <p className="font-bold text-white text-sm">{z.label}</p>
+                  {desc && <p className="text-white/60 text-xs mt-0.5">{desc}</p>}
+                </div>
+              </Link>
+            );
+          })}
         </div>
+
+        {/* Zonas restantes como chips */}
+        {zonasConData.length > 8 && (
+          <div className="flex flex-wrap gap-2">
+            {zonasConData.slice(8).map((z) => (
+              <Link
+                key={z.id}
+                href={`/zona/${z.id}`}
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-white border border-[#D4D2C9] text-sm text-[#5C5B57] hover:border-[#C96442] hover:text-[#C96442] transition-all"
+              >
+                📍 {z.label}
+              </Link>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* ═══════════════════════════════════════════
