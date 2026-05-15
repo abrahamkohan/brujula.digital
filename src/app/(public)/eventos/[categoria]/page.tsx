@@ -97,11 +97,6 @@ export default function CategoriaPage() {
 
   // Cargar datos según categoría
   useEffect(() => {
-    // Noindex — página con datos legacy de directorios
-    const r = document.createElement("meta");
-    r.name = "robots"; r.content = "noindex, nofollow";
-    document.head.appendChild(r);
-
     if (!meta) { setLoading(false); return; }
 
     if (meta.isPeliculas) {
