@@ -15,19 +15,19 @@ const TIPOS_VALIDOS = [
 
 type TipoValido = (typeof TIPOS_VALIDOS)[number];
 
-const TIPO_LABELS: Record<TipoValido, { singular: string; plural: string; icon: string }> = {
-  shopping: { singular: "Shopping", plural: "Shoppings", icon: "🛍️" },
-  gastronomia: { singular: "Restaurante", plural: "Restaurantes", icon: "🍽️" },
-  bar: { singular: "Bar", plural: "Bares", icon: "🍺" },
-  hotel: { singular: "Hotel", plural: "Hoteles", icon: "🏨" },
-  teatro: { singular: "Teatro", plural: "Teatros", icon: "🎭" },
-  museo: { singular: "Museo", plural: "Museos", icon: "🏛️" },
-  parque: { singular: "Parque", plural: "Parques", icon: "🌳" },
-  edificio: { singular: "Edificio", plural: "Edificios históricos", icon: "🏛️" },
-  estadio: { singular: "Estadio", plural: "Estadios", icon: "⚽" },
-  venue: { singular: "Espacio", plural: "Espacios para eventos", icon: "🏟️" },
-  "centro-cultural": { singular: "Centro cultural", plural: "Centros culturales", icon: "🎨" },
-  libreria: { singular: "Librería", plural: "Librerías", icon: "📚" },
+const TIPO_LABELS: Record<TipoValido, { singular: string; plural: string }> = {
+  shopping: { singular: "Shopping", plural: "Shoppings" },
+  gastronomia: { singular: "Restaurante", plural: "Restaurantes" },
+  bar: { singular: "Bar", plural: "Bares" },
+  hotel: { singular: "Hotel", plural: "Hoteles" },
+  teatro: { singular: "Teatro", plural: "Teatros" },
+  museo: { singular: "Museo", plural: "Museos" },
+  parque: { singular: "Parque", plural: "Parques" },
+  edificio: { singular: "Edificio", plural: "Edificios históricos" },
+  estadio: { singular: "Estadio", plural: "Estadios" },
+  venue: { singular: "Espacio", plural: "Espacios para eventos" },
+  "centro-cultural": { singular: "Centro cultural", plural: "Centros culturales" },
+  libreria: { singular: "Librería", plural: "Librerías" },
 };
 
 function isTipo(v: string): v is TipoValido {
@@ -89,7 +89,7 @@ export default async function CategoriaGuiaPage({ params }: { params: Promise<{ 
             <ArrowRight className="h-3.5 w-3.5 rotate-180" /> Guía
           </Link>
           <h1 className="font-[family-name:var(--font-heading)] text-3xl sm:text-5xl font-bold text-white tracking-tight">
-            {label.icon} {label.plural} en Asunción
+            {label.plural} en Asunción
           </h1>
           <p className="text-[#B8B7B2] mt-2 text-sm sm:text-base">
             {lugares.length} {lugares.length === 1 ? label.singular.toLowerCase() : label.plural.toLowerCase()}{" "}
@@ -149,9 +149,7 @@ export default async function CategoriaGuiaPage({ params }: { params: Promise<{ 
                             {item.image ? (
                               <img src={item.image} alt={item.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                             ) : (
-                              <div className="w-full h-full flex items-center justify-center text-[#D4D2C9] text-3xl">
-                                {label.icon}
-                              </div>
+                              <div className="w-full h-full bg-[#1F1E1D]" />
                             )}
                             {item.featured && (
                               <span className="absolute top-2 left-2 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#C96442] text-white">★ Destacado</span>
