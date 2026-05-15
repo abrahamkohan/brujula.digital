@@ -34,5 +34,17 @@ export function getLogoSvg(): string {
 
 /** Retorna un data URI del logo listo para <img src={...}> */
 export function getLogoDataUri(): string {
-  return `data:image/svg+xml;base64,${Buffer.from(ORIGINAL_SVG).toString("base64")}`;
+  // Base64 manual sin depender de Buffer (compatible con Edge Runtime)
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+  const bytes = new TextEncoder().encode(ORIGINAL_SVG);
+  let result = "";
+  for (let i = 0; i < bytes.length; i += 3) {
+    const b1 = bytes[i], b2 = bytes[i + 1] || 0, b3 = bytes[i + 2] || 0;
+    result += chars[b1 >> 2] + chars[((b1 & 3) << 4) | (b2 >> 4)] + chars[((b2 & 15) << 2) | (b3 >> 6)] + chars[b3 & 63];
+  }
+  // Fix padding
+  const pad = bytes.length % 3;
+  if (pad === 1) result = result.slice(0, -2) + "==";
+  else if (pad === 2) result = result.slice(0, -1) + "=";
+  return `data:image/svg+xml;base64,${result}`;
 }

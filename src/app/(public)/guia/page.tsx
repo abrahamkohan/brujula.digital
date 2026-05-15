@@ -30,6 +30,21 @@ const TIPO_ORDER = [
   "parque", "edificio", "estadio", "venue", "centro-cultural", "libreria",
 ];
 
+const TIPO_ICONS: Record<string, string> = {
+  shopping: "🛍️",
+  gastronomia: "🍽️",
+  bar: "🍺",
+  hotel: "🏨",
+  teatro: "🎭",
+  museo: "🏛️",
+  parque: "🌳",
+  edificio: "🏛️",
+  estadio: "⚽",
+  venue: "🎪",
+  "centro-cultural": "🎨",
+  libreria: "📚",
+};
+
 const GRADIENTS: Record<string, string> = {
   shopping: "linear-gradient(135deg, #e11d48, #f43f5e)",
   gastronomia: "linear-gradient(135deg, #ea580c, #f97316)",
@@ -91,7 +106,12 @@ export default async function GuiaPage() {
                   {imagen ? (
                     <img src={imagen} alt={label} className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                   ) : (
-                    <div className="absolute inset-0" style={{ background: grad }} />
+                    <>
+                      <div className="absolute inset-0" style={{ background: grad }} />
+                      <div className="absolute inset-0 flex items-center justify-center opacity-30 pointer-events-none">
+                        <span className="text-6xl">{TIPO_ICONS[tipo] ?? "📍"}</span>
+                      </div>
+                    </>
                   )}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
                   <div className="absolute bottom-0 left-0 right-0 p-4">

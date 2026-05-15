@@ -1,15 +1,11 @@
 import { createClient } from "@/lib/supabase/server";
 import { ZONAS } from "@/lib/directorios/types";
 import Link from "next/link";
-import {
-  Compass, Search, MessageCircle, ArrowRight, Sparkles,
-  ShoppingBag, UtensilsCrossed, Beer, Hotel, Film,
-  Landmark, TreePine, Building2, Trophy, MicVocal,
-  Palmtree, BookOpen,
-} from "lucide-react";
+import { Compass, MessageCircle, ArrowRight, Sparkles } from "lucide-react";
 import type { Metadata } from "next";
 import EventCard from "@/components/eventos/event-card";
 import { getLogoDataUri } from "@/lib/logo";
+import { SearchBar } from "@/components/search-bar";
 
 // ─── Config ────────────────────────────────────────────────────
 const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "595982000808";
@@ -29,6 +25,21 @@ export const metadata: Metadata = {
 };
 
 // ─── Gradientes de fallback por tipo ──────────────────────────
+
+const TIPO_ICONS: Record<string, string> = {
+  shopping: "🛍️",
+  gastronomia: "🍽️",
+  bar: "🍺",
+  hotel: "🏨",
+  teatro: "🎭",
+  museo: "🏛️",
+  parque: "🌳",
+  edificio: "🏛️",
+  estadio: "⚽",
+  venue: "🎪",
+  "centro-cultural": "🎨",
+  libreria: "📚",
+};
 
 const GRADIENTS: Record<string, string> = {
   shopping: "linear-gradient(135deg, #e11d48, #f43f5e)",
@@ -112,14 +123,9 @@ export default async function HomePage() {
             {lugares.length}+ lugares · {eventos.length} eventos próximos
           </p>
 
-          {/* Search — link a guía */}
-          <Link
-            href="/guia"
-            className="relative max-w-2xl mx-auto mt-6 flex items-center bg-white rounded-2xl pl-14 pr-6 py-3.5 text-sm text-[#87867F] shadow-sm hover:shadow-md transition-shadow"
-          >
-            <Search className="absolute left-5 h-5 w-5 text-[#87867F]" />
-            Buscá shoppings, museos, restaurantes...
-          </Link>
+          <div className="mt-6">
+            <SearchBar />
+          </div>
         </div>
       </div>
 
@@ -127,7 +133,7 @@ export default async function HomePage() {
            CATEGORÍAS — Cards con imagen de fondo
          ═══════════════════════════════════════════ */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 -mt-6 relative z-10">
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
           {TIPO_ORDER.map((tipo) => {
             const count = tipoCounts[tipo] ?? 0;
             const label = TIPO_LABELS[tipo] ?? tipo;
@@ -148,7 +154,12 @@ export default async function HomePage() {
                       className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />
                   ) : (
-                    <div className="absolute inset-0" style={{ background: grad }} />
+                    <>
+                      <div className="absolute inset-0" style={{ background: grad }} />
+                      <div className="absolute inset-0 flex items-center justify-center opacity-30 pointer-events-none">
+                        <span className="text-6xl">{TIPO_ICONS[tipo] ?? "📍"}</span>
+                      </div>
+                    </>
                   )}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
                   <div className="absolute bottom-0 left-0 right-0 p-4">
@@ -166,7 +177,7 @@ export default async function HomePage() {
            DESTACADOS
          ═══════════════════════════════════════════ */}
       {destacados.length > 0 && (
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 mt-14">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 mt-14 pt-8 border-t border-[#D4D2C9]/50">
           <div className="flex items-center gap-3 mb-5">
             <Sparkles className="h-5 w-5 text-[#C96442]" />
             <h2 className="font-[family-name:var(--font-heading)] text-xl sm:text-2xl font-bold text-[#1F1E1D] tracking-tight">
@@ -212,12 +223,12 @@ export default async function HomePage() {
            EVENTOS PRÓXIMOS — EventCard real
          ═══════════════════════════════════════════ */}
       {eventos.length > 0 && (
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 mt-14">
-          <div className="flex items-center gap-3 mb-5">
-            <div className="flex-1 h-px bg-[#D4D2C9]/50" />
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 mt-14 pt-8 border-t border-[#D4D2C9]/50">
+          <div className="flex items-center gap-3 mb-6">
             <h2 className="font-[family-name:var(--font-heading)] text-xl sm:text-2xl font-bold text-[#1F1E1D] tracking-tight">
               Eventos próximos
             </h2>
+            <div className="flex-1 h-px bg-[#D4D2C9]/50" />
             <Link href="/eventos" className="text-xs text-[#C96442] hover:underline flex items-center gap-1 shrink-0">
               Ver todos <ArrowRight className="h-3 w-3" />
             </Link>
