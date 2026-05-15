@@ -40,7 +40,6 @@ export default async function BuscarPage({
     supabase
       .from("eventos")
       .select("id, titulo, fecha, venue, categoria")
-      .gte("fecha", new Date().toISOString().split("T")[0])
       .or(`titulo.ilike.%${query}%,venue.ilike.%${query}%`)
       .limit(10),
   ]);
