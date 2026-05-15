@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import { Inter, Geist_Mono } from "next/font/google";
 import PageTransition from "@/components/page-transition";
@@ -16,11 +16,14 @@ const satoshi = localFont({
   variable: "--font-heading",
 });
 
+export const viewport: Viewport = {
+  themeColor: "#1F1E1D",
+};
+
 export const metadata: Metadata = {
   title: "¿Qué hay hoy? — Brújula Digital",
   description: "Descubrí eventos, recitales, gastronomía, bares, cine y más en Paraguay. La guía del turista para saber qué hacer hoy.",
   manifest: "/manifest.json",
-  themeColor: "#1F1E1D",
   icons: {
     apple: "/icon-192.png",
   },
