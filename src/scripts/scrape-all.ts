@@ -15,6 +15,8 @@ import { scrapeCinemark } from "./scrape-cinemark";
 import { scrapeMarket } from "./scrape-market";
 import { scrapeSerpapi } from "./scrape-serpapi";
 import { upsertEventsNoImages } from "../lib/scrapers/upsert-events";
+import { dedupEventos } from "./dedup-eventos";
+
 import type { ScrapedEvent, ScrapeResult } from "../lib/scrapers/types";
 
 interface ScraperDef {
@@ -98,7 +100,10 @@ export async function runAllScrapers(): Promise<ScrapeResult[]> {
     }
   }
 
-  // 3) Resumen final
+  // 3) Deduplicación post-scraping
+  await dedupEventos(true);
+
+  // 4) Resumen final
   console.log("\n" + "=".repeat(50));
   console.log("📊 RESUMEN FINAL");
   console.log("=".repeat(50));

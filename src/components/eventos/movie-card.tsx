@@ -20,7 +20,7 @@ export default function MovieCard({ movie }: { movie: Pelicula }) {
   const hasPoster = movie.poster_url?.startsWith("http");
 
   const content = (
-    <div className="group relative bg-white rounded-2xl overflow-hidden border border-[#E5E4DD] transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 cursor-pointer">
+    <div className="group relative bg-white rounded-2xl overflow-hidden border border-[#E5E4DD] transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 cursor-pointer flex flex-col">
       {/* Poster */}
       <div className="relative aspect-[4/5] overflow-hidden bg-[#F5F4ED]">
         {hasPoster ? (
@@ -42,9 +42,7 @@ export default function MovieCard({ movie }: { movie: Pelicula }) {
             }}
           />
         ) : (
-          <div className="w-full h-full bg-[#1F1E1D] flex items-center justify-center">
-            <span className="text-5xl opacity-20">🎬</span>
-          </div>
+          <div className="w-full h-full bg-[#1F1E1D]" />
         )}
 
         {/* Top row: clasificación + share */}
@@ -61,7 +59,7 @@ export default function MovieCard({ movie }: { movie: Pelicula }) {
               const text = encodeURIComponent(`🎬 ${movie.titulo}\n\n${movie.source_url ?? `https://brujula.digital/eventos/cine`}`);
               window.open(`https://wa.me/?text=${text}`, "_blank");
             }}
-            className="flex items-center justify-center w-7 h-7 rounded-full bg-black/40 backdrop-blur-sm text-white hover:bg-black/60 transition-colors"
+            className="flex items-center justify-center w-9 h-9 rounded-full bg-black/40 backdrop-blur-sm text-white hover:bg-black/60 transition-colors"
           >
             <Share2 className="h-3 w-3" />
           </button>
@@ -69,7 +67,7 @@ export default function MovieCard({ movie }: { movie: Pelicula }) {
       </div>
 
       {/* Info */}
-      <div className="p-4 space-y-1.5">
+      <div className="p-4 space-y-1.5 flex-1">
         <h3 className="font-semibold text-sm text-[#1F1E1D] leading-snug line-clamp-2">
           {movie.titulo}
         </h3>
