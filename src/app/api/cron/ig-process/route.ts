@@ -87,7 +87,7 @@ async function procesarConGemini(
 
 export async function GET() {
   // Marcar como failed los runs pendientes con más de 2 horas
-  await supabase
+  await getSupabase()
     .from("ig_scraper_runs")
     .update({ status: "failed" })
     .eq("status", "pending")
@@ -97,7 +97,7 @@ export async function GET() {
     );
 
   // Buscar runs pendientes
-  const { data: runs } = await supabase
+  const { data: runs } = await getSupabase()
     .from("ig_scraper_runs")
     .select("*")
     .eq("status", "pending");
@@ -161,7 +161,7 @@ export async function GET() {
       await delay(600);
     }
 
-    await supabase
+    await getSupabase()
       .from("ig_scraper_runs")
       .update({ status: "done", processed_at: new Date().toISOString() })
       .eq("run_id", run.run_id);
