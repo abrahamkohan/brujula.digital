@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Compass, Calendar } from "lucide-react";
 import { PWARegister } from "@/components/pwa-register";
+import { WeatherBadge } from "@/components/weather";
 
 export default function PublicLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -18,7 +19,9 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
             </span>
           </Link>
 
-          <nav className="flex items-center gap-1">
+          <div className="flex-1" />
+          <WeatherBadge />
+          <nav className="flex items-center gap-1 ml-4">
             <Link href="/guia" className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm text-[#5C5B57] hover:text-[#1F1E1D] hover:bg-[#F5F4ED] transition-colors">
               <Compass className="h-4 w-4" /> Guía
             </Link>
