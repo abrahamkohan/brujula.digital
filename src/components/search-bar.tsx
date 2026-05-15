@@ -15,11 +15,7 @@ export function SearchBar() {
       router.push("/guia");
       return;
     }
-    // Buscar en Google con site: para resultados del dominio
-    window.open(
-      `https://www.google.com/search?q=${encodeURIComponent(q)}+site:brujula.digital`,
-      "_blank"
-    );
+    router.push(`/buscar?q=${encodeURIComponent(q)}`);
   }
 
   return (
