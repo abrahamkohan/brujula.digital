@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import type { Metadata } from "next";
 import EventCard from "@/components/eventos/event-card";
+import { getLogoDataUri } from "@/lib/logo";
 
 // ─── Config ────────────────────────────────────────────────────
 const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "595982000808";
@@ -271,7 +272,7 @@ export default async function HomePage() {
         <div className="bg-gradient-to-br from-[#1F1E1D] to-[#2A2825] rounded-3xl py-14 px-8 sm:py-16 sm:px-12 text-center">
           <div className="max-w-xl mx-auto space-y-4">
             <img
-              src="https://kohancampos.com.py/logo-navbar.svg"
+              src={getLogoDataUri()}
               alt="Kohan & Campos"
               className="h-9 mx-auto mb-2"
             />

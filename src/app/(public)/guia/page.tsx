@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import { MessageCircle } from "lucide-react";
+import { getLogoDataUri } from "@/lib/logo";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -65,7 +66,7 @@ export default async function GuiaPage() {
       <div className="bg-[#1F1E1D]">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-12 sm:py-16 text-center">
           <h1 className="font-[family-name:var(--font-heading)] text-3xl sm:text-5xl font-bold text-white tracking-tight">
-            📖 Guía de Asunción
+            Guía de Asunción
           </h1>
           <p className="text-[#B8B7B2] mt-2 text-sm sm:text-base">
             {total} lugares · Encontrá qué hacer, dónde ir y qué comer
@@ -74,7 +75,7 @@ export default async function GuiaPage() {
       </div>
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 py-10">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
           {TIPO_ORDER.map((tipo) => {
             const count = counts[tipo] ?? 0;
             const label = TIPO_LABELS[tipo] ?? tipo;
@@ -84,17 +85,19 @@ export default async function GuiaPage() {
               <Link
                 key={tipo}
                 href={`/guia/${tipo}`}
-                className="group relative rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all hover:scale-[1.02] aspect-[4/3]"
+                className="group rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all hover:scale-[1.02] block"
               >
-                {imagen ? (
-                  <img src={imagen} alt={label} className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                ) : (
-                  <div className="absolute inset-0" style={{ background: grad }} />
-                )}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                <div className="absolute bottom-0 left-0 right-0 p-4">
-                  <p className="font-bold text-white text-base">{label}</p>
-                  <p className="text-white/60 text-xs mt-1">{count} lugares</p>
+                <div className="aspect-[4/3] relative">
+                  {imagen ? (
+                    <img src={imagen} alt={label} className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  ) : (
+                    <div className="absolute inset-0" style={{ background: grad }} />
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                  <div className="absolute bottom-0 left-0 right-0 p-4">
+                    <p className="font-bold text-white text-base">{label}</p>
+                    <p className="text-white/60 text-xs mt-1">{count} lugares</p>
+                  </div>
                 </div>
               </Link>
             );
@@ -103,7 +106,7 @@ export default async function GuiaPage() {
 
         <div className="mt-14 bg-gradient-to-br from-[#1F1E1D] to-[#2A2825] rounded-3xl py-14 px-8 sm:py-16 sm:px-12 text-center">
           <img
-            src="https://kohancampos.com.py/logo-navbar.svg"
+            src={getLogoDataUri()}
             alt="Kohan & Campos"
             className="h-9 mx-auto mb-3"
           />

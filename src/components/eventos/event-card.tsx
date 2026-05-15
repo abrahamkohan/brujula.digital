@@ -110,9 +110,9 @@ export default function EventCard({ event, featured, href }: Props) {
               const text = encodeURIComponent(`📍 ${event.titulo}\n${event.venue}\n\nhttps://brujula.digital/eventos/evento/${event.id}`);
               window.open(`https://wa.me/?text=${text}`, "_blank");
             }}
-            className="flex items-center justify-center w-7 h-7 rounded-full bg-black/40 backdrop-blur-sm text-white hover:bg-black/60 transition-colors"
+            className="flex items-center justify-center w-9 h-9 rounded-full bg-black/40 backdrop-blur-sm text-white hover:bg-black/60 transition-colors"
           >
-            <Share2 className="h-3 w-3" />
+            <Share2 className="h-4 w-4" />
           </button>
         </div>
 
