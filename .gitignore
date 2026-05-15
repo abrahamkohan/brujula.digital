@@ -39,3 +39,13 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+# Local Pi runtime state
+.atl/
+
+# Pi handoff / context files
+PARA-PI.md
+PI-CONNECT.md
+
+# Dev artifacts
+.playwright-mcp/
+excalidraw.log

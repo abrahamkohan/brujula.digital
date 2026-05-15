@@ -1,407 +1,161 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
+import { createClient } from "@/lib/supabase/client";
+import { Star, Trash2, Loader2, Search } from "lucide-react";
 import Link from "next/link";
-import {
-  ExternalLink,
-  Music,
-  Trophy,
-  Globe,
-  Calendar,
-  Building2,
-  RefreshCw,
-  CheckCircle2,
-  XCircle,
-  Loader2,
-  Link2,
-  Play,
-} from "lucide-react";
 
-// ─── Fuentes de eventos ────────────────────────────────────────
-
-interface SourceLink {
-  name: string;
-  url: string;
-  icon: React.ReactNode;
-  category: string;
-  social?: { name: string; url: string; icon: React.ReactNode }[];
+interface Evento {
+  id: string;
+  titulo: string;
+  categoria: string;
+  fecha: string;
+  venue: string | null;
+  editorial_pick: boolean;
+  fuente: string | null;
 }
 
-const SOURCES: SourceLink[] = [
-  {
-    name: "Ticketea.com.py",
-    url: "https://ticketea.com.py",
-    icon: <Music className="h-4 w-4" />,
-    category: "Venta de entradas",
-    social: [
-      { name: "Instagram", url: "https://instagram.com/ticketeapy", icon: <Globe className="h-3.5 w-3.5" /> },
-      { name: "Facebook", url: "https://facebook.com/TicketeaParaguay", icon: <Globe className="h-3.5 w-3.5" /> },
-      { name: "Twitter", url: "https://twitter.com/TicketeaPy", icon: <Globe className="h-3.5 w-3.5" /> },
-    ],
-  },
-  {
-    name: "Tuti.com.py",
-    url: "https://tuti.com.py",
-    icon: <Music className="h-4 w-4" />,
-    category: "Venta de entradas",
-    social: [
-      { name: "Instagram", url: "https://instagram.com/tuti.py", icon: <Globe className="h-3.5 w-3.5" /> },
-    ],
-  },
-  {
-    name: "APF — Fútbol Paraguayo",
-    url: "https://apf.org.py",
-    icon: <Trophy className="h-4 w-4" />,
-    category: "Deportes",
-    social: [
-      { name: "Instagram", url: "https://instagram.com/apforganiza", icon: <Globe className="h-3.5 w-3.5" /> },
-      { name: "Facebook", url: "https://facebook.com/APForganiza", icon: <Globe className="h-3.5 w-3.5" /> },
-      { name: "Twitter", url: "https://twitter.com/APFOficial", icon: <Globe className="h-3.5 w-3.5" /> },
-    ],
-  },
-  {
-    name: "Visit Paraguay",
-    url: "https://visitparaguay.travel",
-    icon: <Globe className="h-4 w-4" />,
-    category: "Turismo oficial",
-    social: [
-      { name: "Instagram", url: "https://instagram.com/visitparaguaypy", icon: <Globe className="h-3.5 w-3.5" /> },
-      { name: "Facebook", url: "https://facebook.com/VisitParaguayPy", icon: <Globe className="h-3.5 w-3.5" /> },
-    ],
-  },
-  {
-    name: "Tiketon Paraguay",
-    url: "https://tiketon.com/paraguay",
-    icon: <Calendar className="h-4 w-4" />,
-    category: "Venta de entradas",
-    social: [
-      { name: "Instagram", url: "https://instagram.com/TiketonArgentina", icon: <Globe className="h-3.5 w-3.5" /> },
-    ],
-  },
-  {
-    name: "AllAccess Paraguay",
-    url: "https://allaccess.com.py",
-    icon: <Calendar className="h-4 w-4" />,
-    category: "Venta de entradas",
-    social: [
-      { name: "Instagram", url: "https://instagram.com/allaccesspy", icon: <Globe className="h-3.5 w-3.5" /> },
-    ],
-  },
-  {
-    name: "Market Comunicaciones",
-    url: "https://marketcomunicaciones.com",
-    icon: <Building2 className="h-4 w-4" />,
-    category: "Expos y ferias empresariales",
-    social: [
-      { name: "Instagram", url: "https://instagram.com/marketcomunicaciones", icon: <Globe className="h-3.5 w-3.5" /> },
-    ],
-  },
-];
-
-// ─── Grandes productoras / promoters ───────────────────────────
-
-interface PromoterLink {
-  name: string;
-  social: { name: string; url: string; icon: React.ReactNode }[];
-}
-
-const PROMOTERS: PromoterLink[] = [
-  {
-    name: "G5Pro",
-    social: [
-      { name: "Instagram", url: "https://instagram.com/g5pro", icon: <Globe className="h-3.5 w-3.5" /> },
-    ],
-  },
-  {
-    name: "Track",
-    social: [
-      { name: "Instagram", url: "https://instagram.com/trackpy", icon: <Globe className="h-3.5 w-3.5" /> },
-    ],
-  },
-  {
-    name: "TuTicket",
-    social: [
-      { name: "Instagram", url: "https://instagram.com/tuticketpy", icon: <Globe className="h-3.5 w-3.5" /> },
-    ],
-  },
-  {
-    name: "Secretaría de Turismo (Senatur)",
-    social: [
-      { name: "Instagram", url: "https://instagram.com/senaturpy", icon: <Globe className="h-3.5 w-3.5" /> },
-      { name: "Facebook", url: "https://facebook.com/SenaturPy", icon: <Globe className="h-3.5 w-3.5" /> },
-    ],
-  },
-];
-
-// ─── Últimos scrapes ───────────────────────────────────────────
-
-interface ScrapeLog {
-  fuente: string;
-  registros_nuevos: number;
-  registros_totales: number;
-  duracion_ms: number;
-  estado: string;
-  created_at: string;
-}
-
-// ─── Componente principal ──────────────────────────────────────
+const categorias = ["Todas", "Concierto", "Deporte", "Feria", "Teatro", "Congreso", "Entretenimiento", "Otro"];
 
 export default function AdminEventosPage() {
-  const [logs, setLogs] = useState<ScrapeLog[]>([]);
+  const supabase = createClient();
+  const [eventos, setEventos] = useState<Evento[]>([]);
   const [loading, setLoading] = useState(true);
-  const [scraping, setScraping] = useState<string | null>(null);
-  const [result, setResult] = useState<string | null>(null);
+  const [filtroCat, setFiltroCat] = useState("Todas");
+  const [filtroFuente, setFiltroFuente] = useState("");
+  const [filtroPick, setFiltroPick] = useState<boolean | null>(null);
+  const [toggling, setToggling] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState<string | null>(null);
 
-  useEffect(() => {
-    fetchLogs();
-  }, []);
+  const fetchEventos = useCallback(async () => {
+    setLoading(true);
+    let query = supabase
+      .from("eventos")
+      .select("id, titulo, categoria, fecha, venue, editorial_pick, fuente")
+      .order("fecha", { ascending: true });
 
-  async function fetchLogs() {
-    try {
-      const res = await fetch("/api/scrape/logs");
-      if (res.ok) {
-        const data = await res.json();
-        setLogs(data.logs ?? []);
-      }
-    } catch {
-      // No hay API todavía, silencioso
-    } finally {
-      setLoading(false);
-    }
+    if (filtroCat !== "Todas") query = query.eq("categoria", filtroCat.toLowerCase());
+    if (filtroFuente) query = query.eq("fuente", filtroFuente);
+    if (filtroPick === true) query = query.eq("editorial_pick", true);
+    else if (filtroPick === false) query = query.eq("editorial_pick", false);
+
+    const { data } = await query;
+    if (data) setEventos(data);
+    setLoading(false);
+  }, [supabase, filtroCat, filtroFuente, filtroPick]);
+
+  useEffect(() => { fetchEventos(); }, [fetchEventos]);
+
+  async function togglePick(evento: Evento) {
+    setToggling(evento.id);
+    await supabase.from("eventos").update({ editorial_pick: !evento.editorial_pick }).eq("id", evento.id);
+    setToggling(null);
+    fetchEventos();
   }
 
-  async function handleScrape(source: string) {
-    setScraping(source);
-    setResult(null);
-    try {
-      const res = await fetch("/api/scrape/simple", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ source }),
-      });
-      const data = await res.json();
-      setResult(
-        `✅ ${data.events_inserted ?? 0} eventos de ${source} insertados`
-      );
-      fetchLogs();
-    } catch (err) {
-      setResult(`❌ Error: ${(err as Error).message}`);
-    } finally {
-      setScraping(null);
-    }
+  async function handleDelete(evento: Evento) {
+    if (!confirm(`¿Eliminar "${evento.titulo}"?`)) return;
+    setDeleting(evento.id);
+    await supabase.from("eventos").delete().eq("id", evento.id);
+    setDeleting(null);
+    fetchEventos();
   }
 
-  const lastScrapes = logs.slice(0, 10);
+  function formatFecha(f: string) {
+    return new Date(f + "T12:00:00").toLocaleDateString("es-PY", { day: "numeric", month: "short" });
+  }
 
   return (
-    <div className="min-h-screen bg-[#F5F4ED] font-sans">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-2xl sm:text-3xl font-bold text-[#1F1E1D] mb-2">
-            ⚙️ Radar Admin
-          </h1>
-          <p className="text-[#5C5B57] text-sm">
-            Fuentes de eventos del Paraguay — scrapeá datos, seguí redes, controlá
-            el radar
-          </p>
+    <div>
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h1 className="text-xl font-bold text-[#1F1E1D] tracking-tight">Eventos</h1>
+          <p className="text-sm text-[#87867F] mt-1 font-sans">{eventos.length} eventos</p>
         </div>
-
-        {/* Últimos scrapes */}
-        <section className="mb-8">
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="text-lg font-bold text-[#1F1E1D]">
-              📊 Últimos scrapes
-            </h2>
-            <button
-              onClick={fetchLogs}
-              className="text-xs text-[#C96442] hover:underline flex items-center gap-1"
-            >
-              <RefreshCw className="h-3 w-3" /> Actualizar
-            </button>
-          </div>
-
-          {loading ? (
-            <div className="text-sm text-[#87867F] py-4">
-              <Loader2 className="h-4 w-4 animate-spin inline mr-2" />
-              Cargando...
-            </div>
-          ) : lastScrapes.length === 0 ? (
-            <div className="bg-white rounded-lg border border-[#D4D2C9] p-4 text-sm text-[#87867F]">
-              Aún no hay scrapes registrados. Scrapeá desde los botones de abajo.
-            </div>
-          ) : (
-            <div className="bg-white rounded-lg border border-[#D4D2C9] divide-y divide-[#E5E4DD]">
-              {lastScrapes.map((log, i) => (
-                <div key={i} className="flex items-center justify-between px-4 py-2.5 text-sm">
-                  <div className="flex items-center gap-2">
-                    {log.estado === "ok" ? (
-                      <CheckCircle2 className="h-3.5 w-3.5 text-green-600" />
-                    ) : (
-                      <XCircle className="h-3.5 w-3.5 text-red-500" />
-                    )}
-                    <span className="font-medium text-[#1F1E1D] capitalize">
-                      {log.fuente}
-                    </span>
-                    <span className="text-[#87867F]">
-                      {log.registros_nuevos} eventos
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-3 text-[#87867F] text-xs">
-                    <span>{(log.duracion_ms / 1000).toFixed(1)}s</span>
-                    <span>
-                      {new Date(log.created_at).toLocaleString("es-PY", {
-                        day: "numeric",
-                        month: "short",
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </section>
-
-        {/* Resultado del scrape */}
-        {result && (
-          <div className="mb-6 px-4 py-3 rounded-lg bg-white border border-[#D4D2C9] text-sm font-medium text-[#1F1E1D]">
-            {result}
-          </div>
-        )}
-
-        {/* Portales */}
-        <section className="mb-8">
-          <h2 className="text-lg font-bold text-[#1F1E1D] mb-3">
-            🌐 Portales de eventos
-          </h2>
-          <div className="grid sm:grid-cols-2 gap-3">
-            {SOURCES.map((source) => (
-              <div
-                key={source.name}
-                className="bg-white rounded-lg border border-[#D4D2C9] p-4 hover:shadow-sm transition-shadow"
-              >
-                <div className="flex items-start justify-between mb-2">
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-lg bg-[#C96442]/10 flex items-center justify-center text-[#C96442]">
-                      {source.icon}
-                    </div>
-                    <div>
-                      <Link
-                        href={source.url}
-                        target="_blank"
-                        className="font-bold text-sm text-[#1F1E1D] hover:text-[#C96442] transition-colors flex items-center gap-1"
-                      >
-                        {source.name}
-                        <ExternalLink className="h-3 w-3" />
-                      </Link>
-                      <p className="text-[10px] text-[#87867F] uppercase tracking-wider">
-                        {source.category}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-2 mb-3">
-                  {source.social?.map((s) => (
-                    <Link
-                      key={s.name}
-                      href={s.url}
-                      target="_blank"
-                      className="text-[#87867F] hover:text-[#C96442] transition-colors"
-                      title={s.name}
-                    >
-                      {s.icon}
-                    </Link>
-                  ))}
-                </div>
-
-                <button
-                  onClick={() => handleScrape(source.name.toLowerCase().split(" ")[0])}
-                  disabled={scraping === source.name.toLowerCase().split(" ")[0]}
-                  className="w-full flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-[#F5F4ED] text-[#5C5B57] hover:bg-[#E5E4DD] transition-colors disabled:opacity-50"
-                >
-                  {scraping === source.name.toLowerCase().split(" ")[0] ? (
-                    <>
-                      <Loader2 className="h-3 w-3 animate-spin" />
-                      Scrapeando...
-                    </>
-                  ) : (
-                    <>
-                      <RefreshCw className="h-3 w-3" />
-                      Scrapear ahora
-                    </>
-                  )}
-                </button>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Redes de productoras */}
-        <section className="mb-8">
-          <h2 className="text-lg font-bold text-[#1F1E1D] mb-3">
-            📱 Productoras &amp; Organizadores
-          </h2>
-          <div className="bg-white rounded-lg border border-[#D4D2C9] divide-y divide-[#E5E4DD]">
-            {PROMOTERS.map((p) => (
-              <div
-                key={p.name}
-                className="flex items-center justify-between px-4 py-3"
-              >
-                <span className="font-bold text-sm text-[#1F1E1D]">{p.name}</span>
-                <div className="flex items-center gap-2">
-                  {p.social.map((s) => (
-                    <Link
-                      key={s.name}
-                      href={s.url}
-                      target="_blank"
-                      className="flex items-center gap-1 px-2.5 py-1 rounded-md bg-[#F5F4ED] text-[#5C5B57] hover:bg-[#E5E4DD] transition-colors text-xs"
-                    >
-                      {s.icon}
-                      {s.name}
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Ayuda / Cómo scrapear */}
-        <section className="bg-white rounded-lg border border-[#D4D2C9] p-5">
-          <h2 className="text-lg font-bold text-[#1F1E1D] mb-2">
-            🛠️ Scrapeo manual
-          </h2>
-          <div className="text-sm text-[#5C5B57] space-y-1">
-            <p>
-              Los scrapers que usan Playwright se corren desde tu máquina local:
-            </p>
-            <pre className="bg-[#F5F4ED] p-3 rounded-lg text-xs font-mono text-[#1F1E1D] mt-2 overflow-x-auto">
-              {`# Todos los scrapers
-npm run scrape:all
-
-# Solo uno
-npm run scrape:ticketea
-npm run scrape:tuti
-npm run scrape:apf
-npm run scrape:visitparaguay`}
-            </pre>
-            <p className="mt-2 text-[#87867F]">
-              Los datos se insertan directamente en Supabase y aparecen al toque
-              en la{" "}
-              <Link
-                href="/eventos"
-                className="text-[#C96442] hover:underline font-medium"
-              >
-                página de eventos
-              </Link>
-              .
-            </p>
-          </div>
-        </section>
+        <Link href="/admin/eventos/nuevo"
+          className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#C96442] text-white text-sm font-medium hover:bg-[#b85a3a] transition-colors">
+          + Nuevo evento
+        </Link>
       </div>
+
+      {/* Filtros */}
+      <div className="flex items-center gap-3 mb-4 flex-wrap">
+        <select value={filtroCat} onChange={(e) => setFiltroCat(e.target.value)}
+          className="px-3 py-1.5 rounded-xl border border-[#D4D2C9] bg-white text-[#1F1E1D] text-sm focus:outline-none focus:ring-2 focus:ring-[#C96442]/20 focus:border-[#C96442]">
+          {categorias.map(c => <option key={c} value={c}>{c}</option>)}
+        </select>
+
+        <input type="text" value={filtroFuente} onChange={(e) => setFiltroFuente(e.target.value)}
+          placeholder="Filtrar por fuente..."
+          className="px-3 py-1.5 rounded-xl border border-[#D4D2C9] bg-white text-[#1F1E1D] text-sm focus:outline-none focus:ring-2 focus:ring-[#C96442]/20 focus:border-[#C96442] placeholder-[#87867F] w-44" />
+
+        <select
+          value={filtroPick === true ? "pick" : filtroPick === false ? "nopick" : "todas"}
+          onChange={(e) => {
+            const v = e.target.value;
+            setFiltroPick(v === "pick" ? true : v === "nopick" ? false : null);
+          }}
+          className="px-3 py-1.5 rounded-xl border border-[#D4D2C9] bg-white text-[#1F1E1D] text-sm focus:outline-none focus:ring-2 focus:ring-[#C96442]/20 focus:border-[#C96442]">
+          <option value="todas">Todos</option>
+          <option value="pick">★ Selección</option>
+          <option value="nopick">Sin selección</option>
+        </select>
+
+        <button onClick={fetchEventos} className="p-1.5 rounded-lg text-[#87867F] hover:text-[#1F1E1D] hover:bg-[#F5F4ED]">
+          <Search className="h-4 w-4" />
+        </button>
+      </div>
+
+      {/* Tabla */}
+      {loading ? (
+        <div className="text-[#87867F] text-sm py-8 text-center">
+          <Loader2 className="h-4 w-4 animate-spin inline mr-2" /> Cargando...
+        </div>
+      ) : (
+        <div className="bg-white rounded-xl border border-[#D4D2C9] overflow-hidden">
+          <div className="grid grid-cols-[1fr_80px_100px_1fr_60px_110px] gap-3 px-5 py-3 text-xs font-medium text-[#87867F] border-b border-[#D4D2C9]">
+            <span>Título</span>
+            <span>Cat</span>
+            <span>Fecha</span>
+            <span>Venue</span>
+            <span>Pick</span>
+            <span>Acciones</span>
+          </div>
+
+          {eventos.length === 0 ? (
+            <div className="px-5 py-8 text-center text-[#87867F] text-sm">No hay eventos con esos filtros.</div>
+          ) : (
+            eventos.map((evento) => (
+              <div key={evento.id}
+                className="grid grid-cols-[1fr_80px_100px_1fr_60px_110px] gap-3 px-5 py-3 text-sm border-b border-[#D4D2C9] last:border-0 items-center">
+                <span className="font-medium text-[#1F1E1D] truncate">{evento.titulo}</span>
+                <span className="text-[#5C5B57]">{evento.categoria}</span>
+                <span className="text-[#5C5B57]">{formatFecha(evento.fecha)}</span>
+                <span className="text-[#87867F] truncate">{evento.venue ?? "—"}</span>
+                <div>
+                  <button onClick={() => togglePick(evento)} disabled={toggling === evento.id}
+                    className={`transition-colors ${evento.editorial_pick ? "text-[#C96442]" : "text-[#D4D2C9] hover:text-[#87867F]"}`}>
+                    {toggling === evento.id
+                      ? <Loader2 className="h-4 w-4 animate-spin" />
+                      : <Star className={`h-4 w-4 ${evento.editorial_pick ? "fill-[#C96442]" : ""}`} />
+                    }
+                  </button>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Link href={`/admin/eventos/nuevo?id=${evento.id}`}
+                    className="px-2.5 py-1 rounded-lg text-xs bg-[#F5F4ED] text-[#5C5B57] hover:bg-[#E8DCC8] transition-colors">
+                    Editar
+                  </Link>
+                  <button onClick={() => handleDelete(evento)} disabled={deleting === evento.id}
+                    className="p-1.5 rounded-lg text-[#87867F] hover:text-[#C96442] hover:bg-[#F5F4ED] transition-colors disabled:opacity-50">
+                    {deleting === evento.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Trash2 className="h-3.5 w-3.5" />}
+                  </button>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      )}
     </div>
   );
 }
