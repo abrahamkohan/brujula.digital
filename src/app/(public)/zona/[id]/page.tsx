@@ -6,7 +6,7 @@ import {
   ShoppingBag, UtensilsCrossed, Beer, Hotel, Film,
   Landmark, TreePine, Building2, Trophy, MicVocal,
   Palmtree, BookOpen, Compass, MessageCircle,
-  ArrowRight,
+  ArrowRight, Share2,
 } from "lucide-react";
 import type { Metadata } from "next";
 
@@ -184,10 +184,21 @@ export default async function ZonaPage({ params }: { params: Promise<{ id: strin
                         </span>
                       )}
                       {item.badge && (
-                        <span className="absolute top-2 right-2 px-2 py-0.5 rounded-full text-[10px] font-medium bg-black/50 text-white backdrop-blur-sm">
+                        <span className="absolute top-2 right-10 px-2 py-0.5 rounded-full text-[10px] font-medium bg-black/50 text-white backdrop-blur-sm">
                           {item.badge}
                         </span>
                       )}
+                      <button
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          const msg = encodeURIComponent(`📍 ${item.name}\n${item.descripcion}\n\n${item.url}`);
+                          window.open(`https://wa.me/?text=${msg}`, "_blank");
+                        }}
+                        className="absolute top-2 right-2 flex items-center justify-center w-9 h-9 rounded-full bg-black/40 backdrop-blur-sm text-white hover:bg-black/60 transition-colors"
+                      >
+                        <Share2 className="h-4 w-4" />
+                      </button>
                     </div>
                     <div className="p-4 space-y-1.5">
                       <h3 className="font-semibold text-sm text-[#1F1E1D] group-hover:text-[#C96442] transition-colors">
