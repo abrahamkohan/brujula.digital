@@ -14,12 +14,15 @@ export async function PATCH(request: Request) {
     .from("eventos")
     .update(updates)
     .eq("id", id)
-    .select()
-    .single();
+    .select();
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  return NextResponse.json({ evento: data });
+  if (!data || data.length === 0) {
+    return NextResponse.json({ error: "No se pudo actualizar (RLS bloquea o no existe)" }, { status: 403 });
+  }
+
+  return NextResponse.json({ evento: data[0] });
 }
