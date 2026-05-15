@@ -10,7 +10,7 @@ const planes = [
     cta: "Empezar prueba", href: "/buscar" },
   { nombre: "Full", precio: "USD 300–500", periodo: "/mes", tag: "Todos los módulos", destacado: false,
     features: ["Todos los módulos","API completa","Múltiples usuarios","Soporte WhatsApp","SLA garantizado","Personalización","Sin permanencia"],
-    cta: "Contactar", href: "https://wa.me/595982000808" },
+    cta: "Contactar", href: "https://wa.me/595976227373" },
 ];
 
 export default function PricingPage() {
@@ -60,7 +60,7 @@ export default function PricingPage() {
             <h2 className="text-lg font-bold text-[#1F1E1D]">¿Necesitás algo a medida?</h2>
           </div>
           <p className="text-sm text-[#5C5B57] mb-4">Plan Enterprise con clientes ilimitados, API dedicada y SLA.</p>
-          <a href="https://wa.me/595982000808" className="inline-flex items-center gap-2 text-sm font-semibold text-[#C96442] hover:underline">
+          <a href="https://wa.me/595976227373" className="inline-flex items-center gap-2 text-sm font-semibold text-[#C96442] hover:underline">
             Hablar por WhatsApp <ArrowRight className="h-4 w-4" />
           </a>
         </div>

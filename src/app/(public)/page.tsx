@@ -4,11 +4,11 @@ import Link from "next/link";
 import { Compass, MessageCircle, ArrowRight, Sparkles } from "lucide-react";
 import type { Metadata } from "next";
 import EventCard from "@/components/eventos/event-card";
-import { getLogoDataUri } from "@/lib/logo";
 import { SearchBar } from "@/components/search-bar";
+import { LogoCta } from "@/components/logo-kohan";
 
 // ─── Config ────────────────────────────────────────────────────
-const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "595982000808";
+const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "595976227373";
 
 // ─── Metadata ─────────────────────────────────────────────────
 
@@ -262,11 +262,7 @@ export default async function HomePage() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 mt-14 mb-14">
         <div className="bg-gradient-to-br from-[#1F1E1D] to-[#2A2825] rounded-3xl py-14 px-8 sm:py-16 sm:px-12 text-center">
           <div className="max-w-xl mx-auto space-y-4">
-            <img
-              src={getLogoDataUri()}
-              alt="Kohan & Campos"
-              className="h-9 mx-auto mb-2"
-            />
+            <LogoCta className="h-9 mx-auto mb-2" invert />
             <h2 className="font-[family-name:var(--font-heading)] text-2xl sm:text-3xl font-bold text-white tracking-tight">
               ¿Buscás propiedad en Asunción?
             </h2>

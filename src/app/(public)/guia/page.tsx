@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import { MessageCircle } from "lucide-react";
-import { getLogoDataUri } from "@/lib/logo";
+import { LogoCta } from "@/components/logo-kohan";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -105,11 +105,7 @@ export default async function GuiaPage() {
         </div>
 
         <div className="mt-14 bg-gradient-to-br from-[#1F1E1D] to-[#2A2825] rounded-3xl py-14 px-8 sm:py-16 sm:px-12 text-center">
-          <img
-            src={getLogoDataUri()}
-            alt="Kohan & Campos"
-            className="h-9 mx-auto mb-3"
-          />
+          <LogoCta className="h-9 mx-auto mb-3" invert />
           <h2 className="font-[family-name:var(--font-heading)] text-xl sm:text-2xl font-bold text-white">
             ¿Buscás propiedad en Asunción?
           </h2>
@@ -117,7 +113,7 @@ export default async function GuiaPage() {
             Consultame sin compromiso — te ayudo a encontrar en la zona que te interesa.
           </p>
           <a
-            href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "595982000808"}?text=${encodeURIComponent("Hola, vi la Guía de Asunción en Brújula Digital y me interesa saber sobre propiedades.")}`}
+            href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "595976227373"}?text=${encodeURIComponent("Hola, vi la Guía de Asunción en Brújula Digital y me interesa saber sobre propiedades.")}`}
             target="_blank" rel="noopener noreferrer"
             className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-[#25D366] text-white font-semibold text-sm hover:bg-[#22c35e] transition-colors mt-4"
           >
