@@ -5,7 +5,7 @@ import Link from "next/link";
 import {
   ShoppingBag, UtensilsCrossed, Beer, Hotel, Film,
   Landmark, TreePine, Building2, Trophy, MicVocal,
-  Palmtree, BookOpen, Compass, MessageCircle,
+  TreePalm, BookOpen, Compass, MessageCircle,
   ArrowRight,
 } from "lucide-react";
 import type { Metadata } from "next";
@@ -47,7 +47,7 @@ const TIPO_CONFIG: Record<string, { icon: React.ComponentType<{ className?: stri
   edificio: { icon: Building2, label: "Edificios históricos" },
   estadio: { icon: Trophy, label: "Estadios" },
   venue: { icon: MicVocal, label: "Espacios para eventos" },
-  "centro-cultural": { icon: Palmtree, label: "Centros culturales" },
+  "centro-cultural": { icon: TreePalm, label: "Centros culturales" },
   libreria: { icon: BookOpen, label: "Librerías" },
 };
 

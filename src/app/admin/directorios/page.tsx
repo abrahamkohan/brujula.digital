@@ -5,7 +5,7 @@ import {
   Plus, X, Loader2, ExternalLink, Check, Trash2,
   ShoppingBag, UtensilsCrossed, Beer, Hotel, Film,
   Landmark, TreePine, Building2, Trophy, MicVocal,
-  Palmtree, BookOpen, MapPin, Compass,
+  TreePalm, BookOpen, MapPin, Compass,
   Image as ImageIcon, Star,
 } from "lucide-react";
 import { ZONAS } from "@/lib/directorios/types";
@@ -50,7 +50,7 @@ const TAB_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
   edificio: Building2,
   estadio: Trophy,
   venue: MicVocal,
-  "centro-cultural": Palmtree,
+  "centro-cultural": TreePalm,
   libreria: BookOpen,
   "barrio-zona": MapPin,
 };
