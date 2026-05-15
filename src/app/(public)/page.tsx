@@ -77,13 +77,15 @@ const TIPO_ORDER = [
 export default async function HomePage() {
   const supabase = await createClient();
 
-  const [directoriosRes, eventosRes] = await Promise.all([
+  const [directoriosRes, eventosRes, itinerariosRes] = await Promise.all([
     supabase.from("directorios").select("tipo, name, zone, featured, badge, image, descripcion, horario, stars, url, id").eq("active", true),
     supabase.from("eventos").select("id, titulo, fecha, venue, categoria, image_url, source_url").gte("fecha", new Date().toISOString().split("T")[0]).order("fecha").limit(6),
+    supabase.from("itinerarios").select("*").eq("activo", true).order("orden").order("created_at", { ascending: false }).limit(3),
   ]);
 
   const lugares = directoriosRes.data ?? [];
   const eventos = eventosRes.data ?? [];
+  const itinerarios = itinerariosRes.data ?? [];
 
   // ── Counts por tipo ──
   const tipoCounts: Record<string, number> = {};
@@ -239,6 +241,44 @@ export default async function HomePage() {
       )}
 
       {/* ═══════════════════════════════════════════
+           ITINERARIOS DESTACADOS
+         ═══════════════════════════════════════════ */}
+      {itinerarios.length > 0 && (
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 mt-14 pt-8 border-t border-[#D4D2C9]/50">
+          <div className="flex items-center gap-3 mb-5">
+            <h2 className="font-[family-name:var(--font-heading)] text-xl sm:text-2xl font-bold text-[#1F1E1D] tracking-tight">
+              Itinerarios destacados
+            </h2>
+            <div className="flex-1 h-px bg-[#D4D2C9]/50" />
+            <Link href="/itinerarios" className="text-xs text-[#C96442] hover:underline flex items-center gap-1 shrink-0">
+              Ver todos <ArrowRight className="h-3 w-3" />
+            </Link>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+            {itinerarios.map((it: any) => (
+              <Link
+                key={it.id}
+                href={`/itinerarios/${it.slug}`}
+                className="group bg-white rounded-2xl border border-[#D4D2C9] overflow-hidden shadow-sm hover:shadow-lg hover:border-[#C96442]/30 transition-all"
+              >
+                <div className="aspect-[16/9] bg-[#1F1E1D] overflow-hidden relative">
+                  {it.imagen ? (
+                    <img src={it.imagen} alt={it.titulo} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-3xl">🗺️</div>
+                  )}
+                </div>
+                <div className="p-4 space-y-1">
+                  <h3 className="font-semibold text-sm text-[#1F1E1D] group-hover:text-[#C96442] transition-colors">{it.titulo}</h3>
+                  {it.duracion_texto && <p className="text-xs text-[#87867F]">{it.duracion_texto}</p>}
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* ═══════════════════════════════════════════
            ZONAS
          ═══════════════════════════════════════════ */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 mt-14">
@@ -336,6 +376,7 @@ export default async function HomePage() {
               Kohan &amp; Campos
             </a>
             <Link href="/guia" className="hover:text-[#C96442] transition-colors">Guía</Link>
+            <Link href="/itinerarios" className="hover:text-[#C96442] transition-colors">Itinerarios</Link>
             <Link href="/eventos" className="hover:text-[#C96442] transition-colors">Eventos</Link>
           </div>
           <p className="text-xs">{lugares.length} lugares · {eventos.length} eventos próximos</p>
