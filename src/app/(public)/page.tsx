@@ -2,12 +2,13 @@ import { createClient } from "@/lib/supabase/server";
 import { ZONAS } from "@/lib/directorios/types";
 import Link from "next/link";
 import {
+  Compass, Search, MessageCircle, ArrowRight, Sparkles,
   ShoppingBag, UtensilsCrossed, Beer, Hotel, Film,
   Landmark, TreePine, Building2, Trophy, MicVocal,
-  Palmtree, BookOpen, Compass, Search, MessageCircle,
-  ArrowRight, Sparkles,
+  Palmtree, BookOpen,
 } from "lucide-react";
 import type { Metadata } from "next";
+import EventCard from "@/components/eventos/event-card";
 
 // ─── Config ────────────────────────────────────────────────────
 const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "595982000808";
@@ -26,27 +27,41 @@ export const metadata: Metadata = {
   },
 };
 
-// ─── Config de tipos ──────────────────────────────────────────
+// ─── Gradientes de fallback por tipo ──────────────────────────
 
-const TIPO_CONFIG: Record<string, { icon: React.ComponentType<{ className?: string }>; label: string; color: string }> = {
-  shopping: { icon: ShoppingBag, label: "Shoppings", color: "bg-rose-100 text-rose-600" },
-  gastronomia: { icon: UtensilsCrossed, label: "Restaurantes", color: "bg-orange-100 text-orange-600" },
-  bar: { icon: Beer, label: "Bares", color: "bg-amber-100 text-amber-600" },
-  hotel: { icon: Hotel, label: "Hoteles", color: "bg-blue-100 text-blue-600" },
-  teatro: { icon: Film, label: "Teatros", color: "bg-purple-100 text-purple-600" },
-  museo: { icon: Landmark, label: "Museos", color: "bg-emerald-100 text-emerald-600" },
-  parque: { icon: TreePine, label: "Parques", color: "bg-green-100 text-green-600" },
-  edificio: { icon: Building2, label: "Edificios históricos", color: "bg-stone-100 text-stone-600" },
-  estadio: { icon: Trophy, label: "Estadios", color: "bg-yellow-100 text-yellow-600" },
-  venue: { icon: MicVocal, label: "Espacios para eventos", color: "bg-indigo-100 text-indigo-600" },
-  "centro-cultural": { icon: Palmtree, label: "Centros culturales", color: "bg-teal-100 text-teal-600" },
-  libreria: { icon: BookOpen, label: "Librerías", color: "bg-cyan-100 text-cyan-600" },
+const GRADIENTS: Record<string, string> = {
+  shopping: "linear-gradient(135deg, #e11d48, #f43f5e)",
+  gastronomia: "linear-gradient(135deg, #ea580c, #f97316)",
+  bar: "linear-gradient(135deg, #d97706, #f59e0b)",
+  hotel: "linear-gradient(135deg, #2563eb, #3b82f6)",
+  teatro: "linear-gradient(135deg, #7c3aed, #a855f7)",
+  museo: "linear-gradient(135deg, #059669, #10b981)",
+  parque: "linear-gradient(135deg, #16a34a, #22c55e)",
+  edificio: "linear-gradient(135deg, #57534e, #78716c)",
+  estadio: "linear-gradient(135deg, #ca8a04, #eab308)",
+  venue: "linear-gradient(135deg, #4f46e5, #6366f1)",
+  "centro-cultural": "linear-gradient(135deg, #0d9488, #14b8a6)",
+  libreria: "linear-gradient(135deg, #0891b2, #06b6d4)",
+};
+
+const TIPO_LABELS: Record<string, string> = {
+  shopping: "Shoppings",
+  gastronomia: "Restaurantes",
+  bar: "Bares",
+  hotel: "Hoteles",
+  teatro: "Teatros",
+  museo: "Museos",
+  parque: "Parques",
+  edificio: "Edificios históricos",
+  estadio: "Estadios",
+  venue: "Espacios para eventos",
+  "centro-cultural": "Centros culturales",
+  libreria: "Librerías",
 };
 
 const TIPO_ORDER = [
-  "shopping", "museo", "gastronomia", "bar", "hotel",
-  "teatro", "parque", "edificio", "estadio", "venue",
-  "centro-cultural", "libreria",
+  "shopping", "museo", "gastronomia", "bar", "hotel", "teatro",
+  "parque", "edificio", "estadio", "venue", "centro-cultural", "libreria",
 ];
 
 // ═══════════════════════════════════════════════════════════════
@@ -54,10 +69,9 @@ const TIPO_ORDER = [
 export default async function HomePage() {
   const supabase = await createClient();
 
-  // ── Fetch data ──
   const [directoriosRes, eventosRes] = await Promise.all([
     supabase.from("directorios").select("tipo, name, zone, featured, badge, image, descripcion, horario, stars, url, id").eq("active", true),
-    supabase.from("eventos").select("id, titulo, fecha, venue, categoria, image_url").gte("fecha", new Date().toISOString().split("T")[0]).order("fecha").limit(6),
+    supabase.from("eventos").select("id, titulo, fecha, venue, categoria, image_url, source_url").gte("fecha", new Date().toISOString().split("T")[0]).order("fecha").limit(6),
   ]);
 
   const lugares = directoriosRes.data ?? [];
@@ -65,8 +79,12 @@ export default async function HomePage() {
 
   // ── Counts por tipo ──
   const tipoCounts: Record<string, number> = {};
+  lugares.forEach((l) => { tipoCounts[l.tipo] = (tipoCounts[l.tipo] || 0) + 1; });
+
+  // ── Primera imagen por tipo ──
+  const primeraImagen: Record<string, string> = {};
   lugares.forEach((l) => {
-    tipoCounts[l.tipo] = (tipoCounts[l.tipo] || 0) + 1;
+    if (l.image && !primeraImagen[l.tipo]) primeraImagen[l.tipo] = l.image;
   });
 
   // ── Destacados ──
@@ -77,7 +95,7 @@ export default async function HomePage() {
   const zonasConData = ZONAS.filter((z) => zonasConLugares.has(z.id));
 
   return (
-    <div className="min-h-screen bg-[#F5F4ED] font-sans">
+    <div className="min-h-screen bg-[#F5F4ED]">
       {/* ═══════════════════════════════════════════
            HERO
          ═══════════════════════════════════════════ */}
@@ -89,12 +107,11 @@ export default async function HomePage() {
           <p className="text-[#B8B7B2] mt-3 text-base sm:text-lg max-w-xl mx-auto">
             La guía más completa de Asunción — encontrá qué hacer, dónde ir y qué comer
           </p>
-          <div className="mt-2 text-sm text-[#87867F]">
+          <p className="mt-1 text-sm text-[#87867F]">
             {lugares.length}+ lugares · {eventos.length} eventos próximos
-          </div>
+          </p>
 
-          {/* Search */}
-          {/* Search */}
+          {/* Search — link a guía */}
           <Link
             href="/guia"
             className="relative max-w-2xl mx-auto mt-6 flex items-center bg-white rounded-2xl pl-14 pr-6 py-3.5 text-sm text-[#87867F] shadow-sm hover:shadow-md transition-shadow"
@@ -106,26 +123,38 @@ export default async function HomePage() {
       </div>
 
       {/* ═══════════════════════════════════════════
-           CATEGORÍAS
+           CATEGORÍAS — Cards con imagen de fondo
          ═══════════════════════════════════════════ */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 -mt-6 relative z-10">
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
           {TIPO_ORDER.map((tipo) => {
-            const config = TIPO_CONFIG[tipo];
-            if (!config) return null;
             const count = tipoCounts[tipo] ?? 0;
-            const Icon = config.icon;
+            const label = TIPO_LABELS[tipo] ?? tipo;
+            const imagen = primeraImagen[tipo];
+            const grad = GRADIENTS[tipo] ?? "linear-gradient(135deg, #6b7280, #4b5563)";
+
             return (
               <Link
                 key={tipo}
                 href={`/guia/${tipo}`}
-                className="bg-white rounded-2xl border border-[#D4D2C9] p-4 hover:shadow-md hover:border-[#C96442]/30 transition-all group"
+                className="group relative rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all hover:scale-[1.02]"
               >
-                <div className={`w-10 h-10 rounded-xl ${config.color} flex items-center justify-center mb-2.5 group-hover:scale-110 transition-transform`}>
-                  <Icon className="h-5 w-5" />
+                <div className="aspect-[4/3] relative">
+                  {imagen ? (
+                    <img
+                      src={imagen}
+                      alt={label}
+                      className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                  ) : (
+                    <div className="absolute inset-0" style={{ background: grad }} />
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                  <div className="absolute bottom-0 left-0 right-0 p-4">
+                    <p className="font-bold text-white text-sm">{label}</p>
+                    <p className="text-white/60 text-xs">{count} lugares</p>
+                  </div>
                 </div>
-                <p className="text-sm font-semibold text-[#1F1E1D]">{config.label}</p>
-                <p className="text-xs text-[#87867F] mt-0.5">{count} lugares</p>
               </Link>
             );
           })}
@@ -145,40 +174,41 @@ export default async function HomePage() {
             <div className="flex-1 h-px bg-[#D4D2C9]/50" />
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-            {destacados.map((item) => {
-              const config = TIPO_CONFIG[item.tipo];
-              const Icon = config?.icon ?? Compass;
-              return (
-                <a
-                  key={item.id}
-                  href={item.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group bg-white rounded-2xl border border-[#D4D2C9] overflow-hidden shadow-sm hover:shadow-lg hover:border-[#C96442]/30 transition-all"
-                >
-                  <div className="aspect-[16/9] bg-[#F5F4ED] overflow-hidden relative">
-                    {item.image ? (
-                      <img src={item.image} alt={item.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-[#D4D2C9]"><Icon className="h-8 w-8" /></div>
-                    )}
-                    {item.badge && (
-                      <span className="absolute top-2 right-2 px-2 py-0.5 rounded-full text-[10px] font-medium bg-black/50 text-white backdrop-blur-sm">{item.badge}</span>
-                    )}
+            {destacados.map((item) => (
+              <a
+                key={item.id}
+                href={item.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group relative rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all hover:scale-[1.02]"
+              >
+                <div className="aspect-[4/3] relative">
+                  {item.image ? (
+                    <img src={item.image} alt={item.name} className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  ) : (
+                    <div className="absolute inset-0 flex items-center justify-center text-white/40 text-3xl" style={{ background: GRADIENTS[item.tipo] ?? "#6b7280" }}>
+                      <Compass className="h-10 w-10" />
+                    </div>
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                  {item.badge && (
+                    <span className="absolute top-3 right-3 px-2.5 py-1 rounded-full text-[10px] font-medium bg-black/50 backdrop-blur-sm text-white">
+                      {item.badge}
+                    </span>
+                  )}
+                  <div className="absolute bottom-0 left-0 right-0 p-4">
+                    <p className="font-bold text-white text-sm">{item.name}</p>
+                    <p className="text-white/60 text-xs">{TIPO_LABELS[item.tipo] ?? item.tipo}</p>
                   </div>
-                  <div className="p-3 space-y-1">
-                    <h3 className="font-semibold text-sm text-[#1F1E1D] group-hover:text-[#C96442] transition-colors">{item.name}</h3>
-                    <p className="text-xs text-[#87867F]">{config?.label ?? item.tipo}</p>
-                  </div>
-                </a>
-              );
-            })}
+                </div>
+              </a>
+            ))}
           </div>
         </div>
       )}
 
       {/* ═══════════════════════════════════════════
-           EVENTOS PRÓXIMOS
+           EVENTOS PRÓXIMOS — EventCard real
          ═══════════════════════════════════════════ */}
       {eventos.length > 0 && (
         <div className="max-w-6xl mx-auto px-4 sm:px-6 mt-14">
@@ -187,26 +217,24 @@ export default async function HomePage() {
             <h2 className="font-[family-name:var(--font-heading)] text-xl sm:text-2xl font-bold text-[#1F1E1D] tracking-tight">
               Eventos próximos
             </h2>
-            <Link href="/eventos" className="text-xs text-[#C96442] hover:underline flex items-center gap-1">
+            <Link href="/eventos" className="text-xs text-[#C96442] hover:underline flex items-center gap-1 shrink-0">
               Ver todos <ArrowRight className="h-3 w-3" />
             </Link>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-            {eventos.map((e) => (
-              <Link
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+            {eventos.slice(0, 6).map((e) => (
+              <EventCard
                 key={e.id}
+                event={{
+                  id: e.id,
+                  titulo: e.titulo,
+                  fecha: e.fecha,
+                  venue: e.venue ?? "",
+                  categoria: e.categoria,
+                  image_url: e.image_url,
+                }}
                 href={`/eventos/evento/${e.id}`}
-                className="bg-white rounded-2xl border border-[#D4D2C9] p-4 hover:shadow-md hover:border-[#C96442]/30 transition-all flex items-start gap-3"
-              >
-                <div className="w-3 h-3 rounded-full mt-0.5 bg-[#C96442] shrink-0" />
-                <div className="min-w-0">
-                  <p className="text-sm font-medium text-[#1F1E1D] truncate">{e.titulo}</p>
-                  <p className="text-xs text-[#87867F] mt-0.5">
-                    {new Date(e.fecha + "T12:00:00").toLocaleDateString("es-PY", { day: "numeric", month: "short" })}
-                    {e.venue ? ` · ${e.venue}` : ""}
-                  </p>
-                </div>
-              </Link>
+              />
             ))}
           </div>
         </div>
@@ -264,7 +292,7 @@ export default async function HomePage() {
       </div>
 
       {/* ═══════════════════════════════════════════
-           FOOTER
+           FOOTER — sin /admin
          ═══════════════════════════════════════════ */}
       <footer className="border-t border-[#D4D2C9] py-8">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-[#87867F]">
@@ -275,8 +303,8 @@ export default async function HomePage() {
             <span className="ml-2">· Guía de Asunción</span>
           </div>
           <div className="flex items-center gap-4">
+            <Link href="/guia" className="hover:text-[#C96442] transition-colors">Guía</Link>
             <Link href="/eventos" className="hover:text-[#C96442] transition-colors">Eventos</Link>
-            <Link href="/admin" className="hover:text-[#C96442] transition-colors">Admin</Link>
           </div>
           <p className="text-xs">{lugares.length} lugares · {eventos.length} eventos próximos</p>
         </div>
