@@ -30,7 +30,7 @@ export interface ScrapedEvent {
   title: string;
 
   /** Fecha del evento (puede tener hora o no) */
-  event_date: string; // ISO string, ej: "2026-07-15" o "2026-07-15T20:00:00-04:00"
+  event_date?: string; // ISO string, ej: "2026-07-15". null si no se pudo extraer
 
   /** Fecha de fin si es multi-día */
   event_date_end?: string;

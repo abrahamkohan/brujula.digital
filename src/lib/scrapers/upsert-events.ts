@@ -75,7 +75,7 @@ function toRow(event: ScrapedEvent) {
     external_id: event.external_id,
     titulo: event.title,
     categoria: event.category.toLowerCase(), // la página espera minúscula: "concierto", "deporte"
-    fecha: event.event_date.split("T")[0], // solo YYYY-MM-DD
+    fecha: event.event_date?.split("T")[0] ?? null,
     event_date_end: event.event_date_end ?? null,
     venue: event.venue_name,
     venue_address: event.venue_address ?? venueMatch?.address ?? null,
