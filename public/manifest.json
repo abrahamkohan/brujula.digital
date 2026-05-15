@@ -1,12 +1,15 @@
 {
-  "name": "Brujula",
-  "short_name": "Brujula",
-  "description": "Datos públicos del Estado paraguayo",
+  "name": "Brújula Digital",
+  "short_name": "Brújula",
+  "description": "La guía más completa de Asunción",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#F5F4ED",
-  "theme_color": "#C96442",
+  "background_color": "#1F1E1D",
+  "theme_color": "#1F1E1D",
+  "lang": "es",
   "icons": [
-    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml" }
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
   ]
 }

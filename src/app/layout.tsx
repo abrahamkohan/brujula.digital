@@ -19,6 +19,16 @@ const satoshi = localFont({
 export const metadata: Metadata = {
   title: "¿Qué hay hoy? — Brújula Digital",
   description: "Descubrí eventos, recitales, gastronomía, bares, cine y más en Paraguay. La guía del turista para saber qué hacer hoy.",
+  manifest: "/manifest.json",
+  themeColor: "#1F1E1D",
+  icons: {
+    apple: "/icon-192.png",
+  },
+  appleWebApp: {
+    capable: true,
+    title: "Brújula",
+    statusBarStyle: "black-translucent",
+  },
   openGraph: {
     title: "¿Qué hay hoy? — Brújula Digital",
     description: "Eventos, recitales, gastronomía, bares, cine y más en Paraguay. Actualizado hoy.",

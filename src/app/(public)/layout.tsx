@@ -1,9 +1,11 @@
 import Link from "next/link";
-import { Compass, Calendar, ArrowRight } from "lucide-react";
+import { Compass, Calendar } from "lucide-react";
+import { PWARegister } from "@/components/pwa-register";
 
 export default function PublicLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-[#F5F4ED] font-sans">
+      <PWARegister />
       {/* Nav mínimo */}
       <header className="bg-white border-b border-[#D4D2C9]">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
