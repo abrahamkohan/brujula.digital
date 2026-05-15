@@ -1,0 +1,37 @@
+name: Scrape
+
+on:
+  schedule:
+    # 6:00 AM UTC = 3:00 AM PY (invierno) / 2:00 AM PY (verano)
+    - cron: "0 9 * * *"
+  workflow_dispatch: # permite correrlo manualmente desde GitHub
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    env:
+      NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+      SERPAPI_API_KEY: ${{ secrets.SERPAPI_API_KEY }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+
+      - run: npm ci
+
+      - name: Install Playwright Chromium
+        run: npx playwright install chromium
+
+      - name: Run all scrapers
+        run: npx tsx src/scripts/scrape-all.ts
+
+      - name: Run dedup
+        run: npx tsx src/scripts/dedup-eventos.ts
