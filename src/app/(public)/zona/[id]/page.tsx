@@ -91,20 +91,29 @@ export default async function ZonaPage({ params }: { params: Promise<{ id: strin
     .order("sort_order")
     .order("name");
 
+  const { data: zonaMeta } = await supabase
+    .from("directorios")
+    .select("image, descripcion")
+    .eq("tipo", "barrio-zona")
+    .eq("zone", id)
+    .maybeSingle();
+
+  const heroImg = zonaMeta?.image || getZonaHero(id);
+  const heroDesc = zonaMeta?.descripcion || getZonaDesc(id);
   const totalLugares = lugares?.length ?? 0;
+  const whatsappMsg = encodeURIComponent(
+    `Hola, vi la guía de ${zona.label} en Brújula Digital y me interesa saber sobre propiedades en la zona. ¿Podés darme más info?`
+  );
 
   return (
     <div className="min-h-screen bg-[#F5F4ED] font-sans">
       {/* ─── Hero con imagen ──────────────────────── */}
       <div className="relative h-48 sm:h-64 overflow-hidden">
-        {(() => {
-          const hero = getZonaHero(id);
-          return hero ? (
-            <img src={hero} alt={zona.label} className="absolute inset-0 w-full h-full object-cover" />
-          ) : (
-            <div className="absolute inset-0 bg-gradient-to-br from-[#1F1E1D] to-[#2A2825]" />
-          );
-        })()}
+        {heroImg ? (
+          <img src={heroImg} alt={zona.label} className="absolute inset-0 w-full h-full object-cover" />
+        ) : (
+          <div className="absolute inset-0 bg-gradient-to-br from-[#1F1E1D] to-[#2A2825]" />
+        )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
         <div className="absolute bottom-0 left-0 right-0 max-w-6xl mx-auto px-4 sm:px-6 pb-6 sm:pb-8">
           <Link href="/" className="inline-flex items-center gap-1 text-[#87867F] text-sm hover:text-white transition-colors mb-2">
@@ -114,7 +123,7 @@ export default async function ZonaPage({ params }: { params: Promise<{ id: strin
             {zona.label}
           </h1>
           <p className="text-[#B8B7B2] mt-1 text-sm sm:text-base max-w-xl">
-            {getZonaDesc(id) ?? ""}{getZonaDesc(id) ? " · " : ""}{totalLugares} lugares
+            {heroDesc}{heroDesc ? " · " : ""}{totalLugares} lugares
           </p>
         </div>
       </div>
