@@ -100,7 +100,7 @@ export default function ComoLlegarPage() {
           </h2>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {/* Uber / Bolt */}
+            {/* Uber */}
             <div className="bg-white rounded-2xl border-2 border-[#C96442]/30 p-5 space-y-3 relative">
               <span className="absolute top-4 right-4 text-[10px] font-bold uppercase tracking-wider text-[#C96442] bg-[#C96442]/10 px-2 py-0.5 rounded-full">
                 Recomendado
@@ -109,27 +109,59 @@ export default function ComoLlegarPage() {
                 <Smartphone className="h-5 w-5 text-white" />
               </div>
               <div>
-                <h3 className="font-semibold text-[#1F1E1D]">Uber / Bolt</h3>
+                <h3 className="font-semibold text-[#1F1E1D]">Uber</h3>
                 <p className="text-sm text-[#5C5B57] mt-1">
-                  Funcionan dentro de la terminal. La opción más económica y cómoda. Pedí el auto antes de salir de la sala de llegadas.
+                  Funciona dentro de la terminal. La opción más económica y cómoda. Pedí antes de salir de la sala de llegadas.
                 </p>
               </div>
-              <div className="flex gap-2 pt-1">
-                <a
-                  href="https://uber.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-[#1F1E1D] text-white text-xs font-semibold hover:bg-[#C96442] transition-colors"
-                >
-                  Uber <ExternalLink className="h-3 w-3" />
+              <div className="flex flex-wrap gap-2 pt-1">
+                <a href="https://play.google.com/store/apps/details?id=com.ubercab" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-[#1F1E1D] text-white text-xs font-semibold hover:bg-[#C96442] transition-colors">
+                  Google Play <ExternalLink className="h-3 w-3" />
                 </a>
-                <a
-                  href="https://bolt.eu"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-[#1F1E1D] text-white text-xs font-semibold hover:bg-[#C96442] transition-colors"
-                >
-                  Bolt <ExternalLink className="h-3 w-3" />
+                <a href="https://apps.apple.com/app/uber/id368677368" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-[#1F1E1D] text-white text-xs font-semibold hover:bg-[#C96442] transition-colors">
+                  App Store <ExternalLink className="h-3 w-3" />
+                </a>
+              </div>
+            </div>
+
+            {/* Bolt */}
+            <div className="bg-white rounded-2xl border border-[#D4D2C9] p-5 space-y-3">
+              <div className="w-10 h-10 rounded-xl bg-[#F5F4ED] flex items-center justify-center">
+                <Smartphone className="h-5 w-5 text-[#5C5B57]" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-[#1F1E1D]">Bolt</h3>
+                <p className="text-sm text-[#5C5B57] mt-1">
+                  Competencia local de Uber, a veces más barato. También disponible en la terminal.
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-2 pt-1">
+                <a href="https://play.google.com/store/apps/details?id=ee.mtakso.client" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-[#1F1E1D] text-white text-xs font-semibold hover:bg-[#C96442] transition-colors">
+                  Google Play <ExternalLink className="h-3 w-3" />
+                </a>
+                <a href="https://apps.apple.com/app/bolt/id675033630" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-[#1F1E1D] text-white text-xs font-semibold hover:bg-[#C96442] transition-colors">
+                  App Store <ExternalLink className="h-3 w-3" />
+                </a>
+              </div>
+            </div>
+
+            {/* MUV */}
+            <div className="bg-white rounded-2xl border border-[#D4D2C9] p-5 space-y-3">
+              <div className="w-10 h-10 rounded-xl bg-[#F5F4ED] flex items-center justify-center">
+                <Smartphone className="h-5 w-5 text-[#5C5B57]" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-[#1F1E1D]">MUV</h3>
+                <p className="text-sm text-[#5C5B57] mt-1">
+                  App paraguaya de movilidad. Suele tener buenos precios y disponibilidad en la zona del aeropuerto.
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-2 pt-1">
+                <a href="https://play.google.com/store/apps/details?id=py.com.muv" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-[#1F1E1D] text-white text-xs font-semibold hover:bg-[#C96442] transition-colors">
+                  Google Play <ExternalLink className="h-3 w-3" />
+                </a>
+                <a href="https://apps.apple.com/app/muv-paraguay/id6730000000" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-[#1F1E1D] text-white text-xs font-semibold hover:bg-[#C96442] transition-colors">
+                  App Store <ExternalLink className="h-3 w-3" />
                 </a>
               </div>
             </div>
