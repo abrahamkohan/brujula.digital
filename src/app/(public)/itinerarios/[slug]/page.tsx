@@ -40,7 +40,7 @@ export default async function ItinerarioPage({ params }: { params: Promise<{ slu
 
   const { data: pasos } = await supabase
     .from("itinerario_pasos")
-    .select("*, directorios!lugar_id(name, tipo, image, url, zone)")
+    .select("*")
     .eq("itinerario_id", itinerario.id)
     .order("orden");
 
@@ -74,9 +74,7 @@ export default async function ItinerarioPage({ params }: { params: Promise<{ slu
           <p className="text-[#87867F] text-sm">Este itinerario no tiene pasos cargados todavía.</p>
         ) : (
           <div className="space-y-6">
-            {pasos.map((paso, i) => {
-              const lugar = paso.directorios;
-              return (
+            {pasos.map((paso, i) => (
                 <div key={paso.id} className="relative pl-10">
                   {/* Número de paso */}
                   <div className="absolute left-0 top-0 w-7 h-7 rounded-full bg-[#C96442] text-white text-xs font-bold flex items-center justify-center">
@@ -91,9 +89,6 @@ export default async function ItinerarioPage({ params }: { params: Promise<{ slu
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0 flex-1">
                         <h3 className="font-semibold text-sm text-[#1F1E1D]">{paso.lugar_nombre}</h3>
-                        {lugar && (
-                          <p className="text-xs text-[#87867F] mt-0.5">{lugar.tipo} {lugar.zone ? `· ${lugar.zone}` : ""}</p>
-                        )}
                       </div>
                       {paso.tiempo_estimado && (
                         <span className="shrink-0 text-xs text-[#5C5B57] bg-[#F5F4ED] px-2 py-0.5 rounded-full">{paso.tiempo_estimado}</span>
@@ -102,9 +97,9 @@ export default async function ItinerarioPage({ params }: { params: Promise<{ slu
                     {paso.nota && (
                       <p className="text-xs text-[#5C5B57] mt-2">{paso.nota}</p>
                     )}
-                    {(paso.lugar_url || lugar?.url) && (
+                    {paso.lugar_url && (
                       <a
-                        href={paso.lugar_url || lugar?.url || "#"}
+                        href={paso.lugar_url}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="inline-flex items-center gap-1 text-xs text-[#C96442] hover:underline mt-2"
@@ -114,8 +109,7 @@ export default async function ItinerarioPage({ params }: { params: Promise<{ slu
                     )}
                   </div>
                 </div>
-              );
-            })}
+            ))}
           </div>
         )}
       </div>

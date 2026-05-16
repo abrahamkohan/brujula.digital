@@ -45,7 +45,12 @@ export default async function ItinerariosPage() {
                   {it.imagen ? (
                     <img src={it.imagen} alt={it.titulo} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-4xl">🗺️</div>
+                    <div className="w-full h-full bg-[#1F1E1D]" />
+                  )}
+                  {it.tipo && (
+                    <span className="absolute top-3 left-3 px-2.5 py-1 rounded-full text-[10px] font-semibold tracking-wide uppercase bg-black/50 backdrop-blur-sm text-white">
+                      {it.tipo === "urbano" ? "Urbano" : "Escapada"}
+                    </span>
                   )}
                 </div>
                 <div className="p-4 space-y-2">

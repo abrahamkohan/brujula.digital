@@ -187,14 +187,14 @@ export default async function ZonaPage({ params }: { params: Promise<{ id: strin
                           alt={item.name}
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                           fallback={
-                            <div className="w-full h-full flex items-center justify-center text-[#D4D2C9]">
-                              <Icon className="h-10 w-10" />
+                            <div className="w-full h-full bg-[#1F1E1D] flex items-center justify-center">
+                              <Icon className="h-10 w-10 text-white/20" />
                             </div>
                           }
                         />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center text-[#D4D2C9]">
-                          <Icon className="h-10 w-10" />
+                        <div className="w-full h-full bg-[#1F1E1D] flex items-center justify-center">
+                          <Icon className="h-10 w-10 text-white/20" />
                         </div>
                       )}
                       {item.featured && (

@@ -13,7 +13,7 @@ export function ImageWithFallback({ src, alt, className = "", fallback }: Props)
   const [failed, setFailed] = useState(false);
 
   if (failed || !src) {
-    return <>{fallback ?? <div className={`${className} bg-[#1F1E1D]`} />}</>;
+    return <>{fallback ?? <div className={`${className || ""} bg-[#1F1E1D]`} />}</>;
   }
 
   return (
