@@ -2,11 +2,11 @@ import { createClient } from "@/lib/supabase/server";
 import { ZONAS } from "@/lib/directorios/types";
 import { getZonaHero, getZonaDesc } from "@/lib/zonas-images";
 import Link from "next/link";
-import { Compass, MessageCircle, ArrowRight, Sparkles } from "lucide-react";
+import { Compass, ArrowRight, Sparkles } from "lucide-react";
 import type { Metadata } from "next";
 import EventCard from "@/components/eventos/event-card";
 import { SearchBar } from "@/components/search-bar";
-import { LogoCta } from "@/components/logo-kohan";
+import { KohanCtaCompact } from "@/components/kohan-cta-compact";
 
 // ─── Config ────────────────────────────────────────────────────
 const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "595976227373";
@@ -345,28 +345,7 @@ export default async function HomePage() {
            CTA PROPIEDADES
          ═══════════════════════════════════════════ */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 mt-14 mb-14">
-        <div className="bg-gradient-to-br from-[#1F1E1D] to-[#2A2825] rounded-3xl py-14 px-8 sm:py-16 sm:px-12 text-center">
-          <div className="max-w-xl mx-auto space-y-4">
-            <LogoCta className="h-9 mx-auto mb-2" invert />
-            <h2 className="font-[family-name:var(--font-heading)] text-2xl sm:text-3xl font-bold text-white tracking-tight">
-              ¿Buscás propiedad en Asunción?
-            </h2>
-            <p className="text-[#B8B7B2] text-sm sm:text-base">
-              Te ayudo a encontrar casas, departamentos y terrenos en la zona que te interesa.
-              Consultame sin compromiso.
-            </p>
-            <a
-              href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent("Hola, vi Brújula Digital y me interesa saber sobre propiedades en Asunción. ¿Podés darme más info?")}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-[#25D366] text-white font-semibold text-sm hover:bg-[#22c35e] transition-colors shadow-lg hover:shadow-xl mt-2"
-            >
-              <MessageCircle className="h-5 w-5" />
-              Consultar por WhatsApp
-            </a>
-            <p className="text-[#87867F] text-xs">Respuesta rápida · Sin compromiso</p>
-          </div>
-        </div>
+        <KohanCtaCompact zona="Asunción" />
       </div>
 
       {/* ═══════════════════════════════════════════
