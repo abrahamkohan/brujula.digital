@@ -13,6 +13,7 @@ config({ path: path.resolve(process.cwd(), ".env.local") });
 
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { createHash } from "crypto";
+import { detectCategory } from "../lib/scrapers/types";
 import type { ScrapedEvent } from "../lib/scrapers/types";
 
 const API_KEY = process.env.GEMINI_API_KEY;
