@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Compass, Calendar, Map } from "lucide-react";
 import { PWARegister } from "@/components/pwa-register";
 import { WeatherBadge } from "@/components/weather";
+import { KohanTicker } from "@/components/kohan-ticker";
 
 export default function PublicLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -36,6 +37,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
       </header>
 
       {children}
+      <KohanTicker />
     </div>
   );
 }

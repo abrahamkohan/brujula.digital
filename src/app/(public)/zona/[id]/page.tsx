@@ -5,17 +5,14 @@ import Link from "next/link";
 import {
   ShoppingBag, UtensilsCrossed, Beer, Hotel, Film,
   Landmark, TreePine, Building2, Trophy, MicVocal,
-  TreePalm, BookOpen, Compass, MessageCircle,
+  TreePalm, BookOpen, Compass,
   ArrowRight,
 } from "lucide-react";
 import type { Metadata } from "next";
 import { ShareButton } from "@/components/share-button";
 import { getZonaHero, getZonaDesc } from "@/lib/zonas-images";
 import { ImageWithFallback } from "@/components/image-fallback";
-
-// ─── Config ────────────────────────────────────────────────────
-// ⚠️ Reemplazá con tu número de WhatsApp (formato internacional sin +)
-const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "595976227373";
+import { KohanCtaCompact } from "@/components/kohan-cta-compact";
 
 // ─── Tipos ─────────────────────────────────────────────────────
 
@@ -95,9 +92,6 @@ export default async function ZonaPage({ params }: { params: Promise<{ id: strin
     .order("name");
 
   const totalLugares = lugares?.length ?? 0;
-  const whatsappMsg = encodeURIComponent(
-    `Hola, vi la guía de ${zona.label} en Brújula Digital y me interesa saber sobre propiedades en la zona. ¿Podés darme más info?`
-  );
 
   return (
     <div className="min-h-screen bg-[#F5F4ED] font-sans">
@@ -233,28 +227,7 @@ export default async function ZonaPage({ params }: { params: Promise<{ id: strin
         {/* ═══════════════════════════════════════════
              🏠 PROPIEDADES EN [ZONA] — LEAD GEN
            ═══════════════════════════════════════════ */}
-        <section className="bg-gradient-to-br from-[#1F1E1D] to-[#2D2827] rounded-3xl p-8 sm:p-12 text-center">
-          <div className="max-w-xl mx-auto space-y-4">
-            <div className="text-4xl">🏠</div>
-            <h2 className="font-[family-name:var(--font-heading)] text-2xl sm:text-3xl font-bold text-white tracking-tight">
-              ¿Buscás propiedad en {zona.label}?
-            </h2>
-            <p className="text-[#B8B7B2] text-sm sm:text-base">
-              Te ayudo a encontrar casas, departamentos y terrenos en {zona.label} y zonas aledañas.
-              Consultame sin compromiso.
-            </p>
-            <a
-              href={`https://wa.me/${WHATSAPP_NUMBER}?text=${whatsappMsg}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-[#25D366] text-white font-semibold text-sm hover:bg-[#22c35e] transition-colors shadow-lg hover:shadow-xl mt-2"
-            >
-              <MessageCircle className="h-5 w-5" />
-              Consultar por WhatsApp
-            </a>
-            <p className="text-[#87867F] text-xs">Respuesta rápida · Sin compromiso</p>
-          </div>
-        </section>
+        <KohanCtaCompact zona={zona.label} />
 
         {/* ─── Footer ── */}
         <div className="flex flex-wrap gap-4 justify-center pt-4 text-sm text-[#87867F]">
