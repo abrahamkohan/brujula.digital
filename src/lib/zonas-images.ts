@@ -15,7 +15,7 @@ export const ZONA_HERO: Record<string, string> = {
   "barrio-obrero": "https://images.unsplash.com/photo-1574629810360-3efdf87b6951?w=800&h=600&fit=crop",
   "loma-taruma": "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&h=600&fit=crop",
   "ykua-sati": "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&h=600&fit=crop",
-  "mariano-roque-alonso": "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=800&h=600&fit=crop",
+  "mariano-roque-alonso": "https://upload.wikimedia.org/wikipedia/commons/d/d5/Municipalidad_en_MRA1.jpg",
   "aregua": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&h=600&fit=crop",
   "recoleta": "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&h=600&fit=crop",
 };
