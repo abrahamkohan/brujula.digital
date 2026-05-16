@@ -72,7 +72,7 @@ export default async function HomePage() {
 
   const hotelesPorZona = ZONAS_HOTEL.map((z) => ({
     ...z,
-    hoteles: lugares.filter((l) => l.tipo === "hotel" && l.zone === z.id && l.featured).slice(0, 2),
+    hoteles: lugares.filter((l) => l.tipo === "hotel" && l.zone === z.id).slice(0, 2),
     total: lugares.filter((l) => l.tipo === "hotel" && l.zone === z.id).length,
   }));
 
