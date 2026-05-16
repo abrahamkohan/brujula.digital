@@ -69,6 +69,7 @@ const TAB_LABELS: Record<string, string> = {
   "centro-cultural": "Centros Culturales",
   libreria: "Librerías",
   "barrio-zona": "Barrios/Zonas",
+  "complejo": "Complejos",
 };
 
 // ─── Helpers ─────────────────────────────────────────────────

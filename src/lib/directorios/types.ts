@@ -40,6 +40,9 @@ export const ZONAS: ZonaInfo[] = [
   { id: "ykua-sati", label: "Ykua Sati" },
   { id: "mariano-roque-alonso", label: "Mariano Roque Alonso" },
   { id: "recoleta", label: "Recoleta" },
+  { id: "altos", label: "Altos" },
+  { id: "paraguari", label: "Paraguarí" },
+  { id: "ybycui", label: "Ybycuí" },
   { id: "aregua", label: "Areguá" },
   { id: "otras", label: "Otras" },
 ];

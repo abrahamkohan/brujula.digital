@@ -17,6 +17,9 @@ export const ZONA_HERO: Record<string, string> = {
   "ykua-sati": "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&h=600&fit=crop",
   "mariano-roque-alonso": "https://upload.wikimedia.org/wikipedia/commons/d/d5/Municipalidad_en_MRA1.jpg",
   "aregua": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&h=600&fit=crop",
+  "altos": "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&h=600&fit=crop",
+  "paraguari": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&h=600&fit=crop",
+  "ybycui": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop",
   "recoleta": "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&h=600&fit=crop",
 };
 
@@ -36,6 +39,9 @@ export const ZONA_DESCS: Record<string, string> = {
   "ykua-sati": "Museo del Barro",
   "mariano-roque-alonso": "Centro de Convenciones",
   "aregua": "Artesanía en cerámica",
+  "altos": "Complejos recreativos y naturaleza a 45 minutos",
+  "paraguari": "Eco-aventura en la serranía paraguaya",
+  "ybycui": "Parque nacional con saltos de agua y ruinas históricas",
   "recoleta": "Zona residencial",
 };
 

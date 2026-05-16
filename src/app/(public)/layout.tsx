@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Compass, Calendar, Map } from "lucide-react";
+import { Compass, Calendar, Map, Tent } from "lucide-react";
 import { PWARegister } from "@/components/pwa-register";
 import { WeatherBadge } from "@/components/weather";
 import { KohanTicker } from "@/components/kohan-ticker";
@@ -31,6 +31,9 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
             </Link>
             <Link href="/itinerarios" className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm text-[#5C5B57] hover:text-[#1F1E1D] hover:bg-[#F5F4ED] transition-colors">
               <Map className="h-4 w-4" /> <span className="hidden sm:inline">Itinerarios</span>
+            </Link>
+            <Link href="/escapadas" className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm text-[#5C5B57] hover:text-[#1F1E1D] hover:bg-[#F5F4ED] transition-colors">
+              <Tent className="h-4 w-4" /> <span className="hidden sm:inline">Escapadas</span>
             </Link>
           </nav>
         </div>

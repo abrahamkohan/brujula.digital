@@ -1,6 +1,8 @@
 // ─── CTA compacto Kohan & Campos — reemplaza el bloque grande ──
 // Franja horizontal, navy + gold, con logo hero y botón WhatsApp
 
+"use client";
+
 import { MessageCircle } from "lucide-react";
 
 const LOGO_HERO = "https://kohancampos.com.py/logo-hero.svg";
