@@ -100,6 +100,7 @@ export default function AdminDirectoriosPage() {
   const [formTipoLugar, setFormTipoLugar] = useState("");
   const [formHorario, setFormHorario] = useState("");
   const [formActive, setFormActive] = useState(true);
+  const [formTipo, setFormTipo] = useState("bar");
 
   const fetchItems = useCallback(async () => {
     setLoading(true);
@@ -139,6 +140,7 @@ export default function AdminDirectoriosPage() {
     setFormTipoLugar("");
     setFormHorario("");
     setFormActive(true);
+    setFormTipo(activeTab);
     setModal("new");
   }
 
@@ -152,6 +154,7 @@ export default function AdminDirectoriosPage() {
     setFormTipoLugar(item.tipo_lugar ?? "");
     setFormHorario(item.horario ?? "");
     setFormActive(item.active);
+    setFormTipo(item.tipo);
     setModal("edit");
   }
 
@@ -164,6 +167,7 @@ export default function AdminDirectoriosPage() {
       name: formName,
       descripcion: formDesc,
       zone: formZone,
+      tipo: formTipo,
       image: formImage,
       url: formUrl,
       tipo_lugar: formTipoLugar || null,
@@ -183,7 +187,7 @@ export default function AdminDirectoriosPage() {
         res = await fetch("/api/admin/directorios", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ tipo: activeTab, ...payload }),
+          body: JSON.stringify({ ...payload }),
         });
       }
 
@@ -232,8 +236,6 @@ export default function AdminDirectoriosPage() {
       fetchItems();
     }
   }
-
-  const tiposDisponibles: string[] = [];
 
   return (
     <div>
@@ -337,7 +339,7 @@ export default function AdminDirectoriosPage() {
           <div className="grid grid-cols-[1fr_100px_100px_50px_50px_120px] gap-3 px-5 py-3 text-xs font-medium text-[#87867F] border-b border-[#D4D2C9]">
             <span>Nombre</span>
             <span>Zona</span>
-            <span>Tipo</span>
+            <span>Subtipo</span>
             <span>Activo</span>
             <span>★</span>
             <span>Acciones</span>
@@ -433,6 +435,15 @@ export default function AdminDirectoriosPage() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
+                  <label className="block text-xs font-medium text-[#5C5B57] mb-1">Categoría *</label>
+                  <select value={formTipo} onChange={(e) => setFormTipo(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl border border-[#D4D2C9] bg-white text-[#1F1E1D] text-sm focus:outline-none focus:ring-2 focus:ring-[#C96442]/20 focus:border-[#C96442]">
+                    {Object.entries(TAB_LABELS).filter(([k]) => k !== "barrio-zona").map(([k, v]) => (
+                      <option key={k} value={k}>{v}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
                   <label className="block text-xs font-medium text-[#5C5B57] mb-1">Zona</label>
                   <select value={formZone} onChange={(e) => setFormZone(e.target.value)}
                     className="w-full px-3 py-2 rounded-xl border border-[#D4D2C9] bg-white text-[#1F1E1D] text-sm focus:outline-none focus:ring-2 focus:ring-[#C96442]/20 focus:border-[#C96442]">
@@ -441,16 +452,13 @@ export default function AdminDirectoriosPage() {
                     ))}
                   </select>
                 </div>
-                <div>
-                  <label className="block text-xs font-medium text-[#5C5B57] mb-1">Tipo</label>
-                  <select value={formTipoLugar} onChange={(e) => setFormTipoLugar(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl border border-[#D4D2C9] bg-white text-[#1F1E1D] text-sm focus:outline-none focus:ring-2 focus:ring-[#C96442]/20 focus:border-[#C96442]">
-                    <option value="">Sin tipo</option>
-                    {tiposDisponibles.map((t) => (
-                      <option key={t} value={t}>{t}</option>
-                    ))}
-                  </select>
-                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-[#5C5B57] mb-1">Subtipo <span className="text-[#B8B7B2] font-normal">(opcional — ej: Rock bar, Hotel boutique)</span></label>
+                <input type="text" value={formTipoLugar} onChange={(e) => setFormTipoLugar(e.target.value)}
+                  className="w-full px-3 py-2 rounded-xl border border-[#D4D2C9] bg-white text-[#1F1E1D] text-sm focus:outline-none focus:ring-2 focus:ring-[#C96442]/20 focus:border-[#C96442] placeholder-[#87867F]"
+                  placeholder="Ej: Rock bar, Hotel boutique, Restaurante italiano" />
               </div>
 
               <div>
