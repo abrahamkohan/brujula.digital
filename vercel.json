@@ -8,9 +8,5 @@
       "path": "/api/cron/ig-trigger",
       "schedule": "0 9 * * *"
     },
-    {
-      "path": "/api/cron/ig-process",
-      "schedule": "10 9 * * *"
-    }
   ]
 }
