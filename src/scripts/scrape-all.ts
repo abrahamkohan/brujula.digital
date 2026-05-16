@@ -11,6 +11,7 @@ import { scrapeTicketea } from "./scrape-ticketea";
 import { scrapeTuti } from "./scrape-tuti";
 import { scrapeAPF } from "./scrape-apf";
 import { scrapeCinemark } from "./scrape-cinemark";
+import { scrapeGeminiEvents } from "./scrape-gemini-events";
 import { scrapeSerpapi } from "./scrape-serpapi";
 import { upsertEventsNoImages } from "../lib/scrapers/upsert-events";
 import { dedupEventos } from "./dedup-eventos";
@@ -26,6 +27,7 @@ const SCRAPERS: ScraperDef[] = [
   { name: "ticketea", fn: scrapeTicketea },
   { name: "tuti", fn: scrapeTuti },
   { name: "apf", fn: scrapeAPF },
+  { name: "gemini", fn: scrapeGeminiEvents },
 ];
 
 // Scrapers que requieren Playwright (se ejecutan secuencialmente)
