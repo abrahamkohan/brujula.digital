@@ -10,9 +10,7 @@
 import { scrapeTicketea } from "./scrape-ticketea";
 import { scrapeTuti } from "./scrape-tuti";
 import { scrapeAPF } from "./scrape-apf";
-import { scrapeVisitParaguay } from "./scrape-visitparaguay";
 import { scrapeCinemark } from "./scrape-cinemark";
-import { scrapeMarket } from "./scrape-market";
 import { scrapeSerpapi } from "./scrape-serpapi";
 import { upsertEventsNoImages } from "../lib/scrapers/upsert-events";
 import { dedupEventos } from "./dedup-eventos";
@@ -28,14 +26,11 @@ const SCRAPERS: ScraperDef[] = [
   { name: "ticketea", fn: scrapeTicketea },
   { name: "tuti", fn: scrapeTuti },
   { name: "apf", fn: scrapeAPF },
-  { name: "visitparaguay", fn: scrapeVisitParaguay },
-  { name: "serpapi", fn: scrapeSerpapi as unknown as () => Promise<ScrapedEvent[]> },
 ];
 
 // Scrapers que requieren Playwright (se ejecutan secuencialmente)
 const BROWSER_SCRAPERS: ScraperDef[] = [
   { name: "cinemark", fn: scrapeCinemark as unknown as () => Promise<ScrapedEvent[]> },
-  { name: "market", fn: scrapeMarket as unknown as () => Promise<ScrapedEvent[]> },
   // { name: "tiketon", fn: scrapeTiketon },
   // { name: "allaccess", fn: scrapeAllAccess },
 ];

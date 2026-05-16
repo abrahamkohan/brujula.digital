@@ -29,6 +29,21 @@ const DAYS = [
   "viernes", "sábado", "sabado",
 ];
 
+const ALL_SHORT_MONTHS: Record<string, number> = {
+  // Inglés
+  jan: 0, january: 0, feb: 1, february: 1,
+  mar: 2, march: 2, apr: 3, april: 3,
+  may: 4, jun: 5, june: 5,
+  jul: 6, july: 6, aug: 7, august: 7,
+  sep: 8, september: 8, oct: 9, october: 9,
+  nov: 10, november: 10, dec: 11, december: 11,
+  // Español abreviado
+  ene: 0, feb: 1, mar: 2, abr: 3,
+  may: 4, jun: 5, jul: 6,
+  ago: 7, sep: 8, set: 8, oct: 9,
+  nov: 10, dic: 11,
+};
+
 /**
  * Parsea una fecha en formato paraguayo y devuelve un objeto Date UTC.
  * Si no se puede parsear, devuelve null.
@@ -112,37 +127,35 @@ export function parseParaguayanDate(raw: string): Date | null {
     }
   }
 
-  // Intento 5: "DD MMM" formato inglés (13 MAY, 05 JUN, 23 JUL, etc.)
+  // Intento 5: "13 MAY", "05 JUN", "23 AGO" — día + mes abreviado (inglés o español)
   {
-    const EN_MONTHS: Record<string, number> = {
-      jan: 0, january: 0,
-      feb: 1, february: 1,
-      mar: 2, march: 2,
-      apr: 3, april: 3,
-      may: 4,
-      jun: 5, june: 5,
-      jul: 6, july: 6,
-      aug: 7, august: 7,
-      sep: 8, september: 8,
-      oct: 9, october: 9,
-      nov: 10, november: 10,
-      dec: 11, december: 11,
-    };
-
-    const m = text.match(/^(\d{1,2})\s+([a-z]{3,9})$/i);
+    const m = text.match(/^(\d{1,2})\s+([a-z]{2,9})\.?$/i);
     if (m) {
       const day = Number(m[1]);
-      const month = EN_MONTHS[m[2].toLowerCase()];
+      const month = ALL_SHORT_MONTHS[m[2].toLowerCase()];
       if (month === undefined) return null;
 
       let year = new Date().getFullYear();
       const date = new Date(year, month, day);
+      if (date.getTime() < Date.now()) date.setFullYear(year + 1);
+      return date;
+    }
+  }
 
-      // Si ya pasó, asumir año siguiente
-      if (date.getTime() < Date.now()) {
-        date.setFullYear(year + 1);
-      }
+  // Intento 6: "VIE 13 JUN 21:00" o "SAB 15 JUN" — formato abreviado español
+  {
+    const m = text.match(/^(?:[a-záéíóúñ]{2,4}\.?\s+)?(\d{1,2})\s+([a-záéíóúñ]{3})\.?(?:\s+(\d{1,2}):(\d{2}))?/i);
+    if (m) {
+      const day = Number(m[1]);
+      const month = ALL_SHORT_MONTHS[m[2].toLowerCase()];
+      if (month === undefined) return null;
 
+      const hour = m[3] ? Number(m[3]) : 0;
+      const min = m[4] ? Number(m[4]) : 0;
+
+      let year = new Date().getFullYear();
+      const date = new Date(year, month, day, hour, min);
+      if (date.getTime() < Date.now()) date.setFullYear(year + 1);
       return date;
     }
   }

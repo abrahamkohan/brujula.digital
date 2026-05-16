@@ -257,8 +257,7 @@ export async function scrapeTuti(): Promise<ScrapedEvent[]> {
           external_id: item.slug,
           title: item.title,
           event_date:
-            parseParaguayanDate(item.rawDate)?.toISOString() ??
-            new Date().toISOString(),
+            parseParaguayanDate(item.rawDate)?.toISOString() ?? undefined,
           venue_name: item.venue,
           city: "Asunción",
     category: item.category as EventCategory,
