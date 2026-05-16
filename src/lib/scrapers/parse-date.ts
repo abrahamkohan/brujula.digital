@@ -30,18 +30,19 @@ const DAYS = [
 ];
 
 const ALL_SHORT_MONTHS: Record<string, number> = {
-  // Inglés
-  jan: 0, january: 0, feb: 1, february: 1,
-  mar: 2, march: 2, apr: 3, april: 3,
-  may: 4, jun: 5, june: 5,
-  jul: 6, july: 6, aug: 7, august: 7,
-  sep: 8, september: 8, oct: 9, october: 9,
-  nov: 10, november: 10, dec: 11, december: 11,
-  // Español abreviado
-  ene: 0, feb: 1, mar: 2, abr: 3,
-  may: 4, jun: 5, jul: 6,
-  ago: 7, sep: 8, set: 8, oct: 9,
-  nov: 10, dic: 11,
+  // Inglés + Español abreviado (compartidos, sin duplicados)
+  jan: 0, january: 0, ene: 0,
+  feb: 1, february: 1,
+  mar: 2, march: 2,
+  apr: 3, april: 3, abr: 3,
+  may: 4,
+  jun: 5, june: 5,
+  jul: 6, july: 6,
+  aug: 7, august: 7, ago: 7,
+  sep: 8, september: 8, set: 8,
+  oct: 9, october: 9,
+  nov: 10, november: 10,
+  dec: 11, december: 11, dic: 11,
 };
 
 /**
