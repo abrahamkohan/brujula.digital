@@ -88,7 +88,8 @@ export default async function HomePage() {
         <img
           src="https://images.unsplash.com/photo-1598901865264-4d8b977ccb0b?w=1200&h=800&fit=crop"
           alt="Asunción, Paraguay"
-          className="absolute inset-0 w-full h-full object-cover"
+          className="absolute inset-0 w-full h-full object-cover animate-kenburns"
+          fetchPriority="high"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/45 to-black/80" />
         <div className="relative z-10 flex flex-col items-center justify-center h-full text-center px-4 pb-14">
