@@ -145,7 +145,7 @@ export default async function HomePage() {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {hotelesPorZona.map((z) => (
-              <Link key={z.id} href={`/zona/${z.id}`} className="group bg-white rounded-2xl border border-[#D4D2C9] p-5 hover:border-[#C96442]/30 hover:shadow-md transition-all space-y-3">
+              <Link key={z.id} href={`/guia/hotel?zona=${z.id}`} className="group bg-white rounded-2xl border border-[#D4D2C9] p-5 hover:border-[#C96442]/30 hover:shadow-md transition-all space-y-3">
                 <div className="flex items-start justify-between gap-2">
                   <div>
                     <h3 className="font-semibold text-[#1F1E1D] group-hover:text-[#C96442] transition-colors">{z.label}</h3>

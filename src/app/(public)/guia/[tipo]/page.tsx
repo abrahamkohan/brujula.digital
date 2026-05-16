@@ -56,18 +56,23 @@ export async function generateMetadata({ params }: { params: Promise<{ tipo: str
 
 // ═══════════════════════════════════════════════════════════════
 
-export default async function CategoriaGuiaPage({ params }: { params: Promise<{ tipo: string }> }) {
+export default async function CategoriaGuiaPage({ params, searchParams }: { params: Promise<{ tipo: string }>, searchParams: Promise<{ zona?: string }> }) {
   const { tipo } = await params;
+  const { zona } = await searchParams;
   if (!isTipo(tipo)) notFound();
 
   const label = TIPO_LABELS[tipo];
   const supabase = await createClient();
 
-  const { data: items } = await supabase
+  let query = supabase
     .from("directorios")
     .select("*")
     .eq("tipo", tipo)
-    .eq("active", true)
+    .eq("active", true);
+
+  if (zona) query = query.eq("zone", zona);
+
+  const { data: items } = await query
     .order("sort_order")
     .order("name");
 
