@@ -177,7 +177,7 @@ export default async function HomePage() {
               ¿Dónde quedarse?
             </h2>
             <div className="flex-1 h-px bg-[#D4D2C9]/50" />
-            <Link href="/zona/villa-morra" className="text-xs text-[#C96442] hover:underline flex items-center gap-1 shrink-0">
+            <Link href="/guia/hotel" className="text-xs text-[#C96442] hover:underline flex items-center gap-1 shrink-0">
               Ver todos los hoteles <ArrowRight className="h-3 w-3" />
             </Link>
           </div>
