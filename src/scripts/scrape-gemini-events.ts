@@ -113,11 +113,11 @@ export async function scrapeGeminiEvents(): Promise<ScrapedEvent[]> {
           external_id: slugify(e.title, e.event_date),
           title: e.title,
           event_date: e.event_date ?? undefined,
-          venue_name: e.venue_name ?? undefined,
+          venue_name: e.venue_name ?? "",
           city: "Asunción",
           category: detectCategory(e.title),
           currency: "PYG",
-          source_url: e.source_url ?? undefined,
+          source_url: e.source_url ?? "",
         });
       }
 
