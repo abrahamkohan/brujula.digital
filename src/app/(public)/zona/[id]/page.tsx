@@ -94,33 +94,7 @@ export default async function ZonaPage({ params }: { params: Promise<{ id: strin
     .order("sort_order")
     .order("name");
 
-  if (!lugares || lugares.length === 0) {
-    return (
-      <div className="min-h-screen bg-[#F5F4ED] font-sans">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-20 text-center">
-          <h1 className="text-2xl font-bold text-[#1F1E1D]">{zona.label}</h1>
-          <p className="text-[#87867F] mt-2">Todavía no hay lugares registrados en esta zona.</p>
-          <Link href="/guia" className="text-[#C96442] underline mt-4 inline-block">Explorar otras zonas →</Link>
-        </div>
-      </div>
-    );
-  }
-
-  // Agrupar por tipo
-  const grouped = lugares.reduce<Record<string, DirectorioDB[]>>((acc, lugar) => {
-    if (!acc[lugar.tipo]) acc[lugar.tipo] = [];
-    acc[lugar.tipo].push(lugar);
-    return acc;
-  }, {});
-
-  // Ordenar tipos: primero los que tienen más registros
-  const sortedTipos = Object.entries(grouped)
-    .filter(([tipo]) => TIPO_CONFIG[tipo])
-    .sort(([, a], [, b]) => b.length - a.length);
-
-  const totalLugares = lugares.length;
-
-  // WhatsApp message
+  const totalLugares = lugares?.length ?? 0;
   const whatsappMsg = encodeURIComponent(
     `Hola, vi la guía de ${zona.label} en Brújula Digital y me interesa saber sobre propiedades en la zona. ¿Podés darme más info?`
   );
@@ -153,7 +127,26 @@ export default async function ZonaPage({ params }: { params: Promise<{ id: strin
 
       {/* ─── Contenido ────────────────────────── */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10 space-y-12">
-        {sortedTipos.map(([tipo, items]) => {
+        {!lugares || lugares.length === 0 ? (
+          <div className="text-center py-16 space-y-3">
+            <p className="text-[#1F1E1D] font-semibold text-lg">Estamos mapeando {zona.label}</p>
+            <p className="text-[#87867F] text-sm max-w-xs mx-auto">
+              Pronto vas a encontrar restaurantes, bares y lugares destacados de {zona.label} acá.
+            </p>
+            <Link href="/guia" className="inline-block text-sm text-[#C96442] hover:underline mt-2">
+              Explorá otras zonas →
+            </Link>
+          </div>
+        ) : (() => {
+          const grouped = lugares.reduce<Record<string, DirectorioDB[]>>((acc, lugar) => {
+            if (!acc[lugar.tipo]) acc[lugar.tipo] = [];
+            acc[lugar.tipo].push(lugar);
+            return acc;
+          }, {});
+          const sortedTipos = Object.entries(grouped)
+            .filter(([tipo]) => TIPO_CONFIG[tipo])
+            .sort(([, a], [, b]) => b.length - a.length);
+          return sortedTipos.map(([tipo, items]) => {
           const config = TIPO_CONFIG[tipo];
           if (!config) return null;
           const Icon = config.icon;
@@ -234,7 +227,8 @@ export default async function ZonaPage({ params }: { params: Promise<{ id: strin
               </div>
             </section>
           );
-        })}
+          });
+        })()}
 
         {/* ═══════════════════════════════════════════
              🏠 PROPIEDADES EN [ZONA] — LEAD GEN

@@ -49,3 +49,4 @@ PI-CONNECT.md
 # Dev artifacts
 .playwright-mcp/
 excalidraw.log
+.mcp.json

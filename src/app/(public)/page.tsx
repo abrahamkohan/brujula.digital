@@ -265,7 +265,12 @@ export default async function HomePage() {
                   {it.imagen ? (
                     <img src={it.imagen} alt={it.titulo} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                   ) : (
-                    <div className="w-full h-full bg-[#1F1E1D]" />
+                    <div className="w-full h-full bg-gradient-to-br from-[#1F1E1D] to-[#2A2825] flex flex-col items-center justify-center gap-2">
+                      <Compass className="h-8 w-8 text-white/20" />
+                      <span className="text-[10px] font-medium text-white/30 uppercase tracking-widest">
+                        {it.tipo === "escapada" ? "Escapada" : "Itinerario"}
+                      </span>
+                    </div>
                   )}
                   {it.tipo && (
                     <span className="absolute top-3 left-3 px-2.5 py-1 rounded-full text-[10px] font-semibold tracking-wide uppercase bg-black/50 backdrop-blur-sm text-white">
