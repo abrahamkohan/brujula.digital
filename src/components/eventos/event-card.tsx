@@ -43,19 +43,22 @@ const GRADIENT_STYLES: Record<string, string> = {
 const MONTHS = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
 
 function formatDate(dateStr: string) {
-  const d = new Date(dateStr);
-  if (isNaN(d.getTime())) return dateStr;
-  const day = d.getDate();
-  const month = MONTHS[d.getMonth()];
-  const year = d.getFullYear();
+  // Parsear directo del string para evitar el offset UTC→local (Paraguay = UTC-4)
+  // new Date("2026-05-17") = UTC midnight → local getDate() = 16 en UTC-4
+  const parts = dateStr.split("-");
+  if (parts.length < 3) return dateStr;
+  const year = Number(parts[0]);
+  const month = Number(parts[1]) - 1;
+  const day = Number(parts[2]);
+  if (isNaN(year) || isNaN(month) || isNaN(day)) return dateStr;
   const currentYear = new Date().getFullYear();
-  return `${day} ${month}${year !== currentYear ? ` ${year}` : ""}`;
+  return `${day} ${MONTHS[month]}${year !== currentYear ? ` ${year}` : ""}`;
 }
 
 function isToday(dateStr: string) {
-  const d = new Date(dateStr);
-  const today = new Date();
-  return d.getDate() === today.getDate() && d.getMonth() === today.getMonth() && d.getFullYear() === today.getFullYear();
+  const now = new Date();
+  const todayISO = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+  return dateStr === todayISO;
 }
 
 export default function EventCard({ event, featured, href }: Props) {
