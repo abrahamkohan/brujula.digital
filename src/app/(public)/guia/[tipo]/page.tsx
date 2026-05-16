@@ -11,7 +11,7 @@ import type { Metadata } from "next";
 const TIPOS_VALIDOS = [
   "shopping", "gastronomia", "bar", "hotel", "teatro",
   "museo", "parque", "edificio", "estadio", "venue",
-  "centro-cultural", "libreria",
+  "centro-cultural", "libreria", "complejo",
 ] as const;
 
 type TipoValido = (typeof TIPOS_VALIDOS)[number];
@@ -29,6 +29,7 @@ const TIPO_LABELS: Record<TipoValido, { singular: string; plural: string }> = {
   venue: { singular: "Espacio", plural: "Espacios para eventos" },
   "centro-cultural": { singular: "Centro cultural", plural: "Centros culturales" },
   libreria: { singular: "Librería", plural: "Librerías" },
+  complejo: { singular: "Complejo", plural: "Escapadas" },
 };
 
 function isTipo(v: string): v is TipoValido {
