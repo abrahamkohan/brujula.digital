@@ -9,7 +9,7 @@ on:
 jobs:
   scrape:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 20
 
     env:
       NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
@@ -35,3 +35,8 @@ jobs:
 
       - name: Run dedup
         run: npx tsx src/scripts/dedup-eventos.ts
+
+      - name: Fix missing images (Gemini)
+        run: |
+          sleep 90
+          npx tsx src/scripts/fix-images-gemini.ts
