@@ -147,14 +147,12 @@ export default function EventCard({ event, featured, href }: Props) {
     </div>
   );
 
-  const linkHref = href ?? event.source_url;
-
-  if (linkHref) {
-    if (linkHref.startsWith("/")) {
-      return <Link href={linkHref} className="block">{content}</Link>;
+  if (href) {
+    if (href.startsWith("/")) {
+      return <Link href={href} className="block">{content}</Link>;
     }
     return (
-      <a href={linkHref} target="_blank" rel="noopener noreferrer" className="block">
+      <a href={href} target="_blank" rel="noopener noreferrer" className="block">
         {content}
       </a>
     );

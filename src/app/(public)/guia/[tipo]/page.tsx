@@ -4,6 +4,8 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { ShareButton } from "@/components/share-button";
+
+const SITE_ORIGIN = "https://brujula.digital";
 import type { Metadata } from "next";
 
 // ─── Tipos válidos ────────────────────────────────────────────
@@ -145,11 +147,9 @@ export default async function CategoriaGuiaPage({ params, searchParams }: { para
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                       {items.map((item) => (
-                        <a
+                        <Link
                           key={item.id}
-                          href={item.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
+                          href={`/guia/lugar/${item.id}`}
                           className="group bg-white rounded-2xl border border-[#D4D2C9] overflow-hidden shadow-sm hover:shadow-lg hover:border-[#C96442]/30 transition-all"
                         >
                           <div className="aspect-[16/9] bg-[#F5F4ED] overflow-hidden relative">
@@ -164,7 +164,7 @@ export default async function CategoriaGuiaPage({ params, searchParams }: { para
                             {item.badge && (
                               <span className="absolute top-2 right-10 px-2 py-0.5 rounded-full text-[10px] font-medium bg-black/50 text-white backdrop-blur-sm">{item.badge}</span>
                             )}
-                            <ShareButton name={item.name} descripcion={item.descripcion} url={item.url} />
+                            <ShareButton name={item.name} descripcion={item.descripcion} url={`${SITE_ORIGIN}/guia/lugar/${item.id}`} />
                           </div>
                           <div className="p-4 space-y-1.5">
                             <h3 className="font-semibold text-sm text-[#1F1E1D] group-hover:text-[#C96442] transition-colors">{item.name}</h3>
@@ -178,7 +178,7 @@ export default async function CategoriaGuiaPage({ params, searchParams }: { para
                               </p>
                             )}
                           </div>
-                        </a>
+                        </Link>
                       ))}
                     </div>
                   </section>

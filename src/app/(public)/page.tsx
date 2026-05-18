@@ -291,11 +291,9 @@ export default async function HomePage() {
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
               {destacados.map((item) => (
-                <a
+                <Link
                   key={item.id}
-                  href={item.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  href={`/guia/lugar/${item.id}`}
                   className="group relative rounded-2xl overflow-hidden aspect-[4/3] block shadow-sm hover:shadow-xl transition-all hover:scale-[1.02]"
                 >
                   {item.image ? (
@@ -319,7 +317,7 @@ export default async function HomePage() {
                   <div className="absolute bottom-0 left-0 right-0 p-4">
                     <p className="font-bold text-white text-sm">{item.name}</p>
                   </div>
-                </a>
+                </Link>
               ))}
             </div>
           </section>
