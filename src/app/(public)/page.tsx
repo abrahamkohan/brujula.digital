@@ -4,7 +4,7 @@ import { getZonaHero, getZonaDesc } from "@/lib/zonas-images";
 import Link from "next/link";
 import {
   Compass, ArrowRight, Sparkles,
-  Car, Bus, MapPin,
+  Car, Bus, MapPin, Smartphone,
 } from "lucide-react";
 import type { Metadata } from "next";
 import EventCard from "@/components/eventos/event-card";
