@@ -8,6 +8,15 @@ import type { Metadata } from "next";
 
 export const revalidate = 3600;
 
+export async function generateStaticParams() {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("directorios")
+    .select("id")
+    .eq("active", true);
+  return (data ?? []).map((r) => ({ id: r.id }));
+}
+
 const TIPO_LABELS: Record<string, string> = {
   shopping: "Shoppings",
   gastronomia: "Restaurantes",
