@@ -4,12 +4,13 @@ import { getZonaHero, getZonaDesc } from "@/lib/zonas-images";
 import Link from "next/link";
 import {
   Compass, ArrowRight, Sparkles,
-  Car, Bus, MapPin, Smartphone,
+  Car, Bus, MapPin,
 } from "lucide-react";
 import type { Metadata } from "next";
 import EventCard from "@/components/eventos/event-card";
 import { SearchBar } from "@/components/search-bar";
 import { KohanCtaCompact } from "@/components/kohan-cta-compact";
+import { TransportAppsModal } from "@/components/transport-apps-modal";
 
 export const metadata: Metadata = {
   title: "Brújula Digital — Guía de Asunción",
@@ -139,11 +140,8 @@ export default async function HomePage() {
               <p className="text-[10px] font-bold uppercase tracking-widest text-[#87867F]">aeropuerto</p>
             </div>
 
-            {/* Apps — texto limpio */}
-            <div className="flex-1 px-5 py-3.5 flex items-center gap-3 flex-wrap">
-              <Smartphone className="h-4 w-4 text-[#C96442] shrink-0" />
-              <span className="text-xs font-semibold text-[#1F1E1D]">Uber · Bolt · MUV</span>
-            </div>
+            {/* Apps — modal con links iOS/Android */}
+            <TransportAppsModal />
 
             {/* Taxi */}
             <div className="px-4 py-3 flex items-center gap-2">
