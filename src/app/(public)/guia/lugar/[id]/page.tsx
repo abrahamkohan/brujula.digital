@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { createClient as createDirectClient } from "@supabase/supabase-js";
 import { ZONAS } from "@/lib/directorios/types";
 import { notFound } from "next/navigation";
 import Link from "next/link";
@@ -9,7 +10,10 @@ import type { Metadata } from "next";
 export const revalidate = 3600;
 
 export async function generateStaticParams() {
-  const supabase = await createClient();
+  const supabase = createDirectClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  );
   const { data } = await supabase
     .from("directorios")
     .select("id")
